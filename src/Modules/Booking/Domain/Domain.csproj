@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Booking.Domain</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="RepositoryContracts\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Common\BuildingBlock\Core\Core.csproj" />
+    </ItemGroup>
+
+</Project>
