@@ -8,10 +8,15 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.5"/>
+        <PackageReference Include="Npgsql" Version="9.0.3" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="8.1.4" />
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.4" />
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.1.4" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Modules\Booking\Application\Application.csproj" />
+      <ProjectReference Include="..\..\Modules\Booking\Booking.Application\Booking.Application.csproj" />
+      <ProjectReference Include="..\..\Modules\Booking\Booking.Infrastructure\Booking.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

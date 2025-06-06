@@ -8,11 +8,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{CA05C0
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Booking", "Booking", "{07E2A2B0-9D49-4C95-A770-94EC75755A30}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Modules\Booking\Application\Application.csproj", "{340E6B3F-5430-4A1B-89C7-FABC7C7CC5EC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Booking.Application", "Modules\Booking\Booking.Application\Booking.Application.csproj", "{340E6B3F-5430-4A1B-89C7-FABC7C7CC5EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Modules\Booking\Domain\Domain.csproj", "{F8E0B0D5-2451-4004-90C1-B5D30B09F49E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Booking.Domain", "Modules\Booking\Booking.Domain\Booking.Domain.csproj", "{F8E0B0D5-2451-4004-90C1-B5D30B09F49E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Modules\Booking\Infrastructure\Infrastructure.csproj", "{2F7C8A6A-7724-4BB6-BA99-2C76DBA9FAFF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Booking.Infrastructure", "Modules\Booking\Booking.Infrastructure\Booking.Infrastructure.csproj", "{2F7C8A6A-7724-4BB6-BA99-2C76DBA9FAFF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{E4384D72-BF0D-4CAF-82E6-84FD182122CE}"
 EndProject
@@ -44,7 +44,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildingBlocks", "BuildingB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Common\BuildingBlock\Core\Core.csproj", "{7D012776-5019-4DC7-A93B-2AD69D73127D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEvents", "Modules\Booking\IntegrationEvents\IntegrationEvents.csproj", "{3838B527-E08E-430E-AFB4-4181224BBF8C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Booking.IntegrationEvents", "Modules\Booking\Booking.IntegrationEvents\Booking.IntegrationEvents.csproj", "{3838B527-E08E-430E-AFB4-4181224BBF8C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
