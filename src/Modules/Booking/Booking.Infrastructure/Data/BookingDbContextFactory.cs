@@ -10,7 +10,7 @@ public class BookingDbContextFactory : IDesignTimeDbContextFactory<BookingDbCont
     {
         var optionsBuilder = new DbContextOptionsBuilder<BookingDbContext>();
         
-        var basePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "C:\\Users\\38095\\Programming\\ASP.NET_Projects\\HotelBooking\\HotelBooking\\src\\API\\HotelBooking.API"));
+        var basePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(),  @"..\..\..\API\HotelBooking.API"));
         
         var configuration = new ConfigurationBuilder()
             .SetBasePath(basePath)

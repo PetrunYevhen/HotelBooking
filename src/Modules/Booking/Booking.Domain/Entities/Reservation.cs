@@ -12,10 +12,7 @@ public class Reservation
     public DateTime EndDate { get; set; }
     public ReservationStatus Status { get; set; }
 
-    private Reservation()
-    {
-        // EF Core requires a parameterless constructor for entity instantiation
-    }
+    private Reservation() {} // EF Core requires a parameterless constructor for entity instantiation
     
     public Reservation(
         ReservationId reservationId,
@@ -24,8 +21,8 @@ public class Reservation
         decimal price,
         DateTime startDate,
         DateTime endDate,
-        ReservationStatus status)
-    {
+        ReservationStatus status
+)    {
         if (startDate > endDate) 
             throw new InvalidOperationException("Start date cannot be greater than end date");
         

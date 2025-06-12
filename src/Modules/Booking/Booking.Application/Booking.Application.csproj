@@ -8,11 +8,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Payment\Payment.Application\Payment.Application.csproj" />
+      <ProjectReference Include="..\..\RoomManagment\RoomManagment.Application\RoomManagment.Application.csproj" />
+      <ProjectReference Include="..\..\RoomManagment\RoomManagment.Domain\RoomManagment.Domain.csproj" />
       <ProjectReference Include="..\Booking.Domain\Booking.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="MediatR" Version="12.5.0" />
+      <PackageReference Include="Serilog" Version="4.3.0" />
     </ItemGroup>
 
 </Project>

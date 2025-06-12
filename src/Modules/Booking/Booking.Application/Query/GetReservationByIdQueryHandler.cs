@@ -6,15 +6,15 @@ namespace Application.Query;
 
 public class GetReservationByIdQueryHandler : IRequestHandler<GetReservationByIdQuery, Reservation>
 {
-    private readonly IReservationRepository _reservationRepository;
+    private readonly IReservationReadRepository _reservationReadRepository;
     
-    public GetReservationByIdQueryHandler(IReservationRepository reservationRepository)
+    public GetReservationByIdQueryHandler(IReservationReadRepository reservationReadRepository)
     {
-        _reservationRepository = reservationRepository;
+        _reservationReadRepository = reservationReadRepository;
     }
     
     public Task<Reservation> Handle(GetReservationByIdQuery request, CancellationToken cancellationToken)
     {
-        return _reservationRepository.GetReservationByIdAsync(request.ReservationId, cancellationToken);
+        return _reservationReadRepository.GetReservationByIdAsync(request.ReservationId, cancellationToken);
     }
 }

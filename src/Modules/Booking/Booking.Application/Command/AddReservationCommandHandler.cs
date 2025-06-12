@@ -7,11 +7,11 @@ namespace Application.Command;
 
 public class AddReservationCommandHandler : IRequestHandler<AddReservationCommand, Reservation>
 {
-    private readonly IReservationRepository _reservationRepository;
+    private readonly IReservationWriteRepository _reservationWriteRepository;
     
-    public AddReservationCommandHandler(IReservationRepository reservationRepository)
+    public AddReservationCommandHandler(IReservationWriteRepository reservationWriteRepository)
     {
-        _reservationRepository = reservationRepository;
+        _reservationWriteRepository = reservationWriteRepository;
     }
     
     public async Task<Reservation> Handle(AddReservationCommand request, CancellationToken cancellationToken)
@@ -25,8 +25,10 @@ public class AddReservationCommandHandler : IRequestHandler<AddReservationComman
             request.StartDate,
             request.EndDate,
             ReservationStatus.Pending
+            
         );
-        await _reservationRepository.AddReservationAsync(reservation, cancellationToken);
+        
+        await _reservationWriteRepository.AddReservationAsync(reservation, cancellationToken);
         return reservation;
 
     }

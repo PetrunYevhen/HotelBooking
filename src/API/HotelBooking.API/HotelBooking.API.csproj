@@ -9,6 +9,10 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.5"/>
         <PackageReference Include="Npgsql" Version="9.0.3" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+        <PackageReference Include="Serilog" Version="4.3.0" />
+        <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="8.1.4" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.4" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.1.4" />
@@ -16,7 +20,9 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Modules\Booking\Booking.Application\Booking.Application.csproj" />
+      <ProjectReference Include="..\..\Modules\Booking\Booking.Domain\Booking.Domain.csproj" />
       <ProjectReference Include="..\..\Modules\Booking\Booking.Infrastructure\Booking.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\Modules\RoomManagment\RoomManagment.Infrastructure\RoomManagment.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
