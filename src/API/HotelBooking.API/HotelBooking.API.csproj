@@ -16,13 +16,16 @@
         <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="8.1.4" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.4" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.1.4" />
-    </ItemGroup>
+<!--    </ItemGroup>-->
 
-    <ItemGroup>
+<!--    <ItemGroup>-->
       <ProjectReference Include="..\..\Modules\Booking\Booking.Application\Booking.Application.csproj" />
       <ProjectReference Include="..\..\Modules\Booking\Booking.Domain\Booking.Domain.csproj" />
       <ProjectReference Include="..\..\Modules\Booking\Booking.Infrastructure\Booking.Infrastructure.csproj" />
-      <ProjectReference Include="..\..\Modules\RoomManagment\RoomManagment.Infrastructure\RoomManagment.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\Modules\Facilities\Facilities.Infrastructure\Facilities.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\Modules\Hotel\HotelManagement.Infastructure\HotelManagement.Infastructure.csproj" />
+      <ProjectReference Include="..\..\Modules\RoomManagment\RoomManagement.Application\RoomManagement.Application.csproj" />
+      <ProjectReference Include="..\..\Modules\RoomManagment\RoomManagement.Infrastructure\RoomManagement.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

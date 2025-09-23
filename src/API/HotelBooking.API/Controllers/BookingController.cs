@@ -1,11 +1,7 @@
-﻿using Application.Command;
-using Application.Query;
-using Application.Query.GetRoomBookingDetails;
-using Booking.Domain.Entities;
-using MediatR;
+﻿using BookingManagement.Application.Command;
+using BookingManagement.Application.Contracts;
+using BookingManagement.Application.Query.GetBookingDetails;
 using Microsoft.AspNetCore.Mvc;
-using RoomManagment.Application.Dto;
-using RoomManagment.Domain.Entities;
 
 namespace HotelBooking.API.Controllers;
 
@@ -13,34 +9,39 @@ namespace HotelBooking.API.Controllers;
 [Route("booking")]
 public class BookingController : ControllerBase
 {
-    private readonly IMediator _mediator;
+private readonly IBookingManagementModule _bookingManagementModule;
     
-    public BookingController(IMediator mediator)
+    public BookingController( IBookingManagementModule bookingManagementModule)
     {
-        _mediator = mediator;
+        _bookingManagementModule = bookingManagementModule;
     }
     
     [HttpGet("{reservationId}")]
-    public async Task<Reservation> GetReservationById(Guid  reservationId)
+    public async Task<IActionResult> GetReservationById(Guid reservationId)
     {
-        return await _mediator.Send(new GetReservationByIdQuery(new ReservationId(reservationId)));
+        var result = await _bookingManagementModule.ExecuteQueryAsync(
+            new GetBookingDetailsQuery(new BookingManagement.Domain.Entities.BookingId(reservationId)));
+        if (result == null)
+            return NotFound();
+        return Ok(result);
     }
     
-    [HttpGet("all-reservations")]
-    public async Task<List<Reservation>> GetAllReservations(CancellationToken cancellationToken)
-    {
-        return await _mediator.Send(new GetAllReservationsQuery());
-    }
-    
-    [HttpGet("room-booking-details/{roomId}")]
-    public async Task<RoomBookingDetailsDto> GetRoomBookingDetails(Guid roomId)
-    {
-        return await _mediator.Send(new GetRoomBookingDetailsQuery(new RoomId(roomId)));
-    }
+    // [HttpGet("all-reservations")]
+    // public async Task<List<Booking.Domain.Entities.Booking>> GetAllReservations(CancellationToken cancellationToken)
+    // {
+    //     return await _mediator.Send(new GetAllReservationsQuery());
+    // }
     
     [HttpPost("add-reservation")]
-    public async Task<Reservation> AddReservation(AddReservationCommand request)
+    public async Task<IActionResult> AddReservation([FromBody]AddBookingCommand request)
     {
-        return await _mediator.Send(request);
+        var result = await _bookingManagementModule.ExecuteCommandAsync(
+            new AddBookingCommand(
+                request.GuestId,
+                request.RoomId, 
+                request.Price,
+                request.StartDate, 
+                request.EndDate));
+        return Ok(result);
     }
 }

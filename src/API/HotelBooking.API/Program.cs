@@ -1,20 +1,23 @@
-using Booking.Infrastructure.DI;
-using RoomManagment.Infrastructure.DI;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using HotelBooking.API.Configuration;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+
+var apiConfig = new ApiStartup();
+
+// Autofac modules
+builder.Host.ConfigureContainer<ContainerBuilder>(apiConfig.ConfigureContainer);
+
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
-
-// Register the module services
-builder.Services.AddBookingModule(builder.Configuration);
-builder.Services.AddRoomModule(builder.Configuration);
 
 // Register logging
 builder.Host.UseSerilog((сontext, configuration) => configuration
     .ReadFrom.Configuration(сontext.Configuration));
-builder.Logging.ClearProviders().AddConsole();
 
 builder.Services.AddHttpLogging(logg =>
 {
@@ -23,6 +26,11 @@ builder.Services.AddHttpLogging(logg =>
 });
 
 var app = builder.Build();
+
+var autofacContainer = app.Services.GetAutofacRoot();
+
+var apiConfigForInit = new ApiStartup();
+apiConfigForInit.InitializeModules(autofacContainer);
 
 if (app.Environment.IsDevelopment())
 {
@@ -34,3 +42,4 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 
 app.Run();
+

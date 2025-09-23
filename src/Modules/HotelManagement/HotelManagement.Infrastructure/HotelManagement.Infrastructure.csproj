@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>HotelManagement.Infastructure</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Common\BuildingBlocks\Application\Application.csproj" />
+      <ProjectReference Include="..\..\..\Common\BuildingBlocks\Domain\Domain.csproj" />
+      <ProjectReference Include="..\..\..\Common\BuildingBlocks\Infrastructure\Infrastructure.csproj" />
+      <ProjectReference Include="..\..\..\Common\BuildingBlock\Application\Application.csproj" />
+      <ProjectReference Include="..\..\..\Common\BuildingBlock\Infrastructure\Infrastructure.csproj" />
+      <ProjectReference Include="..\..\RoomManagment\RoomManagement.IntegrationEvent\RoomManagement.IntegrationEvent.csproj" />
+      <ProjectReference Include="..\HotelManagement.Application\HotelManagement.Application.csproj" />
+      <ProjectReference Include="..\HotelManagement.Domain\HotelManagement.Domain.csproj" />
+    </ItemGroup>
+
+</Project>
