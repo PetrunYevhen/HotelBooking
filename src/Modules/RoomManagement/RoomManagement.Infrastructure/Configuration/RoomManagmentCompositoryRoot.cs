@@ -1,6 +1,6 @@
 ﻿using Autofac;
 
-namespace RoomManagment.Infrastructure.Configuration;
+namespace RoomManagement.Infrastructure.Configuration;
 
 public static class RoomManagementCompositoryRoot 
 {
@@ -19,4 +19,6 @@ public static class RoomManagementCompositoryRoot
         
         return _container.BeginLifetimeScope();
     }
+    
+    
 }

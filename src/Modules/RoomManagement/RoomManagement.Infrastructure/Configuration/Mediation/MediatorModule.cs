@@ -2,7 +2,7 @@
 using Infrastructure;
 using MediatR;
 
-namespace RoomManagment.Infrastructure.Configuration.Mediation;
+namespace RoomManagement.Infrastructure.Configuration.Mediation;
 
 public class MediatorModule : Module
 {

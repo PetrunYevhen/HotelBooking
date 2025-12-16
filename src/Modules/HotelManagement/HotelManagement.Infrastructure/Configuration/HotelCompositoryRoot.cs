@@ -20,4 +20,9 @@ internal static class HotelCompositoryRoot
         
         return _container.BeginLifetimeScope();
     }
+
+    internal static ILifetimeScope InfiniteScope()
+    {
+        return BeginLifetimeScope();
+    }
 }

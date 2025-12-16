@@ -1,9 +1,9 @@
 ﻿using Autofac;
-using RoomManagment.Application.Contracts;
-using RoomManagment.Infrastructure.Configuration;
-using RoomManagment.Infrastructure.Configuration.Processing;
+using RoomManagement.Application.Contracts;
+using RoomManagement.Infrastructure.Configuration;
+using RoomManagement.Infrastructure.Configuration.Processing;
 
-namespace RoomManagment.Infrastructure;
+namespace RoomManagement.Infrastructure;
 
 public class RoomManagementModule : IRoomManagementModule
 {

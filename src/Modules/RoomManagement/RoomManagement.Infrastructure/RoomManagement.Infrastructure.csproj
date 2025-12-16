@@ -4,14 +4,13 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>RoomManagment.Infrastructure</RootNamespace>
+        <RootNamespace>RoomManagement.Infrastructure</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\Common\BuildingBlocks\Domain\Domain.csproj" />
       <ProjectReference Include="..\..\..\Common\BuildingBlocks\Infrastructure\Infrastructure.csproj" />
-      <ProjectReference Include="..\..\..\Common\BuildingBlock\Infrastructure\Infrastructure.csproj" />
-      <ProjectReference Include="..\..\Hotel\HotelManagement.IntegrationEvent\HotelManagement.IntegrationEvent.csproj" />
+      <ProjectReference Include="..\..\HotelManagement\HotelManagement.IntegrationEvent\HotelManagement.IntegrationEvent.csproj" />
       <ProjectReference Include="..\RoomManagement.Application\RoomManagement.Application.csproj" />
       <ProjectReference Include="..\RoomManagement.Domain\RoomManagement.Domain.csproj" />
     </ItemGroup>

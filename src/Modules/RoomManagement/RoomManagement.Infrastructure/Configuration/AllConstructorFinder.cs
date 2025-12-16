@@ -2,7 +2,7 @@
 using System.Reflection;
 using Autofac.Core.Activators.Reflection;
 
-namespace RoomManagment.Infrastructure.Configuration;
+namespace RoomManagement.Infrastructure.Configuration;
 
 public class AllConstructorFinder : IConstructorFinder
 {

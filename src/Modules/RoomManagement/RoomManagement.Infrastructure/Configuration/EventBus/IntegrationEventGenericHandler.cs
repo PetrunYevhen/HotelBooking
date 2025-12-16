@@ -5,7 +5,7 @@ using Infrastructure.EventBus;
 using Infrastructure.Serialization;
 using Newtonsoft.Json;
 
-namespace RoomManagment.Infrastructure.Configuration.EventBus;
+namespace RoomManagement.Infrastructure.Configuration.EventBus;
 
 public class IntegrationEventGenericHandler<T> : IIntegrationEventHandler<T>
     where T : global::Infrastructure.EventBus.IntegrationEvent

@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using BookingManagement.Application.EventHandler;
 using BookingManagement.Domain.RepositoryContracts;
 using Infrastructure.EventBus;
 using Microsoft.Extensions.Configuration;
@@ -25,11 +24,10 @@ public class EventBusStartup : Module
         var bookingWriteRepo = scope.Resolve<IReservationWriteRepository>();
         var bookingReadRepo = scope.Resolve<IReservationReadRepository>();
         
-        bookingBus.Subscribe(new GetPricePerNightResponseIntegrationEventHandler(bookingWriteRepo, bookingReadRepo));
     }
     
     private static void SubscribeToIntegrationEvent<T>(IEventBus eventBus, ILogger logger)
-        where T : global::Infrastructure.EventBus.IntegrationEvent
+        where T : IntegrationEvent
     {
         logger.Information("Subscribe to {@IntegrationEvent}", typeof(T).FullName);
         eventBus.Subscribe(

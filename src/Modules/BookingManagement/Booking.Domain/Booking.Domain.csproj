@@ -9,7 +9,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\Common\BuildingBlocks\Domain\Domain.csproj" />
-      <ProjectReference Include="..\..\..\Common\BuildingBlock\Domain\Domain.csproj" />
+      <ProjectReference Include="..\..\..\Common\BuildingBlocks\Domain\Domain.csproj" />
     </ItemGroup>
 
 </Project>

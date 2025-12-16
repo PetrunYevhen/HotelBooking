@@ -1,11 +1,12 @@
 ﻿using BuildingBlock.Domain;
-using RoomManagment.Domain.Enums;
+using RoomManagement.Domain.Enums;
 
-namespace RoomManagment.Domain.Entities;
+namespace RoomManagement.Domain.Entities;
 
 public class Room : Entity
 {
     public RoomId RoomId { get; set; }
+    public Guid HotelId { get; private set; }
     public int RoomNumber { get; set; } // Unique identifier for the room
     public int Capacity { get; set; } // How many people can stay in the room
     public string Description { get; set; } = string.Empty;
@@ -27,11 +28,11 @@ public class Room : Entity
         PricePerNight = price;
     }
 
-    public decimal CalculateMinPriceAndReturn(IEnumerable<decimal> prices)
-    {
-        var min = prices.Min();
-        if (min < PricePerNight)
-            PricePerNight = min;
-        return min;
-    }
+    // public decimal CalculateMinPriceAndReturn(IEnumerable<decimal> prices)
+    // {
+    //     var min = prices.Min();
+    //     if (min < PricePerNight)
+    //         PricePerNight = min;
+    //     return min;
+    // }
 }

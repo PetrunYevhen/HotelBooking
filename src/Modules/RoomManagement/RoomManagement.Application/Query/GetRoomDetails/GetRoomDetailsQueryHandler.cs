@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using RoomManagment.Domain.Entities;
-using RoomManagment.Domain.RepositoryContract;
+using RoomManagement.Domain.Entities;
+using RoomManagement.Domain.RepositoryContract;
 
-namespace RoomManagment.Application.Query.GetRoomDetails;
+namespace RoomManagement.Application.Query.GetRoomDetails;
 
 public class GetRoomDetailsQueryHandler : IRequestHandler<GetRoomDetailsQuery, RoomBookingDetailsDto>
 {

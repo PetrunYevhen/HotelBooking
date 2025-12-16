@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace RoomManagment.Application.Contracts;
+namespace RoomManagement.Application.Contracts;
 
 public interface ICommand<out TResult> : IRequest<TResult>
 {

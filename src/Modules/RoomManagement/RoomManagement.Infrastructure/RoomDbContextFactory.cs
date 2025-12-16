@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace RoomManagment.Infrastructure;
+namespace RoomManagement.Infrastructure;
 
 public class RoomDbContextFactory : IDesignTimeDbContextFactory<RoomDbContext>
 {

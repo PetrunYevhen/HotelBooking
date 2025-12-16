@@ -7,6 +7,6 @@ public class HotelProfile : Profile
 {
     public HotelProfile()
     {
-        CreateMap<Domain.Entities.Hotel, HotelDetailsDto>().ReverseMap();
+        CreateMap<Domain.Entities.Hotel, HotelDetailDto>().ReverseMap();
     }
 }

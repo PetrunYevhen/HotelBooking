@@ -10,10 +10,9 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\Common\BuildingBlocks\Domain\Domain.csproj" />
       <ProjectReference Include="..\..\..\Common\BuildingBlocks\Infrastructure\Infrastructure.csproj" />
-      <ProjectReference Include="..\..\..\Common\BuildingBlock\Application\Application.csproj" />
-      <ProjectReference Include="..\..\..\Common\BuildingBlock\Infrastructure\Infrastructure.csproj" />
+      <ProjectReference Include="..\..\..\Common\BuildingBlocks\Application\Application.csproj" />
+      <ProjectReference Include="..\..\RoomManagement\RoomManagement.Application\RoomManagement.Application.csproj" />
       <ProjectReference Include="..\..\RoomManagement\RoomManagement.IntegrationEvent\RoomManagement.IntegrationEvent.csproj" />
-      <ProjectReference Include="..\..\RoomManagment\RoomManagement.IntegrationEvent\RoomManagement.IntegrationEvent.csproj" />
       <ProjectReference Include="..\HotelManagement.Domain\HotelManagement.Domain.csproj" />
       <ProjectReference Include="..\HotelManagement.IntegrationEvent\HotelManagement.IntegrationEvent.csproj" />
     </ItemGroup>

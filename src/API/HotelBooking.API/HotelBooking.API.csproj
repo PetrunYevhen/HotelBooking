@@ -7,25 +7,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.5"/>
-        <PackageReference Include="Npgsql" Version="9.0.3" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
-        <PackageReference Include="Serilog" Version="4.3.0" />
-        <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="8.1.4" />
-        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.4" />
-        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.1.4" />
-<!--    </ItemGroup>-->
 
-<!--    <ItemGroup>-->
-      <ProjectReference Include="..\..\Modules\Booking\Booking.Application\Booking.Application.csproj" />
-      <ProjectReference Include="..\..\Modules\Booking\Booking.Domain\Booking.Domain.csproj" />
-      <ProjectReference Include="..\..\Modules\Booking\Booking.Infrastructure\Booking.Infrastructure.csproj" />
-      <ProjectReference Include="..\..\Modules\Facilities\Facilities.Infrastructure\Facilities.Infrastructure.csproj" />
-      <ProjectReference Include="..\..\Modules\Hotel\HotelManagement.Infastructure\HotelManagement.Infastructure.csproj" />
-      <ProjectReference Include="..\..\Modules\RoomManagment\RoomManagement.Application\RoomManagement.Application.csproj" />
-      <ProjectReference Include="..\..\Modules\RoomManagment\RoomManagement.Infrastructure\RoomManagement.Infrastructure.csproj" />
+        
+        <ProjectReference Include="..\..\Common\BuildingBlocks\Infrastructure\Infrastructure.csproj" />
+
+        
+        <ProjectReference Include="..\..\SharedKernel\SharedKernel.csproj" />
+        <ProjectReference Include="..\..\Modules\BookingManagement\Booking.Application\Booking.Application.csproj" />
+        <ProjectReference Include="..\..\Modules\BookingManagement\Booking.Domain\Booking.Domain.csproj" />
+        <ProjectReference Include="..\..\Modules\BookingManagement\Booking.Infrastructure\Booking.Infrastructure.csproj" />
+          <ProjectReference Include="..\..\Modules\Facilities\Facilities.Infrastructure\Facilities.Infrastructure.csproj" />
+          <ProjectReference Include="..\..\Modules\HotelManagement\HotelManagement.Application\HotelManagement.Application.csproj" />
+          <ProjectReference Include="..\..\Modules\HotelManagement\HotelManagement.Infrastructure\HotelManagement.Infrastructure.csproj" />
+          <ProjectReference Include="..\..\Modules\RoomManagement\RoomManagement.Application\RoomManagement.Application.csproj" />
+          <ProjectReference Include="..\..\Modules\RoomManagement\RoomManagement.Domain\RoomManagement.Domain.csproj" />
+          <ProjectReference Include="..\..\Modules\RoomManagement\RoomManagement.Infrastructure\RoomManagement.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

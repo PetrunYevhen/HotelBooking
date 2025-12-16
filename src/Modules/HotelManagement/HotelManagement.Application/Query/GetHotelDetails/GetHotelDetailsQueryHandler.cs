@@ -1,55 +1,49 @@
-﻿using HotelManagement.Domain.Entities;
+﻿using HotelManagement.Application.CachingContract;
+using HotelManagement.Domain.Entities;
 using HotelManagement.Domain.RepositoryContract;
-using HotelManagment.IntegrationEvent;
-using Infrastructure.EventBus;
 using MediatR;
+using RoomManagement.Application.Query.GetMinPriceRoom;
 
 namespace HotelManagement.Application.Query.GetHotelDetails;
 
-public class GetHotelDetailsQueryHandler : IRequestHandler<GetHotelDetailsQuery, HotelDetailsDto>
+public class GetHotelDetailsQueryHandler : IRequestHandler<GetHotelDetailsQuery, HotelDetailDto>
 {
-    
     private readonly IHotelReadRepository _hotelReadRepository;
-    private readonly IEventBus _eventBus;
-
+    private readonly IHotelRoomsCache _hotelRoomsCache;
+    private readonly IMediator _mediator;
     
-    public GetHotelDetailsQueryHandler(IHotelReadRepository hotelReadRepository, IEventBus eventBus)
+    public GetHotelDetailsQueryHandler(IHotelReadRepository hotelReadRepository, IMediator mediator, IHotelRoomsCache hotelRoomsCache)
     {
         _hotelReadRepository = hotelReadRepository;
-        _eventBus = eventBus;
+        _mediator = mediator;
+        _hotelRoomsCache = hotelRoomsCache;
     }
 
 
-    public async Task<HotelDetailsDto> Handle(
+    public async Task<HotelDetailDto> Handle(
         GetHotelDetailsQuery request,
         CancellationToken cancellationToken)
     {
         var hotelId = new HotelId(request.HotelId);
 
         var hotel = await _hotelReadRepository
-            .GetHotelByIdAsync(hotelId, cancellationToken); 
-
-        var integrationEvent = new MinPriceRequestedIntegrationEvent(
-            request.HotelId,
-            Guid.NewGuid(),
-            DateTime.UtcNow
-        );
-        await _eventBus.Publish(integrationEvent, cancellationToken);
+            .GetHotelByIdAsync(hotelId, cancellationToken);
         
         if (hotel == null)
             throw new KeyNotFoundException(
                 $"Готель з ID {request.HotelId} не знайдено.");
 
+        var minPriceRoom = await _mediator.Send(new GetMinPriceRoomQuery(hotelId.Value));
         
         
-        return new HotelDetailsDto
+        return new HotelDetailDto
         {
             HotelId = hotel.HotelId.Value,  
             HotelName = hotel.HotelName,
             Description = hotel.Description,
             ImageUrl = hotel.ImageUrl,
             Rating = hotel.Rating,
-            MinRoomPrice = hotel.MinRoomPrice,
+            MinRoomPrice = minPriceRoom
         };
     }
 

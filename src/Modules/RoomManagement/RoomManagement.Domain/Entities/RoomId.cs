@@ -1,6 +1,6 @@
 ﻿using BuildingBlock.Domain;
 
-namespace RoomManagment.Domain.Entities;
+namespace RoomManagement.Domain.Entities;
 
 public class RoomId : TypedIdValueBase
 {

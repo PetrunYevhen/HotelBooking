@@ -1,6 +1,6 @@
-﻿using RoomManagment.Domain.Enums;
+﻿using RoomManagement.Domain.Enums;
 
-namespace RoomManagment.Application.Query.GetRoomDetails;
+namespace RoomManagement.Application.Query.GetRoomDetails;
 
 public class RoomBookingDetailsDto
 {

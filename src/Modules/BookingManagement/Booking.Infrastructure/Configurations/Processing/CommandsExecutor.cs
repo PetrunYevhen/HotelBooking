@@ -6,7 +6,7 @@ namespace BookingManagement.Infrastructure.Configurations.Processing;
 
 public class CommandsExecutor
 {
-    internal static async Task Execute(Application.Contracts.ICommand command)
+    internal static async Task Execute(ICommand command)
     {
         using (var scope = BookingCompositoryRoot.BeginLifetimeScope())
         {

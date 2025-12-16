@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using Serilog;
 
-namespace RoomManagment.Infrastructure.Configuration.Logging;
+namespace RoomManagement.Infrastructure.Configuration.Logging;
 
 public class LoggingModule : Module
 {

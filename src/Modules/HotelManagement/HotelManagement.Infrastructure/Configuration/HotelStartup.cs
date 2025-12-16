@@ -1,8 +1,10 @@
 ﻿using Autofac;
 using Dapper;
+using HotelManagement.Infastructure.Configuration.Caching;
 using HotelManagement.Infastructure.Configuration.DataAccess;
 using HotelManagement.Infastructure.Configuration.EventBus;
 using HotelManagement.Infastructure.Configuration.Logging;
+using HotelManagement.Infastructure.Configuration.Mapping;
 using HotelManagement.Infastructure.Configuration.Mediation;
 using HotelManagement.Infastructure.Dapper;
 using Infrastructure.EventBus;
@@ -44,6 +46,8 @@ public class HotelStartup
        containerBuilder.RegisterModule(new DataAccessModule(connectionString, loggerFactory));
        containerBuilder.RegisterModule(new MediatorModule());
        containerBuilder.RegisterModule(new EventBusModule(eventBus));
+       containerBuilder.RegisterModule(new CachingModule());
+       containerBuilder.RegisterModule(new AutoMapperModule());
        
        _container = containerBuilder.Build();
        

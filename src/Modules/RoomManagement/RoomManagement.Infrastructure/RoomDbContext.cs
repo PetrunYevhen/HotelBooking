@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using RoomManagment.Domain.Entities;
-using RoomManagment.Infrastructure.EntityTypeConfiguration;
+using RoomManagement.Domain.Entities;
+using RoomManagement.Infrastructure.EntityTypeConfiguration;
 
-namespace RoomManagment.Infrastructure;
+namespace RoomManagement.Infrastructure;
 
 public class RoomDbContext : DbContext
 {

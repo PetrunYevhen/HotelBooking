@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RoomManagment.Application.Command.AddRoom;
-using RoomManagment.Application.Contracts;
-using RoomManagment.Application.Query.GetMinPriceForRoom;
-using RoomManagment.Application.Query.GetRoomDetails;
+using RoomManagement.Application.Command.AddRoom;
+using RoomManagement.Application.Contracts;
+using RoomManagement.Application.Query.GetMinPriceForRoom;
+using RoomManagement.Application.Query.GetRoomDetails;
 
 namespace HotelBooking.API.Controllers;
 

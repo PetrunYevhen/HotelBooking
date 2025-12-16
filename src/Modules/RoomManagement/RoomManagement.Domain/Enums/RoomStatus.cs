@@ -1,4 +1,4 @@
-﻿namespace RoomManagment.Domain.Enums;
+﻿namespace RoomManagement.Domain.Enums;
 
 public enum RoomStatus
 {

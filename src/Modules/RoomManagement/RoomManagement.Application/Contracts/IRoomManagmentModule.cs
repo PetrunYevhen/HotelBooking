@@ -1,4 +1,4 @@
-﻿namespace RoomManagment.Application.Contracts;
+﻿namespace RoomManagement.Application.Contracts;
 
 public interface IRoomManagementModule
 {

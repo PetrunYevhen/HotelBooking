@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using RoomManagment.Domain.Entities;
-using RoomManagment.Domain.RepositoryContract;
+using RoomManagement.Domain.Entities;
+using RoomManagement.Domain.RepositoryContract;
 
-namespace RoomManagment.Application.Command.AddRoom;
+namespace RoomManagement.Application.Command.AddRoom;
 
 public class AddRoomCommandHandler : IRequestHandler<AddRoomCommand, Room>
 {

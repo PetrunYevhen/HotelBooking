@@ -25,7 +25,7 @@ public class EventBusStartup : Module
     }
     
     private static void SubscribeToIntegrationEvent<T>(IEventBus eventBus, ILogger logger)
-        where T : global::Infrastructure.EventBus.IntegrationEvent
+        where T : IntegrationEvent
     {
         logger.Information("Subscribe to {@IntegrationEvent}", typeof(T).FullName);
         eventBus.Subscribe(

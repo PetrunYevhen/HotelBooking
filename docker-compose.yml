@@ -1,9 +1,13 @@
 ﻿services:
   hotel_booking_webapi:
     build:
-      context: .
-      dockerfile: D
+      context: ./src/
       
+    container_name: hotel_booking_webapi
+    
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=host.docker.internal;Port=5432;Database=hotel_booking;Username=postgres;Password=password
     ports:
       - "8080:8080"
         
@@ -13,4 +17,12 @@
     image: postgres:latest
     ports: 
         - "5432:5432"
-      
+    environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: hotel_booking
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:  
+  db_data:

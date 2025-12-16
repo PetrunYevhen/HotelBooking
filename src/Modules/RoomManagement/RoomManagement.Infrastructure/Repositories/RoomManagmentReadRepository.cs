@@ -1,9 +1,9 @@
 ﻿using Dapper;
 using Infrastructure.Data;
-using RoomManagment.Domain.Entities;
-using RoomManagment.Domain.RepositoryContract;
+using RoomManagement.Domain.Entities;
+using RoomManagement.Domain.RepositoryContract;
 
-namespace RoomManagment.Infrastructure.Repositories;
+namespace RoomManagement.Infrastructure.Repositories;
 
 public class RoomManagmentReadRepository : IRoomManagmentReadRepository
 {
@@ -32,7 +32,7 @@ public class RoomManagmentReadRepository : IRoomManagmentReadRepository
         return result;
     }
 
-    public async Task<decimal> GetMinRoomPriceInHotelAsync(Guid hotelId, CancellationToken cancellationToken)
+    /*public async Task<decimal> GetMinRoomPriceInHotelAsync(Guid hotelId, CancellationToken cancellationToken)
     {
         using var connection = _npgsqlConnectionFactory.CreateConnection();
         const string sql = @"
@@ -49,7 +49,7 @@ public class RoomManagmentReadRepository : IRoomManagmentReadRepository
         var result = await connection.ExecuteScalarAsync<decimal>(command);
         
         return result;
-    }
+    }*/
 
     public async Task<decimal> GetPriceForRoomAsync(RoomId roomId, CancellationToken cancellationToken)
     {
@@ -68,6 +68,22 @@ public class RoomManagmentReadRepository : IRoomManagmentReadRepository
         var result = await connection.ExecuteScalarAsync<int>(command);
 
         return result;
+    }
+
+    public async Task<List<Room>> GetRoomsByHotelIdAsync(Guid hotelId, CancellationToken cancellationToken)
+    {
+        using var connection = _npgsqlConnectionFactory.CreateConnection();
+
+        const string sql = @"SELECT * FROM ""RoomManagement"".""Rooms""
+                             WHERE ""HotelId"" = @HotelId;";
+        
+        var command = new CommandDefinition(
+            commandText: sql, 
+            parameters: new { HotelId = hotelId },
+            cancellationToken: cancellationToken);
+        
+        var result = await connection.QueryAsync<Room>(command);
+        return result.ToList();
     }
 
     public async Task<bool> IsRoomAvailableAsync(RoomId roomId, DateTime startDate, DateTime endDate,

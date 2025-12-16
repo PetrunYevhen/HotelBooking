@@ -2,16 +2,18 @@
 using Dapper;
 using Infrastructure.EventBus;
 using Microsoft.Extensions.Configuration;
-using RoomManagment.Infrastructure.Configuration.DataAccess;
-using RoomManagment.Infrastructure.Configuration.EventBus;
-using RoomManagment.Infrastructure.Configuration.Logging;
-using RoomManagment.Infrastructure.Configuration.Mediation;
-using RoomManagment.Infrastructure.Dapper;
+using RoomManagement.Application.Mapping;
+using RoomManagement.Infrastructure.Configuration.DataAccess;
+using RoomManagement.Infrastructure.Configuration.EventBus;
+using RoomManagement.Infrastructure.Configuration.Logging;
+using RoomManagement.Infrastructure.Configuration.Mapping;
+using RoomManagement.Infrastructure.Configuration.Mediation;
+using RoomManagement.Infrastructure.Dapper;
 using Serilog;
 using Serilog.Extensions.Logging;
 using IContainer = System.ComponentModel.IContainer;
 
-namespace RoomManagment.Infrastructure.Configuration;
+namespace RoomManagement.Infrastructure.Configuration;
 
 public class RoomManagementStartup
 {
@@ -45,6 +47,7 @@ public class RoomManagementStartup
         containerBuilder.RegisterModule(new DataAccessModule(connectionString, loggerFactory));
         containerBuilder.RegisterModule(new MediatorModule());
         containerBuilder.RegisterModule(new EventBusModule(eventBus));
+        containerBuilder.RegisterModule(new AutoMapperModule(typeof(RoomProfile).Assembly));
         
         var container = containerBuilder.Build();
         

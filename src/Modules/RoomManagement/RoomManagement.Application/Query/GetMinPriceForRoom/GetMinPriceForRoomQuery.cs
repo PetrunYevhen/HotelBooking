@@ -1,6 +1,6 @@
-﻿using RoomManagment.Application.Contracts;
+﻿using RoomManagement.Application.Contracts;
 
-namespace RoomManagment.Application.Query.GetMinPriceForRoom;
+namespace RoomManagement.Application.Query.GetMinPriceForRoom;
 
 public class GetMinPriceForRoomQuery : QueryBase<decimal>
 {

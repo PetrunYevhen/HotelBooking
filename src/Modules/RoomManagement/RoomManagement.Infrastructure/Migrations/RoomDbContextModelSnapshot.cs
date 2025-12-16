@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using RoomManagement.Infrastructure;
 using RoomManagment.Infrastructure;
 
 #nullable disable
@@ -36,6 +37,9 @@ namespace RoomManagment.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<Guid>("HotelId")
+                        .HasColumnType("uuid");
 
                     b.Property<decimal>("PricePerNight")
                         .HasColumnType("numeric");

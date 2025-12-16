@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Logging;
 
-namespace RoomManagment.Infrastructure.Configuration.DataAccess;
+namespace RoomManagement.Infrastructure.Configuration.DataAccess;
 
 public class DataAccessModule : Module
 {

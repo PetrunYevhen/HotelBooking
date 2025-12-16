@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using Infrastructure.EventBus;
 
-namespace RoomManagment.Infrastructure.Configuration.EventBus;
+namespace RoomManagement.Infrastructure.Configuration.EventBus;
 
 public class EventBusModule : Module
 {

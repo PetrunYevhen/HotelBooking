@@ -1,8 +1,8 @@
-﻿using RoomManagment.Application.Contracts;
-using RoomManagment.Domain.Entities;
-using RoomManagment.Domain.Enums;
+﻿using RoomManagement.Application.Contracts;
+using RoomManagement.Domain.Entities;
+using RoomManagement.Domain.Enums;
 
-namespace RoomManagment.Application.Command.AddRoom;
+namespace RoomManagement.Application.Command.AddRoom;
 
 public class AddRoomCommand : CommandBase<Room>
 {

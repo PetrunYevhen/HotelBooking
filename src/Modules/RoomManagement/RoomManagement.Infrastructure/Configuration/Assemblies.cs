@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
-using RoomManagment.Application.Contracts;
+using RoomManagement.Application.Contracts;
 
-namespace RoomManagment.Infrastructure.Configuration;
+namespace RoomManagement.Infrastructure.Configuration;
 
 public class Assemblies
 {

@@ -1,13 +1,12 @@
-﻿using RoomManagment.Domain.Entities;
+﻿using RoomManagement.Domain.Entities;
 
-namespace RoomManagment.Domain.RepositoryContract;
+namespace RoomManagement.Domain.RepositoryContract;
 
 public interface IRoomManagmentReadRepository
 {
     Task<Room> GetRoomByIdAsync(RoomId roomId, CancellationToken cancellationToken);
-    Task<decimal> GetMinRoomPriceInHotelAsync(
-        Guid hotelId, CancellationToken cancellationToken);
     Task<decimal> GetPriceForRoomAsync(
         RoomId roomId, CancellationToken cancellationToken);
+    Task<List<Room>> GetRoomsByHotelIdAsync(Guid hotelId, CancellationToken cancellationToken);
     
 }

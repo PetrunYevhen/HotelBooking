@@ -1,6 +1,6 @@
 ﻿using Autofac;
-using RoomManagment.Application.Contracts;
-using RoomManagment.Infrastructure;
+using RoomManagement.Application.Contracts;
+using RoomManagement.Infrastructure;
 
 namespace HotelBooking.API.Modules.RoomManagement;
 

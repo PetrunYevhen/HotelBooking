@@ -1,6 +1,7 @@
 ﻿using BookingManagement.Application.Command;
 using BookingManagement.Application.Contracts;
 using BookingManagement.Application.Query.GetBookingDetails;
+using BookingManagement.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelBooking.API.Controllers;
@@ -20,7 +21,7 @@ private readonly IBookingManagementModule _bookingManagementModule;
     public async Task<IActionResult> GetReservationById(Guid reservationId)
     {
         var result = await _bookingManagementModule.ExecuteQueryAsync(
-            new GetBookingDetailsQuery(new BookingManagement.Domain.Entities.BookingId(reservationId)));
+            new GetBookingDetailsQuery(new BookingId(reservationId)));
         if (result == null)
             return NotFound();
         return Ok(result);

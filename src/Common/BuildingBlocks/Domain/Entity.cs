@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using BuildingBlock.Domain.Events;
 
 namespace BuildingBlock.Domain;
 

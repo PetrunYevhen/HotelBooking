@@ -4,22 +4,15 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>RoomManagment.Application</RootNamespace>
+        <RootNamespace>RoomManagement.Application</RootNamespace>
     </PropertyGroup>
-
-    <ItemGroup>
-      <PackageReference Include="AutoMapper" Version="14.0.0" />
-      <PackageReference Include="MediatR" Version="12.5.0" />
-      <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
-    </ItemGroup>
-
+    
     <ItemGroup>
       <ProjectReference Include="..\..\..\Common\BuildingBlocks\Domain\Domain.csproj" />
       <ProjectReference Include="..\..\..\Common\BuildingBlocks\Infrastructure\Infrastructure.csproj" />
+      <ProjectReference Include="..\..\..\SharedKernel\SharedKernel.csproj" />
       <ProjectReference Include="..\..\BookingManagement\Booking.IntegrationEvents\Booking.IntegrationEvents.csproj" />
-      <ProjectReference Include="..\..\Booking\Booking.IntegrationEvents\Booking.IntegrationEvents.csproj" />
       <ProjectReference Include="..\..\HotelManagement\HotelManagement.IntegrationEvent\HotelManagement.IntegrationEvent.csproj" />
-      <ProjectReference Include="..\..\Hotel\HotelManagement.IntegrationEvent\HotelManagement.IntegrationEvent.csproj" />
       <ProjectReference Include="..\RoomManagement.Domain\RoomManagement.Domain.csproj" />
       <ProjectReference Include="..\RoomManagement.IntegrationEvent\RoomManagement.IntegrationEvent.csproj" />
     </ItemGroup>

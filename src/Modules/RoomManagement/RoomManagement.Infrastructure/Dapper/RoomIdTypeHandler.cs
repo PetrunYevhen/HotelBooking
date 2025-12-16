@@ -1,8 +1,8 @@
 ﻿using System.Data;
 using Dapper;
-using RoomManagment.Domain.Entities;
+using RoomManagement.Domain.Entities;
 
-namespace RoomManagment.Infrastructure.Dapper;
+namespace RoomManagement.Infrastructure.Dapper;
 
 public class RoomIdTypeHandler : SqlMapper.TypeHandler<RoomId>
 {

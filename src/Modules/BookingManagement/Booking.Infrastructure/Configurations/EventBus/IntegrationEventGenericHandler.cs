@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace BookingManagement.Infrastructure.Configurations.EventBus;
 
 public class IntegrationEventGenericHandler<T> : IIntegrationEventHandler<T>
-    where T : global :: Infrastructure.EventBus.IntegrationEvent
+    where T : IntegrationEvent
 {
     public async Task Handle(T @event, CancellationToken cancellationToken = default)
     {

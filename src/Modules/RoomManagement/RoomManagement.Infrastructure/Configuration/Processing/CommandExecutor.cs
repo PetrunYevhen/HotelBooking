@@ -1,8 +1,8 @@
 ﻿using Autofac;
 using MediatR;
-using RoomManagment.Application.Contracts;
+using RoomManagement.Application.Contracts;
 
-namespace RoomManagment.Infrastructure.Configuration.Processing;
+namespace RoomManagement.Infrastructure.Configuration.Processing;
 
 internal static class CommandsExecutor
 {

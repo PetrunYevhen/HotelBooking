@@ -1,11 +1,10 @@
 ﻿using Autofac;
 using Infrastructure.EventBus;
-using RoomManagment.Application.EventHandlers;
-using RoomManagment.Domain.RepositoryContract;
+using RoomManagement.Application.IntegrationEventHandlers;
+using RoomManagement.Domain.RepositoryContract;
 using Serilog;
 
-
-namespace RoomManagment.Infrastructure.Configuration.EventBus;
+namespace RoomManagement.Infrastructure.Configuration.EventBus;
 
 public static class EventBusStartup
 {
@@ -20,9 +19,7 @@ public static class EventBusStartup
         var roomBus = scope.ResolveNamed<IEventBus>("RoomManagementEventBus");
         var roomRepo = scope.Resolve<IRoomManagmentReadRepository>();
 
-        roomBus.Subscribe(new MinPriceRequestedIntegrationEventHandler(roomRepo, roomBus, logger));
-        roomBus.Subscribe(new GetPricePerNightRequestIntegrationEventHandler(roomRepo, roomBus));
-        
+        roomBus.Subscribe(new RoomsForHotelRequestedIntegrationEventHandler(roomRepo, roomBus));
     }
 
     private static void SubscribeToIntegrationEvent<T>(IEventBus eventBus, ILogger logger)

@@ -1,6 +1,6 @@
-﻿using RoomManagment.Application.Contracts;
+﻿using RoomManagement.Application.Contracts;
 
-namespace RoomManagment.Application.Query.GetRoomDetails;
+namespace RoomManagement.Application.Query.GetRoomDetails;
 
 public class GetRoomDetailsQuery : QueryBase<RoomBookingDetailsDto>
 {

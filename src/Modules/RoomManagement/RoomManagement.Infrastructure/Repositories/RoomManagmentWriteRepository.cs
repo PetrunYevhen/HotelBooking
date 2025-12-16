@@ -1,7 +1,7 @@
-﻿using RoomManagment.Domain.Entities;
-using RoomManagment.Domain.RepositoryContract;
+﻿using RoomManagement.Domain.Entities;
+using RoomManagement.Domain.RepositoryContract;
 
-namespace RoomManagment.Infrastructure.Repositories;
+namespace RoomManagement.Infrastructure.Repositories;
 
 public class RoomManagmentWriteRepository : IRoomManagmentWriteRepository
 {

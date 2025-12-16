@@ -1,13 +1,15 @@
 ﻿using AutoMapper;
-using RoomManagment.Application.Query.GetRoomDetails;
-using RoomManagment.Domain.Entities;
+using DTO.DTOs.RoomDto;
+using RoomManagement.Application.Query.GetRoomDetails;
+using RoomManagement.Domain.Entities;
 
-namespace RoomManagment.Application.Mapping;
+namespace RoomManagement.Application.Mapping;
 
 public class RoomProfile : Profile
 {
     public RoomProfile()
     {
         CreateMap<Room, RoomBookingDetailsDto>().ReverseMap();
+        CreateMap<Room, RoomDto>().ReverseMap();
     }
 }

@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using RoomManagment.Domain.Entities;
+using RoomManagement.Domain.Entities;
 
-namespace RoomManagment.Infrastructure.EntityTypeConfiguration;
+namespace RoomManagement.Infrastructure.EntityTypeConfiguration;
 
 public class RoomEntityTypeConfiguration : IEntityTypeConfiguration<Room>
 {
@@ -11,5 +11,6 @@ public class RoomEntityTypeConfiguration : IEntityTypeConfiguration<Room>
     {
         builder.ToTable("Rooms", "RoomManagement");
         builder.HasKey(r => r.RoomId);
+        builder.Property(hotelid => hotelid.HotelId).IsRequired();
     }
 }

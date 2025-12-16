@@ -3,15 +3,12 @@ using HotelManagement.Domain.Entities;
 using HotelManagement.Infastructure.EntityTypeConfiguration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using SharedKernel.HotelRelations;
 
 namespace HotelManagement.Infastructure;
 
 public class HotelDbContext : DbContext
 {
     public DbSet<Hotel> Hotels { get; set; }
-    public DbSet<HotelFacilities> HotelFacilities { get; set; }
-    public DbSet<HotelRooms> HotelRooms { get; set; }
     public DbSet<OutboxMessage> OutboxMessages { get; set; }
     public HotelDbContext(DbContextOptions<HotelDbContext> options, ILoggerFactory loggerFactory) 
         : base(options) { }
@@ -20,8 +17,6 @@ public class HotelDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new HotelEntityTypeConfiguration());
-        modelBuilder.ApplyConfiguration(new HotelFacilityEntityTypeConfiguration());
-        modelBuilder.ApplyConfiguration(new HotelRoomsEntityTypeConfiguration());
         
         modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
     }

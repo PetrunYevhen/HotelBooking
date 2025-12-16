@@ -1,6 +1,6 @@
-﻿using RoomManagment.Domain.Entities;
+﻿using RoomManagement.Domain.Entities;
 
-namespace RoomManagment.Domain.RepositoryContract;
+namespace RoomManagement.Domain.RepositoryContract;
 
 public interface IRoomManagmentWriteRepository
 {

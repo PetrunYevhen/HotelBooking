@@ -7,7 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\Common\BuildingBlock\Domain\Domain.csproj" />
+      <ProjectReference Include="..\..\..\Common\BuildingBlocks\Domain\Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="HotelRelations\" />
     </ItemGroup>
 
 </Project>
