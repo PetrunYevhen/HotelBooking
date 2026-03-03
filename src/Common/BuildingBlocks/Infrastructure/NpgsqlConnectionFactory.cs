@@ -4,10 +4,9 @@ using Npgsql;
 
 namespace Infrastructure;
 
-public class NpgsqlConnectionFactory : INpgsqlConnectionFactory, IDisposable
+public class NpgsqlConnectionFactory : INpgsqlConnectionFactory
 {
     private readonly string _connectionString;
-    private IDbConnection _connection;
 
     public NpgsqlConnectionFactory(string connectionString)
     {
@@ -22,29 +21,9 @@ public class NpgsqlConnectionFactory : INpgsqlConnectionFactory, IDisposable
 
         return connection;
     }
-
-    public IDbConnection GetOpenConnection()
-    {
-        if (_connection.State == ConnectionState.Closed)
-        {
-            _connection = new NpgsqlConnection(_connectionString);
-            _connection.Open();
-        }
-
-        return _connection;
-    }
-
-
+    
     public string GetConnectionString()
     {
         return _connectionString;
-    }
-
-    public void Dispose()
-    {
-        if (_connection != null && _connection.State == ConnectionState.Open)
-        {
-            _connection.Dispose();
-        }
     }
 }

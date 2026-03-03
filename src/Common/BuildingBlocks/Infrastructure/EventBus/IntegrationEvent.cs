@@ -5,12 +5,12 @@ namespace Infrastructure.EventBus;
 public abstract class IntegrationEvent : INotification 
 {
     public Guid Id { get; set; }
-    public DateTime OccuredOn { get; set; }
-
-    protected IntegrationEvent(Guid id, DateTime occuredOn)
+    public DateTime OccurredOn { get; set; }
+    
+    protected IntegrationEvent(Guid id, DateTime occurredOn)
     {
         Id = id;
-        OccuredOn = occuredOn;
+        OccurredOn = occurredOn;
     }
     
 }

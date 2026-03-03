@@ -1,22 +1,24 @@
-﻿using System.Text.Json.Serialization;
-using BuildingBlock.Domain.Events;
+﻿using BuildingBlock.Domain.Events;
 
 namespace BuildingBlock.Domain;
 
 public class Entity
 {
-    private List<IDomainEvent> _domainEvent;
+    private List<IDomainEvent> _domainEvents;
 
-    [JsonIgnore]
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvent.AsReadOnly();
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
     
-    public void AddDomainEvent(IDomainEvent domainEvent)
+    protected void AddDomainEvent(IDomainEvent domainEvent)
     {
-        _domainEvent.Add(domainEvent);
+        _domainEvents ??= [];
+
+        this._domainEvents.Add(domainEvent);
     }
     
     public void ClearDomainEvents()
     {
-        _domainEvent?.Clear();
+        _domainEvents?.Clear();
     }
+
+    
 }
