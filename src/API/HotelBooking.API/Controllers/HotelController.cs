@@ -1,59 +1,51 @@
-﻿using HotelBooking.API.Composition.HotelCompositionServices.GetAllRoomsForHotel;
-using HotelManagement.Application.Command.AddNewHotel;
+﻿using HotelManagement.Application.Command.AddHotel;
 using HotelManagement.Application.Contracts;
-using HotelManagement.Application.Query.GetAllFacilitiesInHotel;
+using HotelManagement.Application.Query.GetFacilities;
 using HotelManagement.Application.Query.GetHotelDetails;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelBooking.API.Controllers;
 
 [ApiController]
-[Route("hotel")]
+[Route("hotels")] 
 public class HotelController : ControllerBase
 {
     private readonly ILogger<HotelController> _logger;
-    private readonly IHotelDetailsCompositionService _hotelDetailsCompositionService;
     private readonly IHotelManagementModule _hotelManagementModule;
 
-    public HotelController( IHotelManagementModule hotelManagementModule, ILogger<HotelController> logger, IHotelDetailsCompositionService hotelDetailsCompositionService)
+    public HotelController(
+        IHotelManagementModule hotelManagementModule, 
+        ILogger<HotelController> logger)
     {
         _hotelManagementModule = hotelManagementModule;
         _logger = logger;
-        _hotelDetailsCompositionService = hotelDetailsCompositionService;
     }
 
-    [HttpGet("hotel-details/{hotelId}")]
-    public async Task<IActionResult> GetHotelDetails(Guid hotelId)
+    [HttpGet("{Id:guid}")]
+    public async Task<IActionResult> GetDetails(Guid Id)
     {
-        var result = await _hotelManagementModule.ExecuteQueryAsync(new GetHotelDetailsQuery(hotelId));
+        var result = await _hotelManagementModule.ExecuteQueryAsync(new GetHotelDetailsQuery(Id));
+        return result != null ? Ok(result) : NotFound();
+    }
+    
+    // [HttpGet("{Id:guid}/rooms-details")]
+    // public async Task<IActionResult> GetHotelWithRooms(Guid Id)
+    // {
+    //     var result = await _getHotelRoomsCompositionService.GetHotelRooms(Id);
+    //     return result != null ? Ok(result) : NotFound();
+    // }
+    
+    [HttpGet("{Id:guid}/facilities")]
+    public async Task<IActionResult> GetFacilities(Guid Id)
+    {
+        var result = await _hotelManagementModule.ExecuteQueryAsync(new GetFacilitiesQuery(Id));
         return Ok(result);
     }
     
-    [HttpGet("all-rooms/{hotelId}")]
-    public async Task<IActionResult> GetAllRoomsForHotel(Guid hotelId)
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] AddHotelCommand command)
     {
-        var result = await _hotelDetailsCompositionService.GetHotelDetailsAsync(hotelId);
-        
-        return Ok(result);
-    }
-    
-    [HttpGet("all-facilities/{hotelId}")]
-    public async Task<IActionResult> GetAllFacilitiesForHotel(Guid hotelId)
-    {
-        var result = await _hotelManagementModule.ExecuteQueryAsync(new GetAllFacilitiesInHotelQuery(hotelId));
-        return Ok(result);
-    }
-    
-    [HttpPost("add-hotel")]
-    public async Task<IActionResult> AddHotel([FromBody]AddNewHotelCommand request)
-    {
-        var result = await _hotelManagementModule.ExecuteCommandAsync(
-            new AddNewHotelCommand(
-                request.HotelName,
-                request.Description,
-                request.ImageUrl,
-                request.Rating,
-                request.MinRoomPrice));
+        var result = await _hotelManagementModule.ExecuteCommandAsync(command);
         return Ok(result);
     }
 }

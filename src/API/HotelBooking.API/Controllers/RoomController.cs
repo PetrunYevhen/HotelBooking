@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RoomManagement.Application.Command.AddRoom;
 using RoomManagement.Application.Contracts;
-using RoomManagement.Application.Query.GetMinPriceForRoom;
+using RoomManagement.Application.Query.GetMinPrice;
+using RoomManagement.Application.Query.GetPrice;
 using RoomManagement.Application.Query.GetRoomDetails;
+using RoomManagement.Application.Query.GetRoomsByHotelId;
 
 namespace HotelBooking.API.Controllers;
 
@@ -17,36 +19,38 @@ public class RoomController : ControllerBase
         _roomManagementModule = roomManagementModule;
     }
 
-    [HttpGet("get-room-details/{roomId}")]
+    [HttpGet("{roomId:guid}")]
     public async Task<IActionResult> GetRoomDetails(Guid roomId)
     {
-        var result = await _roomManagementModule.ExecuteQueryAsync(
-            new GetRoomDetailsQuery(roomId));
-        return Ok(result);
+        var result = await _roomManagementModule.ExecuteQueryAsync(new GetRoomDetailsQuery(roomId));
+        return result != null ? Ok(result) : NotFound();
     }
-    
-    [HttpGet("get-min-price-room/{hotelId}")]
-    public async Task<IActionResult> GetMinPriceRoom(Guid hotelId)
+
+    [HttpGet("hotel/{id:guid}/min-price")]
+    public async Task<IActionResult> GetHotelMinPrice(Guid id)
     {
-        var result = await _roomManagementModule.ExecuteQueryAsync(
-            new GetMinPriceForRoomQuery(hotelId));
+        var result = await _roomManagementModule.ExecuteQueryAsync(new GetMinPriceQuery(id));
         return Ok(result);
     }
 
-    [HttpPost("add-room")]
-    public async Task<IActionResult> AddRoom(AddRoomCommand request)
+    [HttpGet("hotel/{id:guid}")]
+    public async Task<IActionResult> GetRoomsByHotel(Guid id)
     {
-        var result = await _roomManagementModule.ExecuteCommandAsync(
-            new AddRoomCommand(
-            request.RoomNumber,
-            request.Capacity,
-            request.Description,
-            request.RoomCount,
-            request.Beds,
-            request.Status,
-            request.PricePerNight
-        ));
+        var result = await _roomManagementModule.ExecuteQueryAsync(new GetRoomsByIdQuery(id));
+        return Ok(result);
+    }
+
+    [HttpGet("room-price/{roomId:guid}")]
+    public async Task<IActionResult> GetRoomPrice(Guid roomId)
+    {
+        var result = await _roomManagementModule.ExecuteQueryAsync(new GetPriceQuery(roomId));
         return Ok(result);
     }
     
+    [HttpPost]
+    public async Task<IActionResult> AddRoom([FromBody] AddRoomCommand command)
+    {
+        var result = await _roomManagementModule.ExecuteCommandAsync(command);
+        return Ok(result);
+    }
 }

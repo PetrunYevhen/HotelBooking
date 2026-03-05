@@ -24,4 +24,8 @@
           <ProjectReference Include="..\..\Modules\RoomManagement\RoomManagement.Infrastructure\RoomManagement.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Composition\Room\" />
+    </ItemGroup>
+
 </Project>

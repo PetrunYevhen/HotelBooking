@@ -2,12 +2,11 @@
 using Autofac.Extensions.DependencyInjection;
 using BookingManagement.Infrastructure.Configurations;
 using Facilities.Infrastructure.Configurations;
-using HotelBooking.API.Composition;
 using HotelBooking.API.Modules.BookingManagement;
-using HotelBooking.API.Modules.Facilities;
 using HotelBooking.API.Modules.HotelManagement;
 using HotelBooking.API.Modules.RoomManagement;
 using HotelManagement.Infastructure.Configuration;
+using Infrastructure.Client;
 using RoomManagement.Infrastructure.Configuration;
 using Serilog;
 using Serilog.Formatting.Compact;
@@ -37,11 +36,10 @@ public class ApiStartup
 
     public void ConfigureContainer(ContainerBuilder containerBuilder)
     {
-        containerBuilder.RegisterModule(new CompositionModule());
         containerBuilder.RegisterModule(new BookingManagementAutofacModule());
         containerBuilder.RegisterModule(new HotelManagementAutofacModule());
         containerBuilder.RegisterModule(new RoomManagementAutofacModule());
-        containerBuilder.RegisterModule(new FacilitiesAutofacModule());
+        // containerBuilder.RegisterModule(new FacilitiesAutofacModule());
     }
     
     public void ConfigureServices(IServiceCollection services)
@@ -49,6 +47,13 @@ public class ApiStartup
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
+        ConfigureClient(services);
+    }
+
+    public void ConfigureClient(IServiceCollection services)
+    {
+        services.AddSingleton<InMemoryModuleClient>();
+        services.AddSingleton<IClient>(sp => sp.GetRequiredService<InMemoryModuleClient>());
     }
 
     private static void ConfigureLogger()
@@ -94,12 +99,14 @@ public class ApiStartup
     }
     
     private void InitializeModules(ILifetimeScope container)
-    {
+    { 
+        var client = container.Resolve<InMemoryModuleClient>();
         
         BookingManagementStartup.Initialize(
             GetConnectionString(),
             _logger,
-            null);
+            null,
+            client);
         
         HotelStartup.Initialize(
             GetConnectionString(),
@@ -109,7 +116,8 @@ public class ApiStartup
         RoomManagementStartup.Initialize(
             GetConnectionString(),
             _logger,
-            null);
+            null,
+            client);
         FacilitiesStartup.Initialize(
             GetConnectionString(),
             _logger,

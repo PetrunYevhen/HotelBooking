@@ -1,7 +1,8 @@
-﻿using BookingManagement.Application.Command;
+﻿using BookingManagement.Application.Command.CancelBooking;
+using BookingManagement.Application.Command.CreateBooking;
 using BookingManagement.Application.Contracts;
-using BookingManagement.Application.Query.GetBookingDetails;
-using BookingManagement.Domain.Entities;
+using BookingManagement.Application.Query.GetBookingById;
+using BookingManagement.Infrastructure.Configurations.Processing.Outbox;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelBooking.API.Controllers;
@@ -16,33 +17,26 @@ private readonly IBookingManagementModule _bookingManagementModule;
     {
         _bookingManagementModule = bookingManagementModule;
     }
-    
-    [HttpGet("{reservationId}")]
-    public async Task<IActionResult> GetReservationById(Guid reservationId)
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetBookingAsync(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _bookingManagementModule.ExecuteQueryAsync(
-            new GetBookingDetailsQuery(new BookingId(reservationId)));
-        if (result == null)
-            return NotFound();
+        var result = await _bookingManagementModule.ExecuteQueryAsync(new GetByIdQuery(id));
         return Ok(result);
     }
-    
-    // [HttpGet("all-reservations")]
-    // public async Task<List<Booking.Domain.Entities.Booking>> GetAllReservations(CancellationToken cancellationToken)
-    // {
-    //     return await _mediator.Send(new GetAllReservationsQuery());
-    // }
-    
-    [HttpPost("add-reservation")]
-    public async Task<IActionResult> AddReservation([FromBody]AddBookingCommand request)
+
+    [HttpPost]
+    public async Task<IActionResult> CreateBookingAsync([FromBody] CreateBookingCommand command,
+        CancellationToken cancellationToken)
     {
-        var result = await _bookingManagementModule.ExecuteCommandAsync(
-            new AddBookingCommand(
-                request.GuestId,
-                request.RoomId, 
-                request.Price,
-                request.StartDate, 
-                request.EndDate));
+        var result = await _bookingManagementModule.ExecuteCommandAsync(command);
+        return Ok(result);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> CancelBookingAsync(Guid id)
+    {
+        var result = await _bookingManagementModule.ExecuteCommandAsync(new CancelBookingCommand(id));
         return Ok(result);
     }
 }
