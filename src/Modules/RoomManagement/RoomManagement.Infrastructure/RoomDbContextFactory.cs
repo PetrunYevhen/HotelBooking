@@ -15,7 +15,7 @@ public class RoomDbContextFactory : IDesignTimeDbContextFactory<RoomDbContext>
     {
         var optionsBuilder = new DbContextOptionsBuilder<RoomDbContext>();
         
-        var basePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\API\HotelBooking.API"));
+        var basePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"../HotelBooking.API"));
         
         var configuration = new ConfigurationBuilder()
             .SetBasePath(basePath)

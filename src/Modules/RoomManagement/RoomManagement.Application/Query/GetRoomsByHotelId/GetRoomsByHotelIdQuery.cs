@@ -3,12 +3,12 @@ using RoomManagement.Application.Contracts;
 
 namespace RoomManagement.Application.Query.GetRoomsByHotelId;
 
-public class GetRoomsByHotelIdQuery : QueryBase<List<RoomDto>>
+public class GetRoomsByIdQuery : QueryBase<List<RoomDto>>
 {
     public Guid HotelId { get; init;  }
     
-    public GetRoomsByHotelIdQuery(Guid hotelId)
+    public GetRoomsByIdQuery(Guid id)
     {
-        HotelId = hotelId;
+        HotelId = id;
     }
 }

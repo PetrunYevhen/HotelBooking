@@ -6,6 +6,7 @@ namespace RoomManagement.Application.Command.AddRoom;
 
 public class AddRoomCommand : CommandBase<Room>
 {
+    public Guid HotelId { get; set; }
     public int RoomNumber { get; set; } 
     public int Capacity { get; set; } 
     public string Description { get; set; } = string.Empty;
@@ -14,8 +15,9 @@ public class AddRoomCommand : CommandBase<Room>
     public RoomStatus Status { get; set; }
     public decimal PricePerNight { get; set; }
     
-    public AddRoomCommand(int roomNumber, int capacity, string description, int roomCount, int beds, RoomStatus status, decimal pricePerNight)
+    public AddRoomCommand(Guid hotelId,int roomNumber, int capacity, string description, int roomCount, int beds, RoomStatus status, decimal pricePerNight)
     {
+        HotelId = hotelId;
         RoomNumber = roomNumber;
         Capacity = capacity;
         Description = description;

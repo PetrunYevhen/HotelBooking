@@ -6,17 +6,18 @@ namespace RoomManagement.Application.Command.AddRoom;
 
 public class AddRoomCommandHandler : IRequestHandler<AddRoomCommand, Room>
 {
-    private readonly IRoomManagmentWriteRepository _roomManagmentWriteRepository;
+    private readonly IRoomManagementWriteRepository _roomManagementWriteRepository;
 
-    public AddRoomCommandHandler(IRoomManagmentWriteRepository roomManagmentWriteRepository)
+    public AddRoomCommandHandler(IRoomManagementWriteRepository roomManagementWriteRepository)
     {
-        _roomManagmentWriteRepository = roomManagmentWriteRepository;
+        _roomManagementWriteRepository = roomManagementWriteRepository;
     }
 
     public async Task<Room> Handle(AddRoomCommand request, CancellationToken cancellationToken)
     {
         var room = new Room(
             new RoomId(Guid.NewGuid()),
+            request.HotelId,
             request.RoomNumber,
             request.PricePerNight,
             request.Description,
@@ -25,6 +26,6 @@ public class AddRoomCommandHandler : IRequestHandler<AddRoomCommand, Room>
             request.Beds,
             request.Status
         );
-        return await _roomManagmentWriteRepository.AddRoomAsync(room, cancellationToken);
+        return await _roomManagementWriteRepository.AddAsync(room, cancellationToken);
     }
 }

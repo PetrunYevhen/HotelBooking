@@ -1,81 +1,89 @@
-﻿using BookingManagement.Domain.Enums;
+﻿using BookingManagement.Domain.Entities.Events;
+using BookingManagement.Domain.Enums;
+using BuildingBlock.Domain;
 
 namespace BookingManagement.Domain.Entities;
 
-public class Booking
+public class Booking : Entity
 {
     public BookingId BookingId { get; set; }
-    public Guid GuestId { get; set; }
+    public Guid HotelId { get; set; }
     public Guid RoomId { get; set; }
-    public decimal Price { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
+    public decimal TotalPrice { get; set; }
+    public DateTime CheckInDate { get; set; }
+    public DateTime CheckOutDate { get; set; }
+    public DateTime CreatedAt { get; set; }
     public BookingStatus Status { get; set; }
 
     private Booking() {} // EF Domain requires a parameterless constructor for entity instantiation
     
     public Booking(
         BookingId bookingId,
-        Guid guestId,
+        Guid hotelId,
         Guid roomId,
-        decimal price,
-        DateTime startDate,
-        DateTime endDate,
+        decimal totalPrice,
+        DateTime checkInDate,
+        DateTime checkOutDate,
+        DateTime createdAt,
         BookingStatus status
 )    {
-        if (startDate > endDate) 
-            throw new InvalidOperationException("Start date cannot be greater than end date");
-        
-        if(price < 0) 
-            throw new InvalidOperationException("Price cannot be negative");
-        
         BookingId = bookingId;
-        GuestId = guestId;
+        HotelId = hotelId;
         RoomId = roomId;
-        Price = price;
-        StartDate = startDate;
-        EndDate = endDate;
+        TotalPrice = totalPrice;
+        CheckInDate = checkInDate.Date;
+        CheckOutDate = checkOutDate.Date;
+        CreatedAt = DateTime.UtcNow;
         Status = status;
     }
-    
-    public void Approve()
+
+    public static Booking CreateNew(
+        Guid hotelId,
+        Guid roomId,
+        DateTime checkIn,
+        DateTime checkOut,
+        decimal totalPrice)
     {
-        if (Status != BookingStatus.Pending)
-            throw new InvalidOperationException("Only pending reservations can be approved.");
-        
-        Status = BookingStatus.Confirmed;
+        var bookingId = new BookingId(Guid.NewGuid()); 
+    
+        var booking = new Booking(
+            bookingId,
+            hotelId,
+            roomId, 
+            totalPrice,
+            checkIn,
+            checkOut,
+            DateTime.UtcNow, 
+            BookingStatus.Pending 
+        );
+
+       
+        booking.AddDomainEvent(new BookingCreatedDomainEvent(
+            booking.BookingId,
+            booking.RoomId,
+            booking.CheckInDate,
+            booking.CheckOutDate
+        ));
+
+        return booking;
     }
 
-    public void Canceled()
+    public void Confirmed()
     {
-        if(Status != BookingStatus.Canceled)
-            throw new InvalidOperationException("Only pending reservations can be canceled.");
-        
+        if (Status == BookingStatus.Pending)
+        {
+            Status = BookingStatus.Confirmed;
+        }
+    }
+
+    public void Pending()
+    {
+        Status = BookingStatus.Pending;
+    }
+
+    public void Cancel()
+    {
         Status = BookingStatus.Canceled;
+        AddDomainEvent(new BookingCanceledDomainEvent(BookingId, RoomId));
     }
-
-    public void ChangeDates(DateTime newStartDate, DateTime newEndDate)
-    {
-        if (Status != BookingStatus.Pending)
-            throw new InvalidOperationException("Only pending reservations can be changed.");
-        
-        if(newStartDate > newEndDate) 
-            throw new InvalidOperationException("Start date cannot be greater than end date");
-        
-        StartDate = newStartDate;
-        EndDate = newEndDate;
-    }
-    
-    public decimal CalculateTotalPrice(decimal dailyRate)
-    {
-        if (dailyRate <= 0)
-            throw new ArgumentOutOfRangeException(nameof(dailyRate), "Daily rate must be greater than zero.");
-        
-        if (StartDate >= EndDate)
-            throw new InvalidOperationException("Start date must be before end date to calculate total price.");
-        
-        var totalDays = (EndDate - StartDate).Days;
-        return totalDays * dailyRate;
-    }
-    
 }

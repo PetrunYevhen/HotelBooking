@@ -6,18 +6,18 @@ namespace RoomManagement.Application.Query.GetRoomDetails;
 
 public class GetRoomDetailsQueryHandler : IRequestHandler<GetRoomDetailsQuery, RoomBookingDetailsDto>
 {
-    private readonly IRoomManagmentReadRepository _roomManagmentReadRepository;
+    private readonly IRoomManagementReadRepository _roomReadRepository;
 
-    public GetRoomDetailsQueryHandler(IRoomManagmentReadRepository roomManagmentReadRepository)
+    public GetRoomDetailsQueryHandler(IRoomManagementReadRepository roomManagementReadRepository)
     {
-        _roomManagmentReadRepository = roomManagmentReadRepository;
+        _roomReadRepository = roomManagementReadRepository;
     }
 
     public async Task<RoomBookingDetailsDto> Handle(GetRoomDetailsQuery request, CancellationToken cancellationToken)
     {
-        var roomId = new RoomId(request.RoomId);
+        var roomId = new RoomId(request.Id);
         
-        var room = await _roomManagmentReadRepository.GetRoomByIdAsync(roomId, cancellationToken);
+        var room = await _roomReadRepository.GetByIdAsync(roomId, cancellationToken);
 
         if (room == null) throw new KeyNotFoundException("Room not found");
 

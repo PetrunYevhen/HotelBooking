@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace RoomManagement.Infrastructure.Configuration.EventBus;
 
 public class IntegrationEventGenericHandler<T> : IIntegrationEventHandler<T>
-    where T : global::Infrastructure.EventBus.IntegrationEvent
+    where T : IntegrationEvent
 {
     public async Task Handle(T @event, CancellationToken cancellationToken = default)
     {
@@ -22,13 +22,15 @@ public class IntegrationEventGenericHandler<T> : IIntegrationEventHandler<T>
                     ContractResolver = new AllPropertiesContractResolver()
                 });
 
-                var sql = "INSERT INTO \"meetings\".\"InboxMessages\" (\"Id\", \"OccurredOn\", \"Type\", \"Data\") " +
-                          "VALUES (@Id, @OccurredOn, @Type, @Data)";
+                var sql = @"
+                        INSERT INTO ""RoomManagement"".""InboxMessages"" (""Id"", ""OccurredOn"", ""Type"", ""Data"")
+                        VALUES (@Id, @OccurredOn, @Type, @Data::jsonb)
+                        ON CONFLICT (""Id"") DO NOTHING";
 
                 await connection.ExecuteScalarAsync(sql, new
                 {
                     @event.Id,
-                    @event.OccuredOn,
+                    @event.OccurredOn,
                     type,
                     data
                 });

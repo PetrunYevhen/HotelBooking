@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using BookingManagement.Domain.RepositoryContracts;
 using Infrastructure.EventBus;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -20,9 +19,6 @@ public class EventBusStartup : Module
     private static void SubscribeToIntegrationEvents(ILogger logger)
     {
         var scope = BookingCompositoryRoot.BeginLifetimeScope();
-        var bookingBus = scope.ResolveNamed<IEventBus>("BookingEventBus");
-        var bookingWriteRepo = scope.Resolve<IReservationWriteRepository>();
-        var bookingReadRepo = scope.Resolve<IReservationReadRepository>();
         
     }
     

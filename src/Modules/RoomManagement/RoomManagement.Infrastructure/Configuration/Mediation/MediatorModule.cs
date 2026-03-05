@@ -21,6 +21,7 @@ public class MediatorModule : Module
         {
             typeof(IRequestHandler<,>),
             typeof(IRequestHandler<>),
+            typeof(INotificationHandler<>),
         };
 
         foreach (var mediatorOpenType in mediatorOpenTypes)

@@ -1,33 +1,33 @@
-﻿using System.Reflection;
-using Autofac;
+﻿using Autofac;
 using AutoMapper;
+using RoomManagement.Application.Mapping;
 using Module = Autofac.Module;
 
 namespace RoomManagement.Infrastructure.Configuration.Mapping;
 
 public class AutoMapperModule : Module
 { 
-    private readonly Assembly[] _assemblies;
-
-    public AutoMapperModule(params Assembly[] assemblies)
-    {
-        _assemblies = assemblies;
-    }
+    // private readonly Assembly[] _assemblies;
+    //
+    // public AutoMapperModule(params Assembly[] assemblies)
+    // {
+    //     _assemblies = assemblies;
+    // }
 
     protected override void Load(ContainerBuilder builder)
     {
-        builder.Register(context =>
+        builder.Register(ctx =>
             {
-                var config = new MapperConfiguration(config =>
+                // Створюємо конфігурацію AutoMapper
+                var config = new MapperConfiguration(cfg =>
                 {
-                    config.AddMaps(_assemblies);
+                    // Додаємо профіль HotelModule
+                    cfg.AddProfile<RoomProfile>();
                 });
 
-                config.AssertConfigurationIsValid();
-
-                return config.CreateMapper(context.Resolve);
+                return config.CreateMapper();
             })
-            .As<IMapper>()
-            .SingleInstance();
+            .As<IMapper>()            // Реєструємо як IMapper
+            .SingleInstance();        // Синглтон на модуль
     }
 }

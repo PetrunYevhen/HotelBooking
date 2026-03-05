@@ -10,6 +10,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\Common\BuildingBlocks\Domain\Domain.csproj" />
       <ProjectReference Include="..\..\..\Common\BuildingBlocks\Infrastructure\Infrastructure.csproj" />
+      <ProjectReference Include="..\..\HotelManagement\HotelManagement.Application\HotelManagement.Application.csproj" />
       <ProjectReference Include="..\..\HotelManagement\HotelManagement.IntegrationEvent\HotelManagement.IntegrationEvent.csproj" />
       <ProjectReference Include="..\RoomManagement.Application\RoomManagement.Application.csproj" />
       <ProjectReference Include="..\RoomManagement.Domain\RoomManagement.Domain.csproj" />

@@ -4,10 +4,10 @@ namespace RoomManagement.Application.Query.GetRoomDetails;
 
 public class GetRoomDetailsQuery : QueryBase<RoomBookingDetailsDto>
 {
-    public GetRoomDetailsQuery(Guid roomId)
+    public GetRoomDetailsQuery(Guid id)
     {
-        RoomId = roomId;
+        Id = id;
     }
     
-    public Guid RoomId { get; init; }
+    public Guid Id { get; init; }
 }

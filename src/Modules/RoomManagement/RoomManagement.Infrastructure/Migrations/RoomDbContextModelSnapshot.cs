@@ -5,11 +5,10 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RoomManagement.Infrastructure;
-using RoomManagment.Infrastructure;
 
 #nullable disable
 
-namespace RoomManagment.Infrastructure.Migrations
+namespace RoomManagement.Infrastructure.Migrations
 {
     [DbContext(typeof(RoomDbContext))]
     partial class RoomDbContextModelSnapshot : ModelSnapshot
@@ -18,12 +17,37 @@ namespace RoomManagment.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.5")
+                .HasAnnotation("ProductVersion", "9.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("RoomManagment.Domain.Entities.Room", b =>
+            modelBuilder.Entity("Infrastructure.Inbox.InboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Data")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("OccurredOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ProcessedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InboxMessages", "RoomManagement");
+                });
+
+            modelBuilder.Entity("RoomManagement.Domain.Entities.Room", b =>
                 {
                     b.Property<Guid>("RoomId")
                         .HasColumnType("uuid");

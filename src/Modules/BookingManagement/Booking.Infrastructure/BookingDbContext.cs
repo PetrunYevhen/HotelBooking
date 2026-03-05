@@ -1,4 +1,6 @@
-﻿using BookingManagement.Infrastructure.EntityTypeConfiguration;
+﻿using Application.Outbox;
+using BookingManagement.Domain.Entities;
+using BookingManagement.Infrastructure.EntityTypeConfiguration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -8,7 +10,8 @@ public class BookingDbContext : DbContext
 {
     private readonly ILoggerFactory _loggerFactory;
     
-    public DbSet<Domain.Entities.Booking> Reservations { get; set; }
+    public DbSet<Booking> Bookings { get; set; }
+    public DbSet<OutboxMessage> OutboxMessages { get; set; }
     
     public BookingDbContext(DbContextOptions<BookingDbContext> options, ILoggerFactory loggerFactory)
         : base(options)
@@ -19,6 +22,7 @@ public class BookingDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new BookingEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new OutboxMessageEntityTypeConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }

@@ -11,6 +11,6 @@ public class RoomEntityTypeConfiguration : IEntityTypeConfiguration<Room>
     {
         builder.ToTable("Rooms", "RoomManagement");
         builder.HasKey(r => r.RoomId);
-        builder.Property(hotelid => hotelid.HotelId).IsRequired();
+        builder.Property(hotelId => hotelId.HotelId).IsRequired();
     }
 }

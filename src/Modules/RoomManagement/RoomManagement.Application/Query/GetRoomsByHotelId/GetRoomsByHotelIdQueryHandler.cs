@@ -5,22 +5,22 @@ using RoomManagement.Domain.RepositoryContract;
 
 namespace RoomManagement.Application.Query.GetRoomsByHotelId;
 
-public class GetRoomsByHotelIdQueryHandler : IRequestHandler<GetRoomsByHotelIdQuery, List<RoomDto>>
+public class GetRoomsByIdQueryHandler : IRequestHandler<GetRoomsByIdQuery, List<RoomDto>>
 {
-    private readonly IRoomManagmentReadRepository _roomManagmentReadRepository;
+    private readonly IRoomManagementReadRepository _roomReadRepository;
     private readonly IMapper _mapper;
 
-    public GetRoomsByHotelIdQueryHandler(IRoomManagmentReadRepository roomManagmentReadRepository, IMapper mapper)
+    public GetRoomsByIdQueryHandler(IRoomManagementReadRepository roomManagementReadRepository, IMapper mapper)
     {
-        _roomManagmentReadRepository = roomManagmentReadRepository;
+        _roomReadRepository = roomManagementReadRepository;
         _mapper = mapper;
     }
 
-    public async Task<List<RoomDto>> Handle(GetRoomsByHotelIdQuery request, CancellationToken cancellationToken)
+    public async Task<List<RoomDto>> Handle(GetRoomsByIdQuery request, CancellationToken cancellationToken)
     {
-        var rooms = await _roomManagmentReadRepository.GetRoomsByHotelIdAsync(request.HotelId, cancellationToken);
+        var rooms = await _roomReadRepository.GetByHotelIdAsync(request.HotelId, cancellationToken);
 
-        if (rooms == null) throw new Exception("No rooms found");
+        // if (rooms == null || !rooms.Any()) return new List<RoomDto>();
         
         return _mapper.Map<List<RoomDto>>(rooms);
     }
