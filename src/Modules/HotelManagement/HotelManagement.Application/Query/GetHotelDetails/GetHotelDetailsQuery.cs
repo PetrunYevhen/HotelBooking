@@ -1,13 +1,14 @@
-﻿using HotelManagement.Application.Contracts;
+﻿using DTO.DTOs.HotelDto;
+using HotelManagement.Application.Contracts;
 
 namespace HotelManagement.Application.Query.GetHotelDetails;
 
-public class GetHotelDetailsQuery : QueryBase<HotelDetailDto>
+public class GetHotelDetailsQuery : QueryBase<HotelDetailsDto>
 {
-    public GetHotelDetailsQuery(Guid hotelId)
+    public GetHotelDetailsQuery(Guid id)
     {
-        HotelId = hotelId;
+        Id = id;
     }
     
-    public Guid HotelId { get; init; }
+    public Guid Id { get; init; }
 }

@@ -23,7 +23,7 @@ namespace HotelManagement.Infastructure.Migrations
                 name: "PK_HotelFacilities",
                 schema: "Shared",
                 table: "HotelFacilities",
-                columns: new[] { "HotelId", "FacilityId" });
+                columns: new[] { "Id", "FacilityId" });
         }
 
         /// <inheritdoc />
@@ -42,7 +42,7 @@ namespace HotelManagement.Infastructure.Migrations
             migrationBuilder.AddPrimaryKey(
                 name: "PK_HotelFacilities",
                 table: "HotelFacilities",
-                column: "HotelId");
+                column: "Id");
         }
     }
 }

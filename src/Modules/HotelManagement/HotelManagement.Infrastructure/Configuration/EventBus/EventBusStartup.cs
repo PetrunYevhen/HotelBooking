@@ -1,6 +1,4 @@
 ﻿using Autofac;
-using HotelManagement.Application.CachingContract;
-using HotelManagement.Application.IntegrationEventHandlers;
 using HotelManagement.Domain.RepositoryContract;
 using Infrastructure.EventBus;
 using Serilog;
@@ -24,9 +22,7 @@ public static class EventBusStartup
          var scope = HotelCompositoryRoot.BeginLifetimeScope();
         var hotelBus = scope.ResolveNamed<IEventBus>("HotelManagementEventBus");
         var hotelRepo = scope.Resolve<IHotelWriteRepository>();
-        var hotelCache = scope.Resolve<IHotelRoomsCache>();
         
-        hotelBus.Subscribe(new RoomsForHotelResponseIntegrationEventHandler(hotelCache));
 
     }
 

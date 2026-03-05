@@ -1,50 +1,48 @@
-﻿using HotelManagement.Application.CachingContract;
+﻿using DTO.DTOs.HotelDto;
 using HotelManagement.Domain.Entities;
 using HotelManagement.Domain.RepositoryContract;
 using MediatR;
-using RoomManagement.Application.Query.GetMinPriceRoom;
 
 namespace HotelManagement.Application.Query.GetHotelDetails;
 
-public class GetHotelDetailsQueryHandler : IRequestHandler<GetHotelDetailsQuery, HotelDetailDto>
+public class GetHotelDetailsQueryHandler : IRequestHandler<GetHotelDetailsQuery, HotelDetailsDto>
 {
     private readonly IHotelReadRepository _hotelReadRepository;
-    private readonly IHotelRoomsCache _hotelRoomsCache;
     private readonly IMediator _mediator;
     
-    public GetHotelDetailsQueryHandler(IHotelReadRepository hotelReadRepository, IMediator mediator, IHotelRoomsCache hotelRoomsCache)
+    public GetHotelDetailsQueryHandler(IHotelReadRepository hotelReadRepository, IMediator mediator)
     {
         _hotelReadRepository = hotelReadRepository;
         _mediator = mediator;
-        _hotelRoomsCache = hotelRoomsCache;
     }
 
 
-    public async Task<HotelDetailDto> Handle(
+    public async Task<HotelDetailsDto> Handle(
         GetHotelDetailsQuery request,
         CancellationToken cancellationToken)
     {
-        var hotelId = new HotelId(request.HotelId);
+        var id = new HotelId(request.Id);
 
         var hotel = await _hotelReadRepository
-            .GetHotelByIdAsync(hotelId, cancellationToken);
+            .GetByHotelIdAsync(id, cancellationToken);
         
         if (hotel == null)
             throw new KeyNotFoundException(
-                $"Готель з ID {request.HotelId} не знайдено.");
+                $"Готель з ID {request.Id} не знайдено.");
 
-        var minPriceRoom = await _mediator.Send(new GetMinPriceRoomQuery(hotelId.Value));
+        // var minPriceRoom = await _mediator.Send(new GetMinPriceRoomQuery(Id.Value));
         
         
-        return new HotelDetailDto
-        {
-            HotelId = hotel.HotelId.Value,  
-            HotelName = hotel.HotelName,
-            Description = hotel.Description,
-            ImageUrl = hotel.ImageUrl,
-            Rating = hotel.Rating,
-            MinRoomPrice = minPriceRoom
-        };
+        return new HotelDetailsDto
+        (
+            hotel.HotelId.Value,  
+            hotel.HotelName,
+            hotel.Description,
+            hotel.ImageUrl,
+            hotel.Rating,
+            0,
+            null
+        );
     }
 
 

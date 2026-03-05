@@ -28,7 +28,7 @@ public class IntegrationEventGenericHandler<T> : IIntegrationEventHandler<T>
                 await connection.ExecuteScalarAsync(sql, new
                 {
                     @event.Id,
-                    @event.OccuredOn,
+                    @event.OccurredOn,
                     type,
                     data
                 });

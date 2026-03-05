@@ -15,7 +15,7 @@ public class HotelWriteRepository : IHotelWriteRepository
         _hotelReadRepository = hotelReadRepository;
     }
 
-    public async Task<Hotel> AddHotelAsync(Hotel hotel, CancellationToken cancellationToken)
+    public async Task<Hotel> AddAsync(Hotel hotel, CancellationToken cancellationToken)
     {
         if (hotel == null) throw new ArgumentNullException(nameof(hotel));
 
@@ -24,14 +24,14 @@ public class HotelWriteRepository : IHotelWriteRepository
         return hotel;
     }
     
-    public async Task<bool> UpdateMinRoomPriceAsync(HotelId hotelId, decimal newMinPrice, CancellationToken cancellationToken)
+    public async Task<bool> UpdateMinRoomPriceAsync(HotelId id, decimal newMinPrice, CancellationToken cancellationToken)
     {
         var hotel = await _hotelDbContext.Hotels
-            .FirstOrDefaultAsync(h => h.HotelId == hotelId, cancellationToken);
+            .FirstOrDefaultAsync(h => h.HotelId == id, cancellationToken);
         
         if (hotel == null)
         {
-            throw new NullReferenceException($"Hotel with ID {hotelId} not found.");
+            throw new NullReferenceException($"Hotel with ID {id} not found.");
         }
         
         hotel.UpdateMinRoomPrice(newMinPrice);

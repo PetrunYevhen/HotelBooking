@@ -51,7 +51,7 @@ namespace HotelManagement.Infastructure.Migrations
 
             modelBuilder.Entity("HotelManagement.Domain.Entities.Hotel", b =>
                 {
-                    b.Property<Guid>("HotelId")
+                    b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
@@ -72,34 +72,34 @@ namespace HotelManagement.Infastructure.Migrations
                     b.Property<double>("Rating")
                         .HasColumnType("double precision");
 
-                    b.HasKey("HotelId");
+                    b.HasKey("Id");
 
                     b.ToTable("Hotels", "HotelManagement");
                 });
 
             modelBuilder.Entity("SharedKernel.HotelRelations.HotelFacility", b =>
                 {
-                    b.Property<Guid>("HotelId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("FacilityId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("HotelId");
+                    b.HasKey("Id");
 
                     b.ToTable("HotelFacilities", (string)null);
                 });
 
             modelBuilder.Entity("SharedKernel.HotelRelations.HotelRooms", b =>
                 {
-                    b.Property<Guid>("HotelId")
+                    b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("RoomId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("HotelId", "RoomId");
+                    b.HasKey("Id", "RoomId");
 
                     b.ToTable("HotelRooms", "Shared");
                 });

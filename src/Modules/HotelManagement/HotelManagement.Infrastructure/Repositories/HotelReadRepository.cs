@@ -13,7 +13,7 @@ public class HotelReadRepository : IHotelReadRepository
     {
         _npgsqlConnectionFactory = npgsqlConnectionFactory;
     }
-    public async Task<Hotel> GetHotelByIdAsync(HotelId hotelId, CancellationToken cancellationToken)
+    public async Task<Hotel> GetByHotelIdAsync(HotelId id, CancellationToken cancellationToken)
     { 
         using var connection = _npgsqlConnectionFactory.CreateConnection();
     
@@ -21,27 +21,27 @@ public class HotelReadRepository : IHotelReadRepository
     
         var command = new CommandDefinition(
             commandText: sql,
-            parameters: new { HotelId = hotelId },
+            parameters: new { HotelId = id.Value },
             cancellationToken: cancellationToken);
     
         var result = await connection.QueryFirstOrDefaultAsync<Hotel>(command);
 
         if (result == null)
         {
-            throw new Exception($"Hotel not found with id {hotelId}");
+            throw new Exception($"Hotel not found with id {id}");
         }
 
         return result;
     }
 
-    // public async Task<List<Guid>> GetRoomIdsByHotelIdAsync(HotelId hotelId, CancellationToken cancellationToken)
+    // public async Task<List<Guid>> GetRoomIdsByIdAsync(Id Id, CancellationToken cancellationToken)
     // {
     //     using var connection = _npgsqlConnectionFactory.CreateConnection(); 
     //     
-    //     const string sql = "SELECT \"RoomId\" FROM \"Shared\".\"HotelRooms\" WHERE \"HotelId\" = @HotelId";
+    //     const string sql = "SELECT \"RoomId\" FROM \"Shared\".\"HotelRooms\" WHERE \"Id\" = @Id";
     //     var command = new CommandDefinition(
     //         commandText: sql,
-    //         parameters: new { HotelId = hotelId.Value },
+    //         parameters: new { Id = Id.Value },
     //         cancellationToken: cancellationToken);
     //     
     //     var result = await connection.QueryAsync<Guid>(command);
@@ -49,14 +49,14 @@ public class HotelReadRepository : IHotelReadRepository
     //     return result.ToList();
     // }
 
-    // public async Task<List<Guid>> GetFacilityIdsByHotelIdAsync(HotelId hotelId, CancellationToken cancellationToken)
+    // public async Task<List<Guid>> GetFacilityIdsByIdAsync(Id Id, CancellationToken cancellationToken)
     // {
     //     using var connection = _npgsqlConnectionFactory.CreateConnection(); 
-    //     const string sql = "SELECT \"FacilityId\" FROM \"Shared\".\"HotelFacilities\" WHERE \"HotelId\" = @HotelId";
+    //     const string sql = "SELECT \"FacilityId\" FROM \"Shared\".\"HotelFacilities\" WHERE \"Id\" = @Id";
     //     
     //     var command = new CommandDefinition(
     //         commandText: sql,
-    //         parameters: new { HotelId = hotelId.Value },
+    //         parameters: new { Id = Id.Value },
     //         cancellationToken: cancellationToken);
     //     
     //     var result = await connection.QueryAsync<Guid>(command);

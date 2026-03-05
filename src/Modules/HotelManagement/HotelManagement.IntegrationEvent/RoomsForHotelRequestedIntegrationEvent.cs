@@ -2,13 +2,17 @@
 
 public class RoomsForHotelRequestedIntegrationEvent : Infrastructure.EventBus.IntegrationEvent
 {
-    public Guid HotelId { get; set; }
+    public Guid Id { get; set; }
     public Guid CorrelationId { get; set; }
     
-    public RoomsForHotelRequestedIntegrationEvent(Guid id, DateTime occuredOn, Guid correlationId, Guid hotelId) 
-        : base(id, occuredOn)
+    public RoomsForHotelRequestedIntegrationEvent(Guid id, DateTime OccurredOn
+
+, Guid correlationId, Guid Id) 
+        : base(id, OccurredOn
+
+)
     {
         CorrelationId = correlationId;
-        HotelId = hotelId;
+        Id = Id;
     }
 }

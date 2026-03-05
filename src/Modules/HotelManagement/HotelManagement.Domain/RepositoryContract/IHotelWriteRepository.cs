@@ -4,9 +4,9 @@ namespace HotelManagement.Domain.RepositoryContract;
 
 public interface IHotelWriteRepository
 {
-    Task<Hotel> AddHotelAsync(Hotel hotel, CancellationToken cancellationToken);
+    Task<Hotel> AddAsync(Hotel hotel, CancellationToken cancellationToken);
     Task<bool> UpdateMinRoomPriceAsync(
-        HotelId hotelId,
+        HotelId Id,
         decimal newMinPrice,
         CancellationToken cancellationToken);
 }

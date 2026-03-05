@@ -12,22 +12,46 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HotelManagement.Infastructure.Migrations
 {
     [DbContext(typeof(HotelDbContext))]
-    [Migration("20250826142824_InitialCreated")]
-    partial class InitialCreated
+    [Migration("20251216194352_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.5")
+                .HasAnnotation("ProductVersion", "9.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Application.Outbox.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Data")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("OccurredOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ProcessedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OutboxMessages", "HotelManagement");
+                });
+
             modelBuilder.Entity("HotelManagement.Domain.Entities.Hotel", b =>
                 {
-                    b.Property<Guid>("HotelId")
+                    b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
@@ -48,36 +72,9 @@ namespace HotelManagement.Infastructure.Migrations
                     b.Property<double>("Rating")
                         .HasColumnType("double precision");
 
-                    b.HasKey("HotelId");
+                    b.HasKey("Id");
 
                     b.ToTable("Hotels", "HotelManagement");
-                });
-
-            modelBuilder.Entity("SharedKernel.HotelRelations.HotelFacility", b =>
-                {
-                    b.Property<Guid>("HotelId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("FacilityId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("HotelId");
-
-                    b.ToTable("HotelFacilities", (string)null);
-                });
-
-            modelBuilder.Entity("SharedKernel.HotelRelations.HotelRooms", b =>
-                {
-                    b.Property<Guid>("HotelId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("RoomId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("HotelId", "RoomId");
-
-                    b.ToTable("HotelRooms", "Shared");
                 });
 #pragma warning restore 612, 618
         }

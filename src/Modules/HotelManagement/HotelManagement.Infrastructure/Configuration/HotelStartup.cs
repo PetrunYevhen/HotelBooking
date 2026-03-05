@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using Dapper;
-using HotelManagement.Infastructure.Configuration.Caching;
 using HotelManagement.Infastructure.Configuration.DataAccess;
 using HotelManagement.Infastructure.Configuration.EventBus;
 using HotelManagement.Infastructure.Configuration.Logging;
@@ -24,7 +23,7 @@ public class HotelStartup
        ILogger logger,
        IEventBus eventBus)
    {
-       SqlMapper.AddTypeHandler(new HotelIdTypeHandler());
+       SqlMapper.AddTypeHandler(new IdTypeHandler());
        
        var moduleLogger = logger.ForContext("Module", "HotelManagement");
        
@@ -46,7 +45,6 @@ public class HotelStartup
        containerBuilder.RegisterModule(new DataAccessModule(connectionString, loggerFactory));
        containerBuilder.RegisterModule(new MediatorModule());
        containerBuilder.RegisterModule(new EventBusModule(eventBus));
-       containerBuilder.RegisterModule(new CachingModule());
        containerBuilder.RegisterModule(new AutoMapperModule());
        
        _container = containerBuilder.Build();

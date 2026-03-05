@@ -17,7 +17,7 @@ namespace HotelManagement.Infastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.5")
+                .HasAnnotation("ProductVersion", "9.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -48,7 +48,7 @@ namespace HotelManagement.Infastructure.Migrations
 
             modelBuilder.Entity("HotelManagement.Domain.Entities.Hotel", b =>
                 {
-                    b.Property<Guid>("HotelId")
+                    b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
@@ -69,35 +69,9 @@ namespace HotelManagement.Infastructure.Migrations
                     b.Property<double>("Rating")
                         .HasColumnType("double precision");
 
-                    b.HasKey("HotelId");
+                    b.HasKey("Id");
 
                     b.ToTable("Hotels", "HotelManagement");
-                });
-
-            modelBuilder.Entity("SharedKernel.HotelRelations.HotelFacilities", b =>
-                {
-                    b.Property<Guid>("HotelId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("FacilityId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("HotelId", "FacilityId");
-
-                    b.ToTable("HotelFacilities", "Shared");
-                });
-
-            modelBuilder.Entity("SharedKernel.HotelRelations.HotelRooms", b =>
-                {
-                    b.Property<Guid>("HotelId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("RoomId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("HotelId", "RoomId");
-
-                    b.ToTable("HotelRooms", "Shared");
                 });
 #pragma warning restore 612, 618
         }

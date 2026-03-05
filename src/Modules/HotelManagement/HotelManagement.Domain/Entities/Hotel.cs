@@ -13,7 +13,7 @@ public class Hotel : Entity
     
     public Hotel() { } // EF Core constructor
 
-    public Hotel(HotelId hotelId, 
+    public Hotel(HotelId id, 
         string hotelName, 
         string description, 
         string imageUrl, 
@@ -25,7 +25,7 @@ public class Hotel : Entity
         if (rating < 0 || rating > 5)
             throw new ArgumentOutOfRangeException(nameof(rating), "Rating must be from 0 to 5.");
 
-        HotelId = hotelId;
+        HotelId = id;
         HotelName = hotelName;
         Description = description;
         ImageUrl = imageUrl;
@@ -43,7 +43,7 @@ public class Hotel : Entity
      //     
      //     var minPrice = prices.Min();
      //
-     //     var hotelRooms = new HotelRooms(HotelId, roomId);
+     //     var hotelRooms = new HotelRooms(Id, roomId);
      //     AddDomainEvent(new GetMinPriceRoomDomanEvent(hotelRooms, minPrice));
      // }
 

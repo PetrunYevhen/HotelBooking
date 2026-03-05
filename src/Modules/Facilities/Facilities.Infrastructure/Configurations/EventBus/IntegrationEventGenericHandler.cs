@@ -22,13 +22,15 @@ public class IntegrationEventGenericHandler<T> : IIntegrationEventHandler<T>
                         ContractResolver = new AllPropertiesContractResolver()
                     });
 
-                    var sql = "INSERT INTO \"meetings\".\"InboxMessages\" (\"Id\", \"OccurredOn\", \"Type\", \"Data\") " +
-                              "VALUES (@Id, @OccurredOn, @Type, @Data)";
+                    var sql = "INSERT INTO \"meetings\".\"InboxMessages\" (\"Id\", \"OccurredOn \", \"Type\", \"Data\") " +
+                              "VALUES (@Id, @OccurredOn , @Type, @Data)";
 
                     await connection.ExecuteScalarAsync(sql, new
                     {
                         @event.Id,
-                        @event.OccuredOn,
+                        @event.OccurredOn
+
+,
                         type,
                         data
                     });

@@ -25,7 +25,7 @@ public class HotelDbContextFactory : IDesignTimeDbContextFactory<HotelDbContext>
         var optionsBuilder = new DbContextOptionsBuilder<HotelDbContext>();
         
         
-        var basePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\API\HotelBooking.API"));
+        var basePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"../HotelBooking.API"));
         
         var configuration = new ConfigurationBuilder()
             .SetBasePath(basePath)
@@ -33,6 +33,10 @@ public class HotelDbContextFactory : IDesignTimeDbContextFactory<HotelDbContext>
             .Build();
         
         var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+        if (string.IsNullOrEmpty(connectionString))
+            throw new InvalidOperationException(
+                $"Connection string 'DefaultConnection' not found. Checked path: {basePath}"); 
         
         optionsBuilder
             .ReplaceService<IValueConverterSelector, StronglyTypedIdValueConverterSelector>()

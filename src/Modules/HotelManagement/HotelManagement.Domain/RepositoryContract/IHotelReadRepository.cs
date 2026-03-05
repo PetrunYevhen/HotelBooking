@@ -4,5 +4,5 @@ namespace HotelManagement.Domain.RepositoryContract;
 
 public interface IHotelReadRepository
 {
-    Task<Hotel> GetHotelByIdAsync(HotelId hotelId, CancellationToken cancellationToken);
+    Task<Hotel> GetByHotelIdAsync(HotelId Id, CancellationToken cancellationToken);
 }
