@@ -1,3 +1,6 @@
 ﻿namespace DTO.DTOs.RoomDto;
 
-public record RoomDto(Guid id, string Number, decimal PricePerNight);
+public record RoomDto(
+    Guid Id, 
+    string Number, 
+    decimal PricePerNight);

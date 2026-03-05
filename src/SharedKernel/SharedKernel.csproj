@@ -11,4 +11,10 @@
       <Folder Include="DTOs\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Common\BuildingBlocks\Application\Application.csproj" />
+      <ProjectReference Include="..\Modules\HotelManagement\HotelManagement.Domain\HotelManagement.Domain.csproj" />
+      <ProjectReference Include="..\Modules\RoomManagement\RoomManagement.Domain\RoomManagement.Domain.csproj" />
+    </ItemGroup>
+
 </Project>
