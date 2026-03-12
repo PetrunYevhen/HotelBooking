@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Common\BuildingBlocks\Infrastructure\Infrastructure.csproj" />
+      <ProjectReference Include="..\PaymantManagement.Application\PaymantManagement.Application.csproj" />
+      <ProjectReference Include="..\PaymentManagement.Domain\PaymentManagement.Domain.csproj" />
+    </ItemGroup>
+
+</Project>
