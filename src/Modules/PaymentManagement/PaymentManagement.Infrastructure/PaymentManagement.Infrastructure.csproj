@@ -9,9 +9,9 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\Common\BuildingBlocks\Infrastructure\Infrastructure.csproj" />
-      <ProjectReference Include="..\PaymantManagement.Application\PaymantManagement.Application.csproj" />
       <ProjectReference Include="..\PaymentManagement.Application\PaymentManagement.Application.csproj" />
       <ProjectReference Include="..\PaymentManagement.Domain\PaymentManagement.Domain.csproj" />
+      <ProjectReference Include="..\PaymentManagement.IntegrationEvents\PaymentManagement.IntegrationEvents.csproj" />
     </ItemGroup>
 
 </Project>

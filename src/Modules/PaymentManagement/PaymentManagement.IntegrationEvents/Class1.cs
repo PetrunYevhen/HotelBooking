@@ -1,4 +1,4 @@
-﻿namespace PaymantManagement.IntegrationEvents;
+﻿namespace PaymentManagement.IntegrationEvents;
 
 public class Class1
 {

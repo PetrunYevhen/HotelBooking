@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\PaymantManagement.Application\PaymantManagement.Application.csproj" />
-      <ProjectReference Include="..\PaymantManagement.Infrastructure\PaymantManagement.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\..\Common\BuildingBlocks\Infrastructure\Infrastructure.csproj" />
+      <ProjectReference Include="..\PaymentManagement.Application\PaymentManagement.Application.csproj" />
     </ItemGroup>
 
 </Project>

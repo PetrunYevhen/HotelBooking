@@ -76,7 +76,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentManagement.Domain", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentManagement.Infrastructure", "Modules\PaymentManagement\PaymentManagement.Infrastructure\PaymentManagement.Infrastructure.csproj", "{1BF79E6C-C02A-412E-B466-80320C1E6500}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymantManagement.IntegrationEvents", "Modules\PaymentManagement\PaymentManagement.IntegrationEvents\PaymantManagement.IntegrationEvents.csproj", "{E2D34E54-CB02-4B9A-B599-B7D82FC431F5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentManagement.IntegrationEvents", "Modules\PaymentManagement\PaymentManagement.IntegrationEvents\PaymentManagement.IntegrationEvents.csproj", "{E2D34E54-CB02-4B9A-B599-B7D82FC431F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
