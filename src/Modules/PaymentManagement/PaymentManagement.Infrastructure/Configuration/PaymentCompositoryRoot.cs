@@ -3,7 +3,7 @@ using Autofac;
 
 namespace PaymantManagement.Infrastructure.Configuration;
 
-internal static class HotelCompositoryRoot
+internal static class PaymentCompositoryRoot
 {
     private static IContainer _container;
     internal static void SetContainer(IContainer container)

@@ -18,7 +18,7 @@ public static class EventBusStartup
         // var eventBus = HotelCompositoryRoot.BeginLifetimeScope().Resolve<IEventBus>();
         // SubscribeToIntegrationEvent<MinPriceCalculatedIntegrationEvent>(eventBus, logger);
         
-         var scope = HotelCompositoryRoot.BeginLifetimeScope();
+         var scope = PaymentCompositoryRoot.BeginLifetimeScope();
         
 
     }

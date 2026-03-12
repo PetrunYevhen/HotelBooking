@@ -12,7 +12,7 @@ public class IntegrationEventGenericHandler<T> : IIntegrationEventHandler<T>
 {
     public async Task Handle(T @event, CancellationToken cancellationToken = default)
     {
-        using (var scope = HotelCompositoryRoot.BeginLifetimeScope())
+        using (var scope = PaymentCompositoryRoot.BeginLifetimeScope())
         {
             using (var connection = scope.Resolve<INpgsqlConnectionFactory>().CreateConnection())
             {

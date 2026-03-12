@@ -47,6 +47,6 @@ public class PaymentStartup
        
        _container = containerBuilder.Build();
        
-       HotelCompositoryRoot.SetContainer(_container);
+       PaymentCompositoryRoot.SetContainer(_container);
    }
 }

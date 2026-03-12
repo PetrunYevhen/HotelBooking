@@ -3,6 +3,7 @@ using MediatR;
 using PaymantManagement.Application.Contracts;
 using PaymantManagement.Infrastructure.Configuration;
 using PaymantManagement.Infrastructure.Configuration.Processing;
+using ICommand = PaymantManagement.Application.Contracts.ICommand;
 
 namespace PaymantManagement.Infrastructure;
 
@@ -17,10 +18,10 @@ public class PaymentManagementModule : IPaymentManagementModule
     {
         await CommandsExecutor.Execute(command);
     }
-
+    
     public Task<TResult> ExecuteQueryAsync<TResult>(IQuery<TResult> query)
     {
-        using (var scope = HotelCompositoryRoot.BeginLifetimeScope())
+        using (var scope = PaymentCompositoryRoot.BeginLifetimeScope())
         {
             var mediator = scope.Resolve<IMediator>();
             return mediator.Send(query);
