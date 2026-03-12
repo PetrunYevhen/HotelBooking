@@ -23,7 +23,7 @@ public class HotelStartup
        ILogger logger,
        IEventBus eventBus)
    {
-       SqlMapper.AddTypeHandler(new IdTypeHandler());
+       SqlMapper.AddTypeHandler(new HotelIdTypeHandler());
        
        var moduleLogger = logger.ForContext("Module", "HotelManagement");
        

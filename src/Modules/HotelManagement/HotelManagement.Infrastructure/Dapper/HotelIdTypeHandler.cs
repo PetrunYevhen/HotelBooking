@@ -4,7 +4,7 @@ using HotelManagement.Domain.Entities;
 
 namespace HotelManagement.Infastructure.Dapper;
 
-public class IdTypeHandler : SqlMapper.TypeHandler<HotelId>
+public class HotelIdTypeHandler : SqlMapper.TypeHandler<HotelId>
 {
     public override void SetValue(IDbDataParameter parameter, HotelId? value)
         => parameter.Value = value?.Value;
