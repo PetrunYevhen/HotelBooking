@@ -60,4 +60,4 @@ TestResults/
 publish/
 
 logs/
-**/logs/
+**/logs/**/.DS_Store
