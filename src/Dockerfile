@@ -1,5 +1,5 @@
 ﻿# ============ BASE IMAGE ============
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
@@ -25,7 +25,7 @@ COPY ["Modules/HotelManagement/HotelManagement.IntegrationEvent/HotelManagement.
 COPY ["Common/BuildingBlocks/Application/Application.csproj", "Common/BuildingBlocks/Application/"]
 COPY ["Common/BuildingBlocks/Domain/Domain.csproj", "Common/BuildingBlocks/Domain/"]
 COPY ["Common/BuildingBlocks/Infrastructure/Infrastructure.csproj", "Common/BuildingBlocks/Infrastructure/"]
-COPY ["Modules/SharedKernel/SharedKernel/SharedKernel.csproj", "Modules/SharedKernel/SharedKernel/"]
+COPY ["SharedKernel/SharedKernel.csproj", "SharedKernel/"]
 COPY ["Directory.Packages.props", "./"]
 
 # Restore packages
@@ -41,7 +41,7 @@ FROM build AS publish
 RUN dotnet publish "HotelBooking.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # ============ FINAL IMAGE ============
-FROM base AS final
+FROM runtime AS final
 ENV ASPNETCORE_ENVIRONMENT=Development
 WORKDIR /app
 COPY --from=publish /app/publish .

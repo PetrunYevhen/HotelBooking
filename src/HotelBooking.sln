@@ -68,6 +68,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoomManagement.IntegrationE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedKernel", "SharedKernel\SharedKernel.csproj", "{E882F121-61CC-453F-9C5C-00434EF0F66E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PaymentManagement", "PaymentManagement", "{7CBB6833-AF67-4BC5-8451-6A2DAD69B1B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentManagement.Application", "Modules\PaymentManagement\PaymentManagement.Application\PaymentManagement.Application.csproj", "{638D3068-D78A-4BF9-B0FC-F1BE7DAE55DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentManagement.Domain", "Modules\PaymentManagement\PaymentManagement.Domain\PaymentManagement.Domain.csproj", "{ECDDE968-AEFE-4ED4-BD3B-34F63162A5B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentManagement.Infrastructure", "Modules\PaymentManagement\PaymentManagement.Infrastructure\PaymentManagement.Infrastructure.csproj", "{1BF79E6C-C02A-412E-B466-80320C1E6500}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymantManagement.IntegrationEvents", "Modules\PaymentManagement\PaymentManagement.IntegrationEvents\PaymantManagement.IntegrationEvents.csproj", "{E2D34E54-CB02-4B9A-B599-B7D82FC431F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -154,6 +164,22 @@ Global
 		{E882F121-61CC-453F-9C5C-00434EF0F66E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E882F121-61CC-453F-9C5C-00434EF0F66E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E882F121-61CC-453F-9C5C-00434EF0F66E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{638D3068-D78A-4BF9-B0FC-F1BE7DAE55DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{638D3068-D78A-4BF9-B0FC-F1BE7DAE55DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{638D3068-D78A-4BF9-B0FC-F1BE7DAE55DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{638D3068-D78A-4BF9-B0FC-F1BE7DAE55DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECDDE968-AEFE-4ED4-BD3B-34F63162A5B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECDDE968-AEFE-4ED4-BD3B-34F63162A5B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECDDE968-AEFE-4ED4-BD3B-34F63162A5B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECDDE968-AEFE-4ED4-BD3B-34F63162A5B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BF79E6C-C02A-412E-B466-80320C1E6500}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BF79E6C-C02A-412E-B466-80320C1E6500}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BF79E6C-C02A-412E-B466-80320C1E6500}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BF79E6C-C02A-412E-B466-80320C1E6500}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2D34E54-CB02-4B9A-B599-B7D82FC431F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2D34E54-CB02-4B9A-B599-B7D82FC431F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2D34E54-CB02-4B9A-B599-B7D82FC431F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2D34E54-CB02-4B9A-B599-B7D82FC431F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8F05F7CF-FF4B-4E36-A99D-959F98270E79} = {FFAA3CEF-E14F-46B5-BF4E-72F45D1DB880}
@@ -189,5 +215,10 @@ Global
 		{B5A90787-06B6-4594-9C82-2250345DA8F4} = {1AB47C54-C953-4618-9974-7393BA898D72}
 		{6937F120-0D34-487F-A0AC-E7EA9C06C84C} = {1AB47C54-C953-4618-9974-7393BA898D72}
 		{E882F121-61CC-453F-9C5C-00434EF0F66E} = {255EC108-84FD-43A7-ADCD-B40B7CA759A5}
+		{7CBB6833-AF67-4BC5-8451-6A2DAD69B1B2} = {8F05F7CF-FF4B-4E36-A99D-959F98270E79}
+		{638D3068-D78A-4BF9-B0FC-F1BE7DAE55DC} = {7CBB6833-AF67-4BC5-8451-6A2DAD69B1B2}
+		{ECDDE968-AEFE-4ED4-BD3B-34F63162A5B6} = {7CBB6833-AF67-4BC5-8451-6A2DAD69B1B2}
+		{1BF79E6C-C02A-412E-B466-80320C1E6500} = {7CBB6833-AF67-4BC5-8451-6A2DAD69B1B2}
+		{E2D34E54-CB02-4B9A-B599-B7D82FC431F5} = {7CBB6833-AF67-4BC5-8451-6A2DAD69B1B2}
 	EndGlobalSection
 EndGlobal
