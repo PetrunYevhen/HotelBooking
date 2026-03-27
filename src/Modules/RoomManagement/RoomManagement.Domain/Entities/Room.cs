@@ -29,13 +29,20 @@ public class Room : Entity
         PricePerNight = price;
     }
 
-    public void MarkAsBooked()
+    public void Reserved()
+    {
+        Status = RoomStatus.Reserved;
+    }
+
+    public void  Booked()
     {
         Status = RoomStatus.Booked;
     }
 
-    public void MarkAsFree()
+    public void Free()
     {
         Status = RoomStatus.Free;
     }
+    
+    
 }

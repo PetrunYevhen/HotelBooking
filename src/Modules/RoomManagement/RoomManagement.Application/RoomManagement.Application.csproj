@@ -13,8 +13,13 @@
       <ProjectReference Include="..\..\..\SharedKernel\SharedKernel.csproj" />
       <ProjectReference Include="..\..\BookingManagement\Booking.IntegrationEvents\Booking.IntegrationEvents.csproj" />
       <ProjectReference Include="..\..\HotelManagement\HotelManagement.IntegrationEvent\HotelManagement.IntegrationEvent.csproj" />
+      <ProjectReference Include="..\..\PaymentManagement\PaymentManagement.IntegrationEvents\PaymentManagement.IntegrationEvents.csproj" />
       <ProjectReference Include="..\RoomManagement.Domain\RoomManagement.Domain.csproj" />
       <ProjectReference Include="..\RoomManagement.IntegrationEvent\RoomManagement.IntegrationEvent.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="EventHandlers\" />
     </ItemGroup>
 
 </Project>

@@ -24,7 +24,7 @@ public class BookingCanceledIntegrationEventHandler : INotificationHandler<Booki
         if(room == null) 
             throw new InvalidOperationException($"Room with id {roomId} not found");
         
-        room.MarkAsFree();
+        room.Free();
         
         await _roomWriteRepository.UpdateAsync(room, cancellationToken);
     }

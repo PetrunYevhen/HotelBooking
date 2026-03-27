@@ -18,12 +18,13 @@ public static class EventBusStartup
         
         SubscribeToIntegrationEvent<BookingCreatedIntegrationEvent>(eventBus, logger);
         SubscribeToIntegrationEvent<BookingCanceledIntegrationEvent>(eventBus, logger);
+        SubscribeToIntegrationEvent<BookingConfirmedIntegrationEvent>(eventBus, logger);
     }
 
     private static void SubscribeToIntegrationEvent<T>(IEventBus eventBus, ILogger logger)
         where T : IntegrationEvent
     {
-        logger.Information("Subscribe to {@IntegrationEvent}", typeof(T).FullName);
+        logger.Information("Module 'RoomManagement' Subscribe to {@IntegrationEvent}", typeof(T).FullName);
         eventBus.Subscribe(
             new IntegrationEventGenericHandler<T>());
     }
