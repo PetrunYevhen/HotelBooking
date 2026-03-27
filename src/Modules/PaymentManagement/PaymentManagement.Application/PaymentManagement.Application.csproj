@@ -4,7 +4,13 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>PaymantManagement.Application</RootNamespace>
+        <RootNamespace>PaymentManagement.Application</RootNamespace>
     </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\BookingManagement\Booking.IntegrationEvents\Booking.IntegrationEvents.csproj" />
+      <ProjectReference Include="..\PaymentManagement.Domain\PaymentManagement.Domain.csproj" />
+        <ProjectReference Include="..\PaymentManagement.IntegrationEvents\PaymentManagement.IntegrationEvents.csproj"/>
+    </ItemGroup>
 
 </Project>

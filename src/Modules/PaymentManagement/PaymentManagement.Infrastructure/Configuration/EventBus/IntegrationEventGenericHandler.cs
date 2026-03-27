@@ -5,7 +5,7 @@ using Infrastructure.EventBus;
 using Infrastructure.Serialization;
 using Newtonsoft.Json;
 
-namespace PaymantManagement.Infrastructure.Configuration.EventBus;
+namespace PaymentManagement.Infrastructure.Configuration.EventBus;
 
 public class IntegrationEventGenericHandler<T> : IIntegrationEventHandler<T>
     where T : IntegrationEvent
@@ -22,8 +22,10 @@ public class IntegrationEventGenericHandler<T> : IIntegrationEventHandler<T>
                     ContractResolver = new AllPropertiesContractResolver()
                 });
 
-                var sql = "INSERT INTO [meetings].[InboxMessages] (Id, OccurredOn, Type, Data) " +
-                          "VALUES (@Id, @OccurredOn, @Type, @Data)";
+                var sql = @"
+                        INSERT INTO ""PaymentManagement"".""InboxMessages"" (""Id"", ""OccurredOn"", ""Type"", ""Data"")
+                        VALUES (@Id, @OccurredOn, @Type, @Data::jsonb)
+                        ON CONFLICT (""Id"") DO NOTHING";
 
                 await connection.ExecuteScalarAsync(sql, new
                 {

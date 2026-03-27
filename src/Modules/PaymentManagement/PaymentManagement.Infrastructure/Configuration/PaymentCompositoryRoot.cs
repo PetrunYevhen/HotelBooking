@@ -1,7 +1,7 @@
 ﻿
 using Autofac;
 
-namespace PaymantManagement.Infrastructure.Configuration;
+namespace PaymentManagement.Infrastructure.Configuration;
 
 internal static class PaymentCompositoryRoot
 {

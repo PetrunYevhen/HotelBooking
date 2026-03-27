@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace PaymantManagement.Application.Contracts;
+namespace PaymentManagement.Application.Contracts;
 
 public interface IQuery<out TResult> : IRequest<TResult>
 {

@@ -1,4 +1,4 @@
-﻿namespace PaymantManagement.Application.Contracts;
+﻿namespace PaymentManagement.Application.Contracts;
 
 public abstract class QueryBase<TResult> : IQuery<TResult>
 {

@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using Infrastructure.EventBus;
 
-namespace PaymantManagement.Infrastructure.Configuration.EventBus;
+namespace PaymentManagement.Infrastructure.Configuration.EventBus;
 
 internal class EventBusModule : Module
 {
@@ -22,7 +22,7 @@ internal class EventBusModule : Module
         {
             builder.RegisterType<InMemoryEventBusClient>()
                 .As<IEventBus>()
-                .Named<IEventBus>("HotelManagementEventBus")
+                .Named<IEventBus>("PaymentManagementEventBus")
                 .SingleInstance();
         }
     }

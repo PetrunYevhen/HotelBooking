@@ -1,4 +1,4 @@
-namespace PaymentManagement.Domain.Entities.Enums;
+namespace PaymentManagement.Domain.Enums;
 
 public enum PaymentStatus
 {

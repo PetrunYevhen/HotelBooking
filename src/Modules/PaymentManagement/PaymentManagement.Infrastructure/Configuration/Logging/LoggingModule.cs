@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using Serilog;
 
-namespace PaymantManagement.Infrastructure.Configuration.Logging;
+namespace PaymentManagement.Infrastructure.Configuration.Logging;
 
 internal class LoggingModule : Module
 {

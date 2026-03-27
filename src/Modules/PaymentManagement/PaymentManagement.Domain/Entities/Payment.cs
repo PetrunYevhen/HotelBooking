@@ -1,5 +1,6 @@
 using BuildingBlock.Domain;
-using PaymentManagement.Domain.Entities.Enums;
+using PaymentManagement.Domain.Entities.Events;
+using PaymentManagement.Domain.Enums;
 
 namespace PaymentManagement.Domain.Entities;
 
@@ -11,7 +12,7 @@ public class Payment :  Entity,  IAggregateRoot
     
     public decimal Amount { get; set; }
     public string Currency { get; set; }
-    public string FailureReason { get; set; }
+    public string? FailureReason { get; set; } = string.Empty;
      
     public DateTime CreatedAt { get; set; }
     public DateTime CompletedAt { get; set; }
@@ -30,17 +31,32 @@ public class Payment :  Entity,  IAggregateRoot
         Status = PaymentStatus.Pending;
         CreatedAt = DateTime.UtcNow;
     }
+
+    public static Payment CreatePayment(PaymentId paymentId, Guid bookingId, decimal amount, string currency)
+    {
+        var payment = new Payment(paymentId, bookingId, amount, currency);
+        
+        payment.AddDomainEvent(new PaymentCreatedDomainEvent(paymentId, bookingId, amount, currency));
+        
+        return payment; 
+    }
     
-    public void Complete(Guid externalTransactionId)
+    public void Complete(Guid paymentId)
     {
         if (Status != PaymentStatus.Pending)
             throw new InvalidOperationException("Only pending payments can be completed.");
 
         Status = PaymentStatus.Completed;
-        ExternalTransactionId = externalTransactionId;
+        // ExternalTransactionId = externalTransactionId;
         CompletedAt = DateTime.UtcNow;
 
-        // Тут ми потім додамо: AddDomainEvent(new PaymentCompletedDomainEvent(Id, BookingId));
+        AddDomainEvent(new PaymentCompletedDomainEvent(
+            paymentId,
+            this.BookingId,
+            this.Amount,
+            this.Currency,
+            this.CompletedAt
+            ));
     }
 
     public void Fail(string reason)

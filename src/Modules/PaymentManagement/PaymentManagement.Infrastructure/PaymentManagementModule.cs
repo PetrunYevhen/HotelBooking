@@ -1,11 +1,11 @@
 using Autofac;
 using MediatR;
-using PaymantManagement.Application.Contracts;
-using PaymantManagement.Infrastructure.Configuration;
-using PaymantManagement.Infrastructure.Configuration.Processing;
-using ICommand = PaymantManagement.Application.Contracts.ICommand;
+using PaymentManagement.Application.Contracts;
+using PaymentManagement.Infrastructure.Configuration;
+using PaymentManagement.Infrastructure.Configuration.Processing;
+using ICommand = PaymentManagement.Application.Contracts.ICommand;
 
-namespace PaymantManagement.Infrastructure;
+namespace PaymentManagement.Infrastructure;
 
 public class PaymentManagementModule : IPaymentManagementModule
 {
@@ -19,6 +19,7 @@ public class PaymentManagementModule : IPaymentManagementModule
         await CommandsExecutor.Execute(command);
     }
     
+
     public Task<TResult> ExecuteQueryAsync<TResult>(IQuery<TResult> query)
     {
         using (var scope = PaymentCompositoryRoot.BeginLifetimeScope())

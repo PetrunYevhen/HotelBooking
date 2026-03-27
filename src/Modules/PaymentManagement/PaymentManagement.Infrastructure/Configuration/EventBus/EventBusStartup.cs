@@ -1,12 +1,13 @@
 ﻿using Autofac;
+using BookingManagement.IntegrationEvents;
 using Infrastructure.EventBus;
 using Serilog;
 
-namespace PaymantManagement.Infrastructure.Configuration.EventBus;
+namespace PaymentManagement.Infrastructure.Configuration.EventBus;
 
 public static class EventBusStartup
 {
-    private static ILifetimeScope _scope; // живе весь час
+    private static ILifetimeScope _scope; 
 
     public static void Initialize(ILogger logger)
     {
@@ -15,12 +16,8 @@ public static class EventBusStartup
     
     private static void SubscribeToIntegrationEvents(ILogger logger)
     {
-        // var eventBus = HotelCompositoryRoot.BeginLifetimeScope().Resolve<IEventBus>();
-        // SubscribeToIntegrationEvent<MinPriceCalculatedIntegrationEvent>(eventBus, logger);
-        
-         var scope = PaymentCompositoryRoot.BeginLifetimeScope();
-        
-
+         var eventBus = PaymentCompositoryRoot.BeginLifetimeScope().Resolve<IEventBus>();
+         SubscribeToIntegrationEvent<BookingCreatedIntegrationEvent>(eventBus, logger);
     }
 
     private static void SubscribeToIntegrationEvent<T>(IEventBus eventBus, ILogger logger)

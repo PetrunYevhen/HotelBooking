@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
-using PaymantManagement.Application.Contracts;
+using PaymentManagement.Application.Contracts;
 
-namespace PaymantManagement.Infrastructure.Configuration;
+namespace PaymentManagement.Infrastructure.Configuration;
 
 public class Assemblies
 {

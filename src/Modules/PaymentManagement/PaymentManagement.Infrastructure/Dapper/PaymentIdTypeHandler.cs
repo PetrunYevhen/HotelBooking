@@ -2,7 +2,7 @@ using System.Data;
 using Dapper;
 using PaymentManagement.Domain.Entities;
 
-namespace PaymantManagement.Infrastructure.Configuration.Dapper;
+namespace PaymentManagement.Infrastructure.Dapper;
 
 public class PaymentIdTypeHandler  : SqlMapper.TypeHandler<PaymentId>
 {

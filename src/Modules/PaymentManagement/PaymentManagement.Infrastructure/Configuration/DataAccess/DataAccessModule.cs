@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Logging;
 
-namespace PaymantManagement.Infrastructure.Configuration.DataAccess;
+namespace PaymentManagement.Infrastructure.Configuration.DataAccess;
 
 public class DataAccessModule : Module
 {

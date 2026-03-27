@@ -1,16 +1,21 @@
 ﻿using Autofac;
 using Dapper;
+using Infrastructure;
 using Infrastructure.EventBus;
 using Microsoft.Extensions.Configuration;
-using PaymantManagement.Infrastructure.Configuration.Dapper;
-using PaymantManagement.Infrastructure.Configuration.DataAccess;
-using PaymantManagement.Infrastructure.Configuration.EventBus;
-using PaymantManagement.Infrastructure.Configuration.Logging;
-using PaymantManagement.Infrastructure.Configuration.Mediation;
+using PaymentManagement.Application.Events;
+using PaymentManagement.Infrastructure.Configuration.DataAccess;
+using PaymentManagement.Infrastructure.Configuration.EventBus;
+using PaymentManagement.Infrastructure.Configuration.Logging;
+using PaymentManagement.Infrastructure.Configuration.Mediation;
+using PaymentManagement.Infrastructure.Configuration.Processing;
+using PaymentManagement.Infrastructure.Configuration.Processing.Outbox;
+using PaymentManagement.Infrastructure.Configuration.Quartz;
+using PaymentManagement.Infrastructure.Dapper;
 using Serilog.Extensions.Logging;
 using ILogger = Serilog.ILogger;
 
-namespace PaymantManagement.Infrastructure.Configuration;
+namespace PaymentManagement.Infrastructure.Configuration;
 
 public class PaymentStartup
 {
@@ -20,7 +25,8 @@ public class PaymentStartup
    public static void Initialize(
        string connectionString,
        ILogger logger,
-       IEventBus eventBus)
+       IEventBus eventBus,
+       long? internalProcessingPoolingInterval = null)
    {
        SqlMapper.AddTypeHandler(new PaymentIdTypeHandler());
        
@@ -29,6 +35,7 @@ public class PaymentStartup
        ConfigureCompositionRoot(connectionString, moduleLogger, eventBus);
        
        EventBusStartup.Initialize(moduleLogger);
+       QuartzStartup.Initialize(moduleLogger, internalProcessingPoolingInterval);
    }
 
    private static void ConfigureCompositionRoot(
@@ -44,6 +51,14 @@ public class PaymentStartup
        containerBuilder.RegisterModule(new DataAccessModule(connectionString, loggerFactory));
        containerBuilder.RegisterModule(new MediatorModule());
        containerBuilder.RegisterModule(new EventBusModule(eventBus));
+       containerBuilder.RegisterModule(new ProcessingModule());
+       containerBuilder.RegisterModule(new QuartzModule());
+       
+       var domainNotificationsMap = new BiDictionary<string, Type>();
+       domainNotificationsMap.Add("PaymentCreatedNotification", typeof(PaymentCreatedNotification));
+       domainNotificationsMap.Add("PaymentCompletedNotification", typeof(PaymentCompletedNotification));
+       
+       containerBuilder.RegisterModule(new OutboxModule(domainNotificationsMap));
        
        _container = containerBuilder.Build();
        

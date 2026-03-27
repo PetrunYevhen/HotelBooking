@@ -2,7 +2,7 @@
 using System.Reflection;
 using Autofac.Core.Activators.Reflection;
 
-namespace PaymantManagement.Infrastructure.Configuration;
+namespace PaymentManagement.Infrastructure.Configuration;
 
 public class AllConstructorFinder : IConstructorFinder
 {

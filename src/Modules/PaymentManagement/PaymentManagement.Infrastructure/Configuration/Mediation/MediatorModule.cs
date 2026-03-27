@@ -3,7 +3,7 @@ using Autofac;
 using Infrastructure;
 using MediatR;
 
-namespace PaymantManagement.Infrastructure.Configuration.Mediation;
+namespace PaymentManagement.Infrastructure.Configuration.Mediation;
 
 public class MediatorModule : Autofac.Module
 {
@@ -22,6 +22,7 @@ public class MediatorModule : Autofac.Module
         {
             typeof(IRequestHandler<,>),
             typeof(IRequestHandler<>),
+            typeof(INotificationHandler<>),
         };
         
         foreach (var mediatorOpenType in mediatorOpenTypes)
