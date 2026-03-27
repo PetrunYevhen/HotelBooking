@@ -12,6 +12,18 @@
         <ProjectReference Include="..\..\Common\BuildingBlocks\Infrastructure\Infrastructure.csproj" />
 
         
+        <ProjectReference Include="..\..\Modules\PaymentManagement\PaymentManagement.Application\PaymentManagement.Application.csproj" />
+
+        
+        <ProjectReference Include="..\..\Modules\PaymentManagement\PaymentManagement.Domain\PaymentManagement.Domain.csproj" />
+
+        
+        <ProjectReference Include="..\..\Modules\PaymentManagement\PaymentManagement.Infrastructure\PaymentManagement.Infrastructure.csproj" />
+
+        
+        <ProjectReference Include="..\..\Modules\PaymentManagement\PaymentManagement.IntegrationEvents\PaymentManagement.IntegrationEvents.csproj" />
+
+        
         <ProjectReference Include="..\..\SharedKernel\SharedKernel.csproj" />
         <ProjectReference Include="..\..\Modules\BookingManagement\Booking.Application\Booking.Application.csproj" />
         <ProjectReference Include="..\..\Modules\BookingManagement\Booking.Domain\Booking.Domain.csproj" />

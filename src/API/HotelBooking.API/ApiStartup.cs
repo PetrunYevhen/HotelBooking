@@ -4,9 +4,11 @@ using BookingManagement.Infrastructure.Configurations;
 using Facilities.Infrastructure.Configurations;
 using HotelBooking.API.Modules.BookingManagement;
 using HotelBooking.API.Modules.HotelManagement;
+using HotelBooking.API.Modules.PaymentManagement;
 using HotelBooking.API.Modules.RoomManagement;
 using HotelManagement.Infastructure.Configuration;
 using Infrastructure.Client;
+using PaymentManagement.Infrastructure.Configuration;
 using RoomManagement.Infrastructure.Configuration;
 using Serilog;
 using Serilog.Formatting.Compact;
@@ -40,6 +42,7 @@ public class ApiStartup
         containerBuilder.RegisterModule(new HotelManagementAutofacModule());
         containerBuilder.RegisterModule(new RoomManagementAutofacModule());
         // containerBuilder.RegisterModule(new FacilitiesAutofacModule());
+        containerBuilder.RegisterModule(new PaymentManagementAutofacModule());
     }
     
     public void ConfigureServices(IServiceCollection services)
@@ -119,6 +122,11 @@ public class ApiStartup
             null,
             client);
         FacilitiesStartup.Initialize(
+            GetConnectionString(),
+            _logger,
+            null);
+        
+        PaymentStartup.Initialize(
             GetConnectionString(),
             _logger,
             null);

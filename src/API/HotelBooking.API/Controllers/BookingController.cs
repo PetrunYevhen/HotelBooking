@@ -2,7 +2,6 @@
 using BookingManagement.Application.Command.CreateBooking;
 using BookingManagement.Application.Contracts;
 using BookingManagement.Application.Query.GetBookingById;
-using BookingManagement.Infrastructure.Configurations.Processing.Outbox;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelBooking.API.Controllers;
