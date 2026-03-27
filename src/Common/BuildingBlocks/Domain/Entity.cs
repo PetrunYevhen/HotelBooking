@@ -4,7 +4,7 @@ namespace BuildingBlock.Domain;
 
 public class Entity
 {
-    private List<IDomainEvent> _domainEvents;
+    private List<IDomainEvent> _domainEvents = new();
 
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
     
@@ -12,7 +12,7 @@ public class Entity
     {
         _domainEvents ??= [];
 
-        this._domainEvents.Add(domainEvent);
+        _domainEvents.Add(domainEvent);
     }
     
     public void ClearDomainEvents()

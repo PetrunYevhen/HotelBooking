@@ -1,53 +1,56 @@
-﻿namespace Infrastructure.EventBus;
-
-public sealed class InMemoryEventBus
+﻿namespace Infrastructure.EventBus
 {
-    static InMemoryEventBus() { }
-
-    public static InMemoryEventBus Instance { get; } = new InMemoryEventBus();
-    private readonly IDictionary<string, List<IIntegrationEventHandler>> _handlersDictionary;
-    
-    private InMemoryEventBus()
+    public sealed class InMemoryEventBus
     {
-        _handlersDictionary = new Dictionary<string, List<IIntegrationEventHandler>>();
-    }
-
-    public void Subscribe<T>(IIntegrationEventHandler<T> handler) where T : IntegrationEvent
-    {
-        var eventType = typeof(T).FullName;
-
-        if (eventType != null)
+        static InMemoryEventBus()
         {
-            if (_handlersDictionary.ContainsKey(eventType))
+        }
+
+        private InMemoryEventBus()
+        {
+            _handlersDictionary = new Dictionary<string, List<IIntegrationEventHandler>>();
+        }
+
+        public static InMemoryEventBus Instance { get; } = new InMemoryEventBus();
+
+        private readonly IDictionary<string, List<IIntegrationEventHandler>> _handlersDictionary;
+
+        public void Subscribe<T>(IIntegrationEventHandler<T> handler)
+            where T : IntegrationEvent
+        {
+            var eventType = typeof(T).FullName;
+            if (eventType != null)
             {
-                var handlers = _handlersDictionary[eventType];
-                handlers.Add(handler);
-            }
-            else
-            {
-                _handlersDictionary.Add(eventType, [handler]);
+                if (_handlersDictionary.ContainsKey(eventType))
+                {
+                    var handlers = _handlersDictionary[eventType];
+                    handlers.Add(handler);
+                }
+                else
+                {
+                    _handlersDictionary.Add(eventType, [handler]);
+                }
             }
         }
 
-        _handlersDictionary[eventType].Add(handler);
-    }
-    
-    public async Task Publish<T>(T @event) where T : IntegrationEvent
-    {
-        var eventType = @event.GetType().FullName;
-
-        if (eventType == null)
+        public async Task Publish<T>(T @event)
+            where T : IntegrationEvent
         {
-            return;
-        }
+            var eventType = @event.GetType().FullName;
 
-        List<IIntegrationEventHandler> integrationEventHandlers = _handlersDictionary[eventType];
-
-        foreach (var integrationEventHandler in integrationEventHandlers)
-        {
-            if (integrationEventHandler is IIntegrationEventHandler<T> handler)
+            if (eventType == null)
             {
-                await handler.Handle(@event);
+                return;
+            }
+
+            List<IIntegrationEventHandler> integrationEventHandlers = _handlersDictionary[eventType];
+
+            foreach (var integrationEventHandler in integrationEventHandlers)
+            {
+                if (integrationEventHandler is IIntegrationEventHandler<T> handler)
+                {
+                    await handler.Handle(@event);
+                }
             }
         }
     }

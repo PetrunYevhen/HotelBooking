@@ -27,7 +27,7 @@ public class DomainEventAccessor : IDomainEventAccessor
 
     public void ClearAllDomainEvents()
     {
-        var domainEntities = this._dbContext.ChangeTracker
+        var domainEntities = _dbContext.ChangeTracker
             .Entries<Entity>()
             .Where(x => x.Entity.DomainEvents != null && x.Entity.DomainEvents.Any()).ToList();
 

@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using System.Reflection;
+using Serilog;
 
 namespace Infrastructure.EventBus;
 
@@ -18,7 +19,10 @@ public class InMemoryEventBusClient : IEventBus
 
     public async Task Publish<T>(T @event, CancellationToken cancellationToken) where T : IntegrationEvent
     {
-        _logger.Information("Publishing {Event}", @event.GetType().FullName);
+    
+        var sourceModule = @event.GetType().Assembly.GetName().Name?.Split('.').FirstOrDefault() ?? "Unknown";
+        _logger.Information("[{SourceModule}] Publishing {Event}", sourceModule, @event.GetType().FullName);
+    
         await InMemoryEventBus.Instance.Publish(@event);
     }
 
