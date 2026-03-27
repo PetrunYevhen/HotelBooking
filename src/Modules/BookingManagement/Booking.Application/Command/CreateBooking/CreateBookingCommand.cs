@@ -8,18 +8,15 @@ public class CreateBookingCommand : CommandBase<Guid>
     public Guid HotelId { get; init; }
     public Guid RoomId { get; init; }
     public int UserId { get; init; } = 1;
-    public decimal TotalPrice { get; init; }
     
     public DateTime CheckInDate { get; init; }
     public DateTime CheckOutDate { get; init; }
-    public BookingStatus Status { get; init; }
 
-    public CreateBookingCommand(Guid hotelId, Guid roomId, int userId, decimal totalPrice, DateTime checkInDate, DateTime checkOutDate)
+    public CreateBookingCommand(Guid hotelId, Guid roomId, int userId, DateTime checkInDate, DateTime checkOutDate)
     {
         HotelId = hotelId;
         RoomId = roomId;
         UserId = userId;
-        TotalPrice = totalPrice;
         CheckInDate = checkInDate;
         CheckOutDate = checkOutDate;
         

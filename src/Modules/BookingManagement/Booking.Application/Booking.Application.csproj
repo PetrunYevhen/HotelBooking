@@ -10,14 +10,11 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\Common\BuildingBlocks\Domain\Domain.csproj" />
       <ProjectReference Include="..\..\..\Common\BuildingBlocks\Infrastructure\Infrastructure.csproj" />
+      <ProjectReference Include="..\..\PaymentManagement\PaymentManagement.IntegrationEvents\PaymentManagement.IntegrationEvents.csproj" />
       <ProjectReference Include="..\..\RoomManagement\RoomManagement.Application\RoomManagement.Application.csproj" />
       <ProjectReference Include="..\..\RoomManagement\RoomManagement.IntegrationEvent\RoomManagement.IntegrationEvent.csproj" />
       <ProjectReference Include="..\Booking.Domain\Booking.Domain.csproj" />
       <ProjectReference Include="..\Booking.IntegrationEvents\Booking.IntegrationEvents.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="EventHandler\" />
     </ItemGroup>
     
 

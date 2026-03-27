@@ -1,16 +1,12 @@
 ﻿using Autofac;
 using Infrastructure.EventBus;
-using Microsoft.Extensions.Configuration;
+using PaymentManagement.IntegrationEvents;
 using Serilog;
 
 namespace BookingManagement.Infrastructure.Configurations.EventBus;
 
-public class EventBusStartup : Module
+public static class EventBusStartup
 {
-    private readonly IContainer _container;
-    private readonly IConfiguration _configuration;
-    
-    
     public static void Initialize(ILogger logger)
     {
         SubscribeToIntegrationEvents(logger);
@@ -18,14 +14,14 @@ public class EventBusStartup : Module
 
     private static void SubscribeToIntegrationEvents(ILogger logger)
     {
-        var scope = BookingCompositoryRoot.BeginLifetimeScope();
-        
+        var eventBus = BookingCompositoryRoot.BeginLifetimeScope().Resolve<IEventBus>();
+        SubscribeToIntegrationEvent<PaymentCompletedIntegrationEvent>(eventBus, logger);
     }
     
     private static void SubscribeToIntegrationEvent<T>(IEventBus eventBus, ILogger logger)
         where T : IntegrationEvent
     {
-        logger.Information("Subscribe to {@IntegrationEvent}", typeof(T).FullName);
+        logger.Information("Booking subscribe to {@IntegrationEvent}", typeof(T).FullName);
         eventBus.Subscribe(
             new IntegrationEventGenericHandler<T>());
     }

@@ -24,8 +24,7 @@ private readonly INpgsqlConnectionFactory _npgsqlConnectionFactory;
         return reservations.ToList();
     }
     
-    public async  Task<Booking> GetByIdAsync
-(BookingId bookingId, CancellationToken cancellationToken)
+    public async  Task<Booking> GetByIdAsync(BookingId bookingId, CancellationToken cancellationToken)
     {
         using var connection = _npgsqlConnectionFactory.CreateConnection();
 

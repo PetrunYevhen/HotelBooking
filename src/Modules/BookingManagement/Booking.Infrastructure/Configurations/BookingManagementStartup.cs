@@ -57,6 +57,7 @@ public class BookingManagementStartup
         var domainNotificationMap = new BiDictionary<string, Type>();
         domainNotificationMap.Add("BookingCreatedNotification", typeof(BookingCreatedNotification));
         domainNotificationMap.Add("BookingCanceledNotification", typeof(BookingCanceledNotification));
+        domainNotificationMap.Add("BookingConfirmedNotification", typeof(BookingConfirmedNotification));
         
         containerBuilder.RegisterModule(new OutboxModule(domainNotificationMap));
         containerBuilder.RegisterModule(new QuartzModule());

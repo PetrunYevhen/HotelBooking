@@ -17,9 +17,11 @@ public class BookingCreatedNotificationHandler : INotificationHandler<BookingCre
     public async Task Handle(BookingCreatedNotification notification, CancellationToken cancellationToken)
     {
         await _eventBus.Publish(new BookingCreatedIntegrationEvent(
-            notification.DomainEvent.Id,
+            notification.DomainEvent.BookingId.Value,
             notification.DomainEvent.RoomId,
             notification.DomainEvent.CheckInDate,
-            notification.DomainEvent.CheckOutDate), cancellationToken);
+            notification.DomainEvent.CheckOutDate.Date,
+            notification.DomainEvent.TotalPrice, 
+            notification.DomainEvent.Currency), cancellationToken);
     }
 }

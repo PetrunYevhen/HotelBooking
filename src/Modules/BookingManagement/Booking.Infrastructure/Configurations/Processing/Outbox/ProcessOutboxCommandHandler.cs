@@ -26,7 +26,7 @@ public class ProcessOutboxCommandHandler : IRequestHandler<ProcessOutboxCommand>
 
     public async Task Handle(ProcessOutboxCommand command, CancellationToken cancellationToken)
     {
-        var connection = _npgsqlConnectionFactory.CreateConnection();
+        using var connection = _npgsqlConnectionFactory.CreateConnection();
 
         const string sql = $"""
                             SELECT 
@@ -55,7 +55,7 @@ public class ProcessOutboxCommandHandler : IRequestHandler<ProcessOutboxCommand>
                 
                 using (LogContext.Push(new OutboxMessageContextEnricher(@event)))
                 {
-                    await this._mediator.Publish(@event, cancellationToken);
+                    await _mediator.Publish(@event, cancellationToken);
 
                     await connection.ExecuteAsync(sqlUpdateProcessedDate, new
                     {

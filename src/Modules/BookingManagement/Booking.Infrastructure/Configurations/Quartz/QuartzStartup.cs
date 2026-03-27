@@ -1,4 +1,5 @@
 using System.Collections.Specialized;
+using BookingManagement.Infrastructure.Configurations.Processing.Inbox;
 using BookingManagement.Infrastructure.Configurations.Processing.Outbox;
 using Quartz;
 using Quartz.Impl;
@@ -21,7 +22,9 @@ internal static class QuartzStartup
         _scheduler = schedulerFactory.GetScheduler().GetAwaiter().GetResult();
 
         _scheduler.Start().GetAwaiter().GetResult();
+
         
+        //Outbox
         var processOutboxJob = JobBuilder.Create<ProcessOutboxJob>().Build();
 
         ITrigger trigger;
@@ -50,6 +53,32 @@ internal static class QuartzStartup
             .ScheduleJob(processOutboxJob, trigger)
             .GetAwaiter().GetResult();
 
+
+        //Inbox
+        var processInboxJob = JobBuilder.Create<ProcessInboxJob>().Build();
+        if (internalProcessingPoolingInterval.HasValue)
+        {
+            trigger =
+                TriggerBuilder
+                    .Create()
+                    .StartNow()
+                    .WithSimpleSchedule(x =>
+                        x.WithInterval(TimeSpan.FromMilliseconds(internalProcessingPoolingInterval.Value))
+                            .RepeatForever())
+                    .Build();
+        }
+        else
+        {
+            trigger =
+                TriggerBuilder
+                    .Create()
+                    .StartNow()
+                    .WithCronSchedule("0/2 * * ? * *")
+                    .Build();
+        }
+
+        _scheduler
+            .ScheduleJob(processInboxJob, trigger)
+            .GetAwaiter().GetResult();
     }
-    
 }

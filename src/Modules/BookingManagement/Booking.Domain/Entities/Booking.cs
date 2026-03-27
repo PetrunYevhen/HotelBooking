@@ -10,6 +10,7 @@ public class Booking : Entity
     public Guid HotelId { get; set; }
     public Guid RoomId { get; set; }
     public decimal TotalPrice { get; set; }
+    public string Currency { get; set; }
     public DateTime CheckInDate { get; set; }
     public DateTime CheckOutDate { get; set; }
     public DateTime CreatedAt { get; set; }
@@ -22,6 +23,7 @@ public class Booking : Entity
         Guid hotelId,
         Guid roomId,
         decimal totalPrice,
+        string currency,
         DateTime checkInDate,
         DateTime checkOutDate,
         DateTime createdAt,
@@ -31,6 +33,7 @@ public class Booking : Entity
         HotelId = hotelId;
         RoomId = roomId;
         TotalPrice = totalPrice;
+        Currency = currency;
         CheckInDate = checkInDate.Date;
         CheckOutDate = checkOutDate.Date;
         CreatedAt = DateTime.UtcNow;
@@ -42,7 +45,8 @@ public class Booking : Entity
         Guid roomId,
         DateTime checkIn,
         DateTime checkOut,
-        decimal totalPrice)
+        decimal totalPrice,
+        string currency)
     {
         var bookingId = new BookingId(Guid.NewGuid()); 
     
@@ -51,6 +55,7 @@ public class Booking : Entity
             hotelId,
             roomId, 
             totalPrice,
+            currency,
             checkIn,
             checkOut,
             DateTime.UtcNow, 
@@ -62,7 +67,9 @@ public class Booking : Entity
             booking.BookingId,
             booking.RoomId,
             booking.CheckInDate,
-            booking.CheckOutDate
+            booking.CheckOutDate,
+            booking.TotalPrice,
+            booking.Currency
         ));
 
         return booking;
@@ -74,11 +81,22 @@ public class Booking : Entity
         {
             Status = BookingStatus.Confirmed;
         }
+        
+        AddDomainEvent(new BookingConfirmedDomainEvent(
+            BookingId.Value,
+            RoomId,
+            CheckInDate,
+            CheckOutDate));
     }
 
     public void Pending()
     {
         Status = BookingStatus.Pending;
+    }
+
+    public void Confirm()
+    {
+        Status = BookingStatus.Confirmed;
     }
 
     public void Cancel()

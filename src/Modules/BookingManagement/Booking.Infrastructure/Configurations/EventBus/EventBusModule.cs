@@ -16,13 +16,14 @@ public class EventBusModule : Module
     {
         if (_eventBus != null)
         {
-            builder.RegisterInstance(_eventBus);
+            builder.RegisterInstance(_eventBus).SingleInstance();
         }
-        
-        
-        builder.RegisterType<InMemoryEventBusClient>()
-            .As<IEventBus>()
-            .Named<IEventBus>("BookingEventBus")
-            .SingleInstance();
+        else
+        {
+            builder.RegisterType<InMemoryEventBusClient>()
+                .As<IEventBus>()
+                .Named<IEventBus>("BookingEventBus")
+                .SingleInstance();
+        }
     }
 }

@@ -36,7 +36,8 @@ public class CreateBookingCommandHandler : IRequestHandler<CreateBookingCommand,
             request.RoomId, 
             request.CheckInDate, 
             request.CheckOutDate,
-            totalPrice);
+            totalPrice,
+            currency: "UAH");
         
         booking.Pending();
         
