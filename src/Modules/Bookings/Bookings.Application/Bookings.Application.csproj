@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Bookings.Application</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Payments\Payments.IntegrationEvents\Payments.IntegrationEvents.csproj" />
+      <ProjectReference Include="..\Bookings.Domain\Bookings.Domain.csproj" />
+      <ProjectReference Include="..\Bookings.IntegrationEvents\Bookings.IntegrationEvents.csproj" />
+    </ItemGroup>
+    
+
+</Project>

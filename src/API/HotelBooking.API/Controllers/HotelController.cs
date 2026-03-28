@@ -1,7 +1,7 @@
-﻿using HotelManagement.Application.Command.AddHotel;
-using HotelManagement.Application.Contracts;
-using HotelManagement.Application.Query.GetFacilities;
-using HotelManagement.Application.Query.GetHotelDetails;
+﻿using Hotels.Application.Command.AddHotel;
+using Hotels.Application.Contracts;
+using Hotels.Application.Query.GetFacilities;
+using Hotels.Application.Query.GetHotelDetails;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelBooking.API.Controllers;
@@ -11,20 +11,20 @@ namespace HotelBooking.API.Controllers;
 public class HotelController : ControllerBase
 {
     private readonly ILogger<HotelController> _logger;
-    private readonly IHotelManagementModule _hotelManagementModule;
+    private readonly IHotelsModule _hotelManagementModule;
 
     public HotelController(
-        IHotelManagementModule hotelManagementModule, 
+        IHotelsModule hotelManagementModule, 
         ILogger<HotelController> logger)
     {
         _hotelManagementModule = hotelManagementModule;
         _logger = logger;
     }
 
-    [HttpGet("{Id:guid}")]
-    public async Task<IActionResult> GetDetails(Guid Id)
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetDetails(Guid id)
     {
-        var result = await _hotelManagementModule.ExecuteQueryAsync(new GetHotelDetailsQuery(Id));
+        var result = await _hotelManagementModule.ExecuteQueryAsync(new GetHotelDetailsQuery(id));
         return result != null ? Ok(result) : NotFound();
     }
     
@@ -35,10 +35,10 @@ public class HotelController : ControllerBase
     //     return result != null ? Ok(result) : NotFound();
     // }
     
-    [HttpGet("{Id:guid}/facilities")]
-    public async Task<IActionResult> GetFacilities(Guid Id)
+    [HttpGet("{id:guid}/facilities")]
+    public async Task<IActionResult> GetFacilities(Guid id)
     {
-        var result = await _hotelManagementModule.ExecuteQueryAsync(new GetFacilitiesQuery(Id));
+        var result = await _hotelManagementModule.ExecuteQueryAsync(new GetFacilitiesQuery(id));
         return Ok(result);
     }
     

@@ -1,15 +1,15 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using BookingManagement.Infrastructure.Configurations;
+using Bookings.Infrastructure.Configurations;
 using Facilities.Infrastructure.Configurations;
-using HotelBooking.API.Modules.BookingManagement;
-using HotelBooking.API.Modules.HotelManagement;
-using HotelBooking.API.Modules.PaymentManagement;
-using HotelBooking.API.Modules.RoomManagement;
-using HotelManagement.Infastructure.Configuration;
+using HotelBooking.API.Modules.Bookings;
+using HotelBooking.API.Modules.Hotels;
+using HotelBooking.API.Modules.Payments;
+using HotelBooking.API.Modules.Rooms;
+using Hotels.Infastructure.Configuration;
 using Infrastructure.Client;
-using PaymentManagement.Infrastructure.Configuration;
-using RoomManagement.Infrastructure.Configuration;
+using Payments.Infrastructure.Configuration;
+using Rooms.Infrastructure.Configuration;
 using Serilog;
 using Serilog.Formatting.Compact;
 using ILogger = Serilog.ILogger;
@@ -38,8 +38,8 @@ public class ApiStartup
 
     public void ConfigureContainer(ContainerBuilder containerBuilder)
     {
-        containerBuilder.RegisterModule(new BookingManagementAutofacModule());
-        containerBuilder.RegisterModule(new HotelManagementAutofacModule());
+        containerBuilder.RegisterModule(new BookingsAutofacModule());
+        containerBuilder.RegisterModule(new HotelsAutofacModule());
         containerBuilder.RegisterModule(new RoomManagementAutofacModule());
         // containerBuilder.RegisterModule(new FacilitiesAutofacModule());
         containerBuilder.RegisterModule(new PaymentManagementAutofacModule());
@@ -105,7 +105,7 @@ public class ApiStartup
     { 
         var client = container.Resolve<InMemoryModuleClient>();
         
-        BookingManagementStartup.Initialize(
+        BookingsStartup.Initialize(
             GetConnectionString(),
             _logger,
             null,
@@ -116,7 +116,7 @@ public class ApiStartup
             _logger,
             null);
         
-        RoomManagementStartup.Initialize(
+        RoomsStartup.Initialize(
             GetConnectionString(),
             _logger,
             null,
@@ -126,7 +126,7 @@ public class ApiStartup
             _logger,
             null);
         
-        PaymentStartup.Initialize(
+        PaymentsStartup.Initialize(
             GetConnectionString(),
             _logger,
             null);

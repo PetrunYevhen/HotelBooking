@@ -1,8 +1,9 @@
+
 using Microsoft.AspNetCore.Mvc;
-using PaymentManagement.Application.Commands.CompletePayment;
-using PaymentManagement.Application.Contracts;
-using PaymentManagement.Application.Queries.GetPaymentById;
-using PaymentManagement.Domain.Entities;
+using Payments.Application.Commands.CompletePayment;
+using Payments.Application.Contracts;
+using Payments.Application.Queries.GetPaymentById;
+using Payments.Domain.Entities;
 
 namespace HotelBooking.API.Controllers;
 
@@ -10,24 +11,24 @@ namespace HotelBooking.API.Controllers;
 [Route("payment")]
 public class PaymentController : ControllerBase
 {
-    private readonly IPaymentManagementModule _paymentManagementModule;
+    private readonly IPaymentsModule _paymentsModule;
 
-    public PaymentController(IPaymentManagementModule paymentManagementModule)
+    public PaymentController(IPaymentsModule paymentManagementModule)
     {
-        _paymentManagementModule = paymentManagementModule;
+        _paymentsModule = paymentManagementModule;
     }
 
     [HttpGet("{paymentId:guid}")]
     public async Task<ActionResult<Payment>> GetAsync(Guid paymentId)
     {
-        var result = await _paymentManagementModule.ExecuteQueryAsync(new GetByIdQuery(paymentId));
+        var result = await _paymentsModule.ExecuteQueryAsync(new GetByIdQuery(paymentId));
         return Ok(result);
     }
 
     [HttpPost("{paymentId:guid}/complete")]
     public async Task<IActionResult> CompletePayment(Guid paymentId)
     {
-        await _paymentManagementModule.ExecuteCommandAsync(new CompletePaymentCommand(paymentId));
+        await _paymentsModule.ExecuteCommandAsync(new CompletePaymentCommand(paymentId));
         return Ok(); 
     }
 }

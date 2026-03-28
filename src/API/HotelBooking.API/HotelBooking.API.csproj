@@ -7,37 +7,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-
-        
-        <ProjectReference Include="..\..\Common\BuildingBlocks\Infrastructure\Infrastructure.csproj" />
-
-        
-        <ProjectReference Include="..\..\Modules\PaymentManagement\PaymentManagement.Application\PaymentManagement.Application.csproj" />
-
-        
-        <ProjectReference Include="..\..\Modules\PaymentManagement\PaymentManagement.Domain\PaymentManagement.Domain.csproj" />
-
-        
-        <ProjectReference Include="..\..\Modules\PaymentManagement\PaymentManagement.Infrastructure\PaymentManagement.Infrastructure.csproj" />
-
-        
-        <ProjectReference Include="..\..\Modules\PaymentManagement\PaymentManagement.IntegrationEvents\PaymentManagement.IntegrationEvents.csproj" />
-
-        
-        <ProjectReference Include="..\..\SharedKernel\SharedKernel.csproj" />
-        <ProjectReference Include="..\..\Modules\BookingManagement\Booking.Application\Booking.Application.csproj" />
-        <ProjectReference Include="..\..\Modules\BookingManagement\Booking.Domain\Booking.Domain.csproj" />
-        <ProjectReference Include="..\..\Modules\BookingManagement\Booking.Infrastructure\Booking.Infrastructure.csproj" />
-          <ProjectReference Include="..\..\Modules\Facilities\Facilities.Infrastructure\Facilities.Infrastructure.csproj" />
-          <ProjectReference Include="..\..\Modules\HotelManagement\HotelManagement.Application\HotelManagement.Application.csproj" />
-          <ProjectReference Include="..\..\Modules\HotelManagement\HotelManagement.Infrastructure\HotelManagement.Infrastructure.csproj" />
-          <ProjectReference Include="..\..\Modules\RoomManagement\RoomManagement.Application\RoomManagement.Application.csproj" />
-          <ProjectReference Include="..\..\Modules\RoomManagement\RoomManagement.Domain\RoomManagement.Domain.csproj" />
-          <ProjectReference Include="..\..\Modules\RoomManagement\RoomManagement.Infrastructure\RoomManagement.Infrastructure.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Composition\Room\" />
+      <ProjectReference Include="..\..\Modules\Bookings\Bookings.Application\Bookings.Application.csproj" />
+      <ProjectReference Include="..\..\Modules\Bookings\Bookings.Infrastructure\Bookings.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\Modules\Facilities\Facilities.Application\Facilities.Application.csproj" />
+      <ProjectReference Include="..\..\Modules\Facilities\Facilities.Infrastructure\Facilities.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\Modules\Hotels\Hotels.Application\Hotels.Application.csproj" />
+      <ProjectReference Include="..\..\Modules\Hotels\Hotels.Infrastructure\Hotels.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\Modules\Payments\Payments.Application\Payments.Application.csproj" />
+      <ProjectReference Include="..\..\Modules\Payments\Payments.Infrastructure\Payments.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\Modules\Rooms\Rooms.Application\Rooms.Application.csproj" />
+      <ProjectReference Include="..\..\Modules\Rooms\Rooms.Infrastructure\Rooms.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

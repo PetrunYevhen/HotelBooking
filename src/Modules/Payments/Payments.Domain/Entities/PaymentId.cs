@@ -1,0 +1,8 @@
+using BuildingBlock.Domain;
+
+namespace Payments.Domain.Entities;
+
+public class PaymentId : TypedIdValueBase
+{
+    public  PaymentId(Guid value) : base(value) {}
+}

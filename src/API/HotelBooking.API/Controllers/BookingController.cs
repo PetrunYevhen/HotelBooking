@@ -1,7 +1,8 @@
-﻿using BookingManagement.Application.Command.CancelBooking;
-using BookingManagement.Application.Command.CreateBooking;
-using BookingManagement.Application.Contracts;
-using BookingManagement.Application.Query.GetBookingById;
+﻿
+using Bookings.Application.Command.CancelBooking;
+using Bookings.Application.Command.CreateBooking;
+using Bookings.Application.Contracts;
+using Bookings.Application.Query.GetBookingById;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelBooking.API.Controllers;
@@ -10,9 +11,9 @@ namespace HotelBooking.API.Controllers;
 [Route("booking")]
 public class BookingController : ControllerBase
 {
-private readonly IBookingManagementModule _bookingManagementModule;
+private readonly IBookingsModule _bookingManagementModule;
     
-    public BookingController( IBookingManagementModule bookingManagementModule)
+    public BookingController( IBookingsModule bookingManagementModule)
     {
         _bookingManagementModule = bookingManagementModule;
     }
