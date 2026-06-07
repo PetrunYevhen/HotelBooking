@@ -1,7 +1,0 @@
-POST http://localhost:5044/hotel/add-room-to-hotel
-Content-Type: application/json
-
-{
-  "Id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "roomId": "1c3b4a5d-6e7f-8901-2345-6789abcdef01"
-}
