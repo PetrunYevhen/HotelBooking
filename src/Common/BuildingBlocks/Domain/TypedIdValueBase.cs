@@ -5,6 +5,7 @@ public abstract class TypedIdValueBase : IEquatable<TypedIdValueBase>
 {
     public Guid Value { get; }
     
+    
     protected TypedIdValueBase() {}
     protected TypedIdValueBase(Guid value)
     {
@@ -13,12 +14,10 @@ public abstract class TypedIdValueBase : IEquatable<TypedIdValueBase>
         Value = value;
     }
     
-    
     public bool Equals(TypedIdValueBase? other)
     {
         return Value == other?.Value;
     }
-    
     public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj))
@@ -27,12 +26,10 @@ public abstract class TypedIdValueBase : IEquatable<TypedIdValueBase>
         }
         return obj is TypedIdValueBase other && Equals(other);
     }
-    
     public override int GetHashCode()
     {
         return Value.GetHashCode();
     }
-    
     public static bool operator ==(TypedIdValueBase? obj1, TypedIdValueBase? obj2)
     {
         if (Equals(obj1, null))

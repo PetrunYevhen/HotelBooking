@@ -1,9 +1,9 @@
 ﻿
 using Autofac;
 
-namespace Hotels.Infastructure.Configuration;
+namespace Accommodations.Infrastructure.Configuration;
 
-internal static class HotelsCompositoryRoot
+internal static class AccommodationsCompositionRoot
 {
     private static IContainer _container;
     internal static void SetContainer(IContainer container)

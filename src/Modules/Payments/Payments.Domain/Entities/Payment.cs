@@ -41,7 +41,7 @@ public class Payment :  Entity,  IAggregateRoot
         return payment; 
     }
     
-    public void Complete(Guid paymentId)
+    public void Complete()
     {
         if (Status != PaymentStatus.Pending)
             throw new InvalidOperationException("Only pending payments can be completed.");
@@ -51,7 +51,7 @@ public class Payment :  Entity,  IAggregateRoot
         CompletedAt = DateTime.UtcNow;
 
         AddDomainEvent(new PaymentCompletedDomainEvent(
-            paymentId,
+            this.PaymentId.Value,
             this.BookingId,
             this.Amount,
             this.Currency,

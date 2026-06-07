@@ -4,8 +4,7 @@ namespace Infrastructure.Data;
 
 public interface INpgsqlConnectionFactory
 {
-    IDbConnection CreateConnection();
-    // IDbConnection GetOpenConnection();
+    IDbConnection CreateNewConnection();
     string GetConnectionString();
 
 }

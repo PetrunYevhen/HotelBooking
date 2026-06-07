@@ -1,9 +1,8 @@
 ﻿using Autofac;
-using Hotels.Domain.RepositoryContract;
 using Infrastructure.EventBus;
 using Serilog;
 
-namespace Hotels.Infastructure.Configuration.EventBus;
+namespace Accommodations.Infrastructure.Configuration.EventBus;
 
 public static class EventBusStartup
 {
@@ -16,7 +15,7 @@ public static class EventBusStartup
     
     private static void SubscribeToIntegrationEvents(ILogger logger)
     {
-        var eventBus = HotelsCompositoryRoot.BeginLifetimeScope().Resolve<IEventBus>();
+        var eventBus = AccommodationsCompositionRoot.BeginLifetimeScope().Resolve<IEventBus>();
     }
 
     private static void SubscribeToIntegrationEvent<T>(IEventBus eventBus, ILogger logger)

@@ -7,16 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Modules\Bookings\Bookings.Application\Bookings.Application.csproj" />
-      <ProjectReference Include="..\..\Modules\Bookings\Bookings.Infrastructure\Bookings.Infrastructure.csproj" />
-      <ProjectReference Include="..\..\Modules\Facilities\Facilities.Application\Facilities.Application.csproj" />
-      <ProjectReference Include="..\..\Modules\Facilities\Facilities.Infrastructure\Facilities.Infrastructure.csproj" />
-      <ProjectReference Include="..\..\Modules\Hotels\Hotels.Application\Hotels.Application.csproj" />
-      <ProjectReference Include="..\..\Modules\Hotels\Hotels.Infrastructure\Hotels.Infrastructure.csproj" />
-      <ProjectReference Include="..\..\Modules\Payments\Payments.Application\Payments.Application.csproj" />
-      <ProjectReference Include="..\..\Modules\Payments\Payments.Infrastructure\Payments.Infrastructure.csproj" />
-      <ProjectReference Include="..\..\Modules\Rooms\Rooms.Application\Rooms.Application.csproj" />
-      <ProjectReference Include="..\..\Modules\Rooms\Rooms.Infrastructure\Rooms.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\Modules\Accommodations\Accommodations.Infrastructure\Accommodations.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\Modules\Bookings\Bookings.Infrastructure\Bookings.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\Modules\Payments\Payments.Infrastructure\Payments.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

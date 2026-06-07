@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using Serilog;
 
-namespace Hotels.Infastructure.Configuration.Logging;
+namespace Accommodations.Infrastructure.Configuration.Logging;
 
 internal class LoggingModule : Module
 {

@@ -1,13 +1,12 @@
-﻿using Accommodations.Domain.Entities.Hotels;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SharedKernel.ValueObjects;
 
-namespace Accommodations.Infrastructure.EntityTypeConfiguration;
+namespace Accommodations.Infrastructure.EntityTypeConfiguration.Hotel;
 
-public class HotelEntityTypeConfiguration : IEntityTypeConfiguration<Hotel>
+public class HotelEntityTypeConfiguration : IEntityTypeConfiguration<Domain.Entities.Hotels.Hotel>
 {
-    public void Configure(EntityTypeBuilder<Hotel> builder)
+    public void Configure(EntityTypeBuilder<Domain.Entities.Hotels.Hotel> builder)
     {
         builder.ToTable("Hotels", "Accommodations");
         builder.HasKey(h => h.HotelId);
@@ -23,17 +22,12 @@ public class HotelEntityTypeConfiguration : IEntityTypeConfiguration<Hotel>
         });
         builder.ComplexProperty<OperatingHours>(h => h.OperatingHours, hours =>
         {
-            hours.Property(p => p.CheckIn).IsRequired().HasColumnName("CheckIn").HasMaxLength(100);
-            hours.Property(p => p.CheckOut).IsRequired().HasColumnName("CheckOut").HasMaxLength(100);
+            hours.Property(p => p.CheckIn).IsRequired().HasColumnName("CheckIn");
+            hours.Property(p => p.CheckOut).IsRequired().HasColumnName("CheckOut");
         });
-        builder.Property(h => h.Rating).IsRequired().HasColumnName("Rating").HasMaxLength(100);
-        builder.ComplexProperty<Money>(h => h.MinRoomPrice, money =>
-        {
-            money.Property(p => p.Amount).IsRequired().HasColumnName("Amount").HasColumnType("decimal(18,2)");
-            money.Property(p => p.Currency).IsRequired().HasColumnName("Currency").HasMaxLength(3);
-        });
-        builder.Property(h => h.Status).HasConversion<string>().IsRequired();
-        
+        builder.Property(h => h.Rating).IsRequired().HasColumnName("Rating");
+        builder.Property(h => h.Status).HasConversion<int>().IsRequired();
+
         builder.OwnsOne(h => h.MinRoomPrice, m =>
         {
             m.Property(p => p.Amount).HasColumnName("MinRoomPrice_Amount").HasColumnType("decimal(18,2)");
@@ -44,10 +38,9 @@ public class HotelEntityTypeConfiguration : IEntityTypeConfiguration<Hotel>
             .WithOne()
             .HasForeignKey(f => f.HotelId)
             .OnDelete(DeleteBehavior.Cascade);
-        
+
         builder.HasIndex(h => h.Status);
         builder.HasIndex(h => h.Rating);
-        builder.HasIndex("City");
     }
     
 }

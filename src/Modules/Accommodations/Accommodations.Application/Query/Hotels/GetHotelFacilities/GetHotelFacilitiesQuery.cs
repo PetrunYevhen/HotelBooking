@@ -1,12 +1,14 @@
 ﻿using Accommodations.Application.Contracts;
+using Accommodations.Application.Query.Shared;
 
-namespace Accommodations.Application.Query.GetHotelFacilities;
+namespace Accommodations.Application.Query.Hotels.GetHotelFacilities;
 
-public class GetHotelFacilitiesQuery : QueryBase<List<Guid>>
+public class GetHotelFacilitiesQuery : QueryBase<List<FacilityDto>>
 {
-    public Guid Id { get; set;}
-    public GetHotelFacilitiesQuery(Guid id)
+    public GetHotelFacilitiesQuery(Guid hotelId)
     {
-        Id = id;
+        HotelId = hotelId;
     }
+
+    public Guid HotelId { get; set; }
 }

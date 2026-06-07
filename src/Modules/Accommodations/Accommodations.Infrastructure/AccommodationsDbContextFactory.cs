@@ -5,24 +5,24 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Hotels.Infastructure;
+namespace Accommodations.Infrastructure;
 
-public class HotelDbContextFactory : IDesignTimeDbContextFactory<HotelDbContext>
+public class AccommodationsDbContextFactory : IDesignTimeDbContextFactory<AccommodationsDbContext>
 {
     private readonly ILoggerFactory _loggerFactory;
 
-    public HotelDbContextFactory()
+    public AccommodationsDbContextFactory()
     {
     }
 
-    public HotelDbContextFactory(ILoggerFactory loggerFactory)
+    public AccommodationsDbContextFactory(ILoggerFactory loggerFactory)
     {
         _loggerFactory = loggerFactory;
     }
 
-    public HotelDbContext CreateDbContext(string[] args)
+    public AccommodationsDbContext CreateDbContext(string[] args)
     {
-        var optionsBuilder = new DbContextOptionsBuilder<HotelDbContext>();
+        var optionsBuilder = new DbContextOptionsBuilder<AccommodationsDbContext>();
         
         
         var basePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"../HotelBooking.API"));
@@ -40,13 +40,9 @@ public class HotelDbContextFactory : IDesignTimeDbContextFactory<HotelDbContext>
         
         optionsBuilder
             .ReplaceService<IValueConverterSelector, StronglyTypedIdValueConverterSelector>()
-            .UseNpgsql(
-            connectionString
-        );
-
-        optionsBuilder.UseNpgsql(connectionString);
+            .UseNpgsql(connectionString);
         
-        return new HotelDbContext(optionsBuilder.Options, _loggerFactory);
+        return new AccommodationsDbContext(optionsBuilder.Options, _loggerFactory);
         
     }
 }

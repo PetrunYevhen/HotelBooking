@@ -10,8 +10,16 @@
     
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\Common\BuildingBlocks\Infrastructure\Infrastructure.csproj" />
       <ProjectReference Include="..\..\..\SharedKernel\SharedKernel.csproj" />
       <ProjectReference Include="..\Accommodations.Domain\Accommodations.Domain.csproj" />
+    </ItemGroup>
+
+    
+
+    <ItemGroup>
+      <Folder Include="Command\Pricing\" />
+      <Folder Include="Query\Pricing\" />
     </ItemGroup>
     
 </Project>

@@ -9,12 +9,11 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\Common\BuildingBlocks\Domain\Domain.csproj" />
+      <ProjectReference Include="..\..\..\SharedKernel\SharedKernel.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Entities\Facilities\Enums\" />
-      <Folder Include="Entities\Hotels\Enums\" />
-      <Folder Include="Entities\Pricing\Enums\" />
+      <Folder Include="Entities\Pricing\Events\" />
     </ItemGroup>
 
 </Project>

@@ -26,7 +26,7 @@ public class ProcessOutboxCommandHandler : IRequestHandler<ProcessOutboxCommand>
 
     public async Task Handle(ProcessOutboxCommand command, CancellationToken cancellationToken)
     {
-        using var connection = _npgsqlConnectionFactory.CreateConnection();
+        using var connection = _npgsqlConnectionFactory.CreateNewConnection();
 
         const string sql = $"""
                             SELECT 

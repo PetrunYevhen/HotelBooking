@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
-using Hotels.Application.Contracts;
+using Accommodations.Application.Contracts;
 
-namespace Hotels.Infastructure.Configuration;
+namespace Accommodations.Infrastructure.Configuration;
 
 public class Assemblies
 {
-    public static readonly Assembly Application = typeof(IHotelsModule).Assembly;
+    public static readonly Assembly Application = typeof(IAccommodationsModule).Assembly;
 }

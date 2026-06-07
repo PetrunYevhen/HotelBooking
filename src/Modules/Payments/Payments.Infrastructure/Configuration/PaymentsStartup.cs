@@ -2,7 +2,6 @@
 using Dapper;
 using Infrastructure;
 using Infrastructure.EventBus;
-using Microsoft.Extensions.Configuration;
 using Payments.Application.Events;
 using Payments.Infrastructure.Configuration.DataAccess;
 using Payments.Infrastructure.Configuration.EventBus;

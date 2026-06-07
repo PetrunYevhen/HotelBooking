@@ -2,7 +2,7 @@
 using System.Reflection;
 using Autofac.Core.Activators.Reflection;
 
-namespace Hotels.Infastructure.Configuration;
+namespace Accommodations.Infrastructure.Configuration;
 
 public class AllConstructorFinder : IConstructorFinder
 {

@@ -1,4 +1,4 @@
-﻿namespace DTO.DTOs.RoomDto;
+﻿namespace SharedKernel.DTOs.RoomDto;
 
 public record RoomDto(
     Guid Id, 

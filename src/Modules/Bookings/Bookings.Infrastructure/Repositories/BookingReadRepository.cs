@@ -16,7 +16,7 @@ private readonly INpgsqlConnectionFactory _npgsqlConnectionFactory;
 
     public async Task<List<Booking>> GetAllReservationsAsync(CancellationToken cancellationToken)
     {
-        using var connection = _npgsqlConnectionFactory.CreateConnection();
+        using var connection = _npgsqlConnectionFactory.CreateNewConnection();
 
         
         const string request = "SELECT * FROM \"BookingManagement\".\"Bookings\""; 
@@ -26,7 +26,7 @@ private readonly INpgsqlConnectionFactory _npgsqlConnectionFactory;
     
     public async  Task<Booking> GetByIdAsync(BookingId bookingId, CancellationToken cancellationToken)
     {
-        using var connection = _npgsqlConnectionFactory.CreateConnection();
+        using var connection = _npgsqlConnectionFactory.CreateNewConnection();
 
         
         const string request = "SELECT * FROM \"BookingManagement\".\"Bookings\" WHERE \"BookingId\" = @BookingId";
@@ -44,7 +44,7 @@ private readonly INpgsqlConnectionFactory _npgsqlConnectionFactory;
 
     public async Task<bool> IsBookedInRangeAsync(Guid roomId, DateTime checkIn, DateTime checkOut, CancellationToken cancellationToken)
     {
-        using var connection = _npgsqlConnectionFactory.CreateConnection();
+        using var connection = _npgsqlConnectionFactory.CreateNewConnection();
         
         const string sql = @"
                             SELECT COUNT(*) 

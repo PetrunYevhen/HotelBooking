@@ -25,7 +25,7 @@ public class CompletePaymentCommandHandler : IRequestHandler<CompletePaymentComm
         if (payment == null)
             throw new InvalidOperationException($"Payment {request.PaymentId} not found.");
 
-        payment.Complete(request.PaymentId);
+        payment.Complete();
 
         
         await _paymentWriteRepository.UpdateAsync(payment, cancellationToken);

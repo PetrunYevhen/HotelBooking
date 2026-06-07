@@ -1,13 +1,13 @@
-﻿using Autofac;
-using Hotels.Application.Contracts;
-using Hotels.Infastructure.Configuration;
-using Hotels.Infastructure.Configuration.Processing;
+﻿using Accommodations.Application.Contracts;
+using Accommodations.Infrastructure.Configuration;
+using Accommodations.Infrastructure.Configuration.Processing;
+using Autofac;
 using MediatR;
-using ICommand = Hotels.Application.Contracts.ICommand;
+using ICommand = Accommodations.Application.Contracts.ICommand;
 
-namespace Hotels.Infastructure;
+namespace Accommodations.Infrastructure;
 
-public class HotelsModule : IHotelsModule
+public class AccommodationsModule : IAccommodationsModule
 {
     public async Task<TResult> ExecuteCommandAsync<TResult>(ICommand<TResult> command)
     {
@@ -21,7 +21,7 @@ public class HotelsModule : IHotelsModule
 
     public Task<TResult> ExecuteQueryAsync<TResult>(IQuery<TResult> query)
     {
-        using (var scope = HotelsCompositoryRoot.BeginLifetimeScope())
+        using (var scope = AccommodationsCompositionRoot.BeginLifetimeScope())
         {
             var mediator = scope.Resolve<IMediator>();
             return mediator.Send(query);

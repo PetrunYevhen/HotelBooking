@@ -14,7 +14,7 @@ public class IntegrationEventGenericHandler<T> : IIntegrationEventHandler<T>
     {
             using (var scope = BookingCompositoryRoot.BeginLifetimeScope())
             {
-                using (var connection = scope.Resolve<INpgsqlConnectionFactory>().CreateConnection())
+                using (var connection = scope.Resolve<INpgsqlConnectionFactory>().CreateNewConnection())
                 {
                     string type = @event.GetType().FullName;
                     var data = JsonConvert.SerializeObject(@event, new JsonSerializerSettings

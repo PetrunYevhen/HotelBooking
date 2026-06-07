@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Serilog;
+﻿using Serilog;
 
 namespace Infrastructure.EventBus;
 

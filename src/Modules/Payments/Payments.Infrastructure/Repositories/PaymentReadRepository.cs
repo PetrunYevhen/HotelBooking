@@ -16,7 +16,7 @@ public class PaymentReadRepository : IPaymentReadRepository
 
     public async Task<Payment> GetByIdAsync(PaymentId paymentId) 
     {
-        using var connection = _connectionFactory.CreateConnection();
+        using var connection = _connectionFactory.CreateNewConnection();
 
         const string sql = @"
             SELECT * FROM ""PaymentManagement"".""Payments"" 

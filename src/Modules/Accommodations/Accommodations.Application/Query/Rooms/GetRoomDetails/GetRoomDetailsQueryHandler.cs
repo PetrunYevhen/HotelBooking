@@ -1,34 +1,38 @@
-﻿// using Hotels.Domain.Entities.Rooms;
-// using MediatR;
-//
-// namespace Hotels.Application.Query.GetRoomDetails;
-//
-// public class GetRoomDetailsQueryHandler : IRequestHandler<GetRoomDetailsQuery, RoomBookingDetailsDto>
-// {
-//     private readonly IRoomsReadRepository _roomReadRepository;
-//
-//     public GetRoomDetailsQueryHandler(IRoomsReadRepository roomManagementReadRepository)
-//     {
-//         _roomReadRepository = roomManagementReadRepository;
-//     }
-//
-//     public async Task<RoomBookingDetailsDto> Handle(GetRoomDetailsQuery request, CancellationToken cancellationToken)
-//     {
-//         var roomId = new RoomId(request.Id);
-//         
-//         var room = await _roomReadRepository.GetByIdAsync(roomId, cancellationToken);
-//
-//         if (room == null) throw new KeyNotFoundException("Room not found");
-//
-//         return new RoomBookingDetailsDto
-//         {
-//             RoomId = room.RoomId.Value,
-//             RoomNumber = room.RoomNumber,
-//             Beds = room.Beds,
-//             Capacity = room.Capacity,
-//             Description = room.Description,
-//             PricePerNight = room.PricePerNight,
-//             Status = room.Status
-//         };
-//     }
-// }
+﻿using Accommodations.Application.Query.Shared;
+using Dapper;
+using Infrastructure.Data;
+using MediatR;
+
+namespace Accommodations.Application.Query.Rooms.GetRoomDetails;
+
+public class GetRoomDetailsQueryHandler : IRequestHandler<GetRoomDetailsQuery, RoomDetailsDto?>
+{
+    private readonly INpgsqlConnectionFactory _connectionFactory;
+
+    public GetRoomDetailsQueryHandler(INpgsqlConnectionFactory connectionFactory)
+    {
+        _connectionFactory = connectionFactory;
+    }
+
+    public async Task<RoomDetailsDto?> Handle(GetRoomDetailsQuery request, CancellationToken cancellationToken)
+    {
+        using var connection = _connectionFactory.CreateNewConnection();
+
+        const string sql = """
+            SELECT
+                "RoomId", "HotelId", "RoomNumber", "Type", "Beds",
+                "Capacity", "Description", "Status", "IsActive",
+                "BasePrice_Amount" AS "BasePriceAmount", 
+                "BasePrice_Currency" AS "BasePriceCurrency"
+            FROM "Accommodations"."Rooms"
+            WHERE "RoomId" = @RoomId
+            """;
+
+        var parameters = new
+        {
+            RoomId = request.Id
+        };
+        return await connection
+            .QueryFirstOrDefaultAsync<RoomDetailsDto>(new CommandDefinition(sql, parameters, cancellationToken: cancellationToken));
+    }
+}

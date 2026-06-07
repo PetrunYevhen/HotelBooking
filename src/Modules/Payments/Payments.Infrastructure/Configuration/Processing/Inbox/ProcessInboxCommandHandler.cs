@@ -19,7 +19,7 @@ public class ProcessInboxCommandHandler : IRequestHandler<ProcessInboxCommand>
 
     public async Task Handle(ProcessInboxCommand command, CancellationToken cancellationToken)
     {
-        using var connection = _npgsqlConnectionFactory.CreateConnection();
+        using var connection = _npgsqlConnectionFactory.CreateNewConnection();
 
         const string sql = $""""
                             SELECT 

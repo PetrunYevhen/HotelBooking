@@ -1,12 +1,11 @@
-﻿using Accommodations.Infrastructure.Configuration;
-using Accommodations.Infrastructure.Processing.Outbox;
-using Application.Outbox;
+﻿using Application.Outbox;
 using Autofac;
+using BuildingBlock.Domain.Events;
 using Infrastructure;
 using Infrastructure.IntegrationEventsDispatching;
 using MediatR;
 
-namespace Accommodations.Infrastructure.Processing;
+namespace Accommodations.Infrastructure.Configuration.Processing.Outbox;
 
 public class OutboxModule : Module
 {
@@ -38,6 +37,7 @@ public class OutboxModule : Module
         var integrationEvents = Assemblies.Application
             .GetTypes()
             .Where(x => x.GetInterfaces().Contains(typeof(INotification)))
+            .Where(x => !x.GetInterfaces().Contains(typeof(IDomainEvent)))
             .ToList();
 
         List<Type> notMappedEvents = [];

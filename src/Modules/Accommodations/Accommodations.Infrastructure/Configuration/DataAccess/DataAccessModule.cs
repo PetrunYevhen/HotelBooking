@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Logging;
 
-namespace Hotels.Infastructure.Configuration.DataAccess;
+namespace Accommodations.Infrastructure.Configuration.DataAccess;
 
 public class DataAccessModule : Module
 {
@@ -28,22 +28,19 @@ public class DataAccessModule : Module
 
         builder.Register(c =>
             {
-                var dbContextOptionBuilder = new DbContextOptionsBuilder<HotelDbContext>();
+                var dbContextOptionBuilder = new DbContextOptionsBuilder<AccommodationsDbContext>();
                 
                 dbContextOptionBuilder
-                    // .ReplaceService<IValueConverterSelector, StronglyTypedIdValueConverterSelector>()
+                    .ReplaceService<IValueConverterSelector, StronglyTypedIdValueConverterSelector>()
                     .UseNpgsql(_databaseConnectionString);
-
-                dbContextOptionBuilder
-                    .ReplaceService<IValueConverterSelector, StronglyTypedIdValueConverterSelector>();
-
-                return new HotelDbContext(dbContextOptionBuilder.Options, _loggerFactory);
+                
+                return new AccommodationsDbContext(dbContextOptionBuilder.Options, _loggerFactory);
             })
             .AsSelf()
             .As<DbContext>()
             .InstancePerLifetimeScope();
         
-        var infrastructureAssembly = typeof(HotelDbContext).Assembly;
+        var infrastructureAssembly = typeof(AccommodationsDbContext).Assembly;
 
         builder.RegisterAssemblyTypes(infrastructureAssembly)
             .Where(t => t.Name.EndsWith("Repository"))

@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using Infrastructure.EventBus;
 
-namespace Hotels.Infastructure.Configuration.EventBus;
+namespace Accommodations.Infrastructure.Configuration.EventBus;
 
 internal class EventBusModule : Module
 {

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Accommodations.Infrastructure.Processing.Outbox;
+namespace Accommodations.Infrastructure.Configuration.Processing.Outbox;
 
 public class OutboxMessageEntityTypeConfiguration : IEntityTypeConfiguration<OutboxMessage>
 {

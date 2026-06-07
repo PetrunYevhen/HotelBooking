@@ -1,4 +1,4 @@
-﻿namespace Hotels.Application.Contracts;
+﻿namespace Accommodations.Application.Contracts;
 
 public abstract class QueryBase<TResult> : IQuery<TResult>
 {

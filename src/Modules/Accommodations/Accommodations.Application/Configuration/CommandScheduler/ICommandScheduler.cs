@@ -1,6 +1,6 @@
-﻿using Hotels.Application.Contracts;
+﻿using Accommodations.Application.Contracts;
 
-namespace Hotels.Application.Configuration.CommandScheduler;
+namespace Accommodations.Application.Configuration.CommandScheduler;
 
 public interface ICommandScheduler
 {

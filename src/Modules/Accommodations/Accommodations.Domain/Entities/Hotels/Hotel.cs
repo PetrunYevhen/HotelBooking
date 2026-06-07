@@ -1,46 +1,74 @@
-﻿using BuildingBlock.Domain;
+﻿using Accommodations.Domain.Entities.Hotels.Enums;
+using Accommodations.Domain.Entities.Hotels.Events;
+using Accommodations.Domain.Entities.Hotels.Facility;
+using Accommodations.Domain.Enums;
+using BuildingBlock.Domain;
+using SharedKernel.ValueObjects;
 
-namespace Hotels.Domain.Entities.Hotels;
+namespace Accommodations.Domain.Entities.Hotels;
 
-public class Hotel : Entity
+public class Hotel : Entity, IAggregateRoot
 {
     public HotelId HotelId { get; private set; }
-    public string HotelName { get; private set; } = string.Empty;
+    public string Name { get; private set; }
     public string Description { get; private set; } = string.Empty;
-    public string ImageUrl { get; private set; } = string.Empty;
+    public Address Address { get; private set; }
+    public OperatingHours OperatingHours { get; private set; } 
     public double Rating { get; private set; }
-    public decimal MinRoomPrice { get; private set; }
+    public Money? MinRoomPrice { get; private set; }
+    public HotelStatus Status { get; private set; }
+    private readonly List<HotelFacility> _hotelFacilities = new();
+    public IReadOnlyCollection<HotelFacility> HotelFacilities => _hotelFacilities.AsReadOnly();
+    
+    private Hotel() { }
 
-    public Hotel()
+    private Hotel(string name, string description, HotelStatus status, Address address, OperatingHours operatingHours)
     {
-    } // EF Core constructor
-
-    public Hotel(HotelId id,
-        string hotelName,
-        string description,
-        string imageUrl,
-        double rating,
-        decimal minRoomPrice)
-    {
-        if (string.IsNullOrWhiteSpace(hotelName))
-            throw new ArgumentException("Hotel name cannot be empty", nameof(hotelName));
-        if (rating < 0 || rating > 5)
-            throw new ArgumentOutOfRangeException(nameof(rating), "Rating must be from 0 to 5.");
-
-        HotelId = id;
-        HotelName = hotelName;
+        HotelId = HotelId.New();
+        Name = name;
         Description = description;
-        ImageUrl = imageUrl;
-        Rating = rating;
-        MinRoomPrice = minRoomPrice;
+        Address = address;
+        OperatingHours = operatingHours;
+        Status = status;
+        Rating = 0;
+
+        AddDomainEvent(new HotelCreatedDomainEvent(HotelId));
     }
 
-    public void UpdateMinRoomPrice(decimal newPrice)
+    public static Result<Hotel> Create(
+        string name,
+        string description,
+        HotelStatus status,
+        Address address,
+        OperatingHours operatingHours)
     {
-        if (newPrice < 0)
-            throw new ArgumentOutOfRangeException(nameof(newPrice), "Price must be non-negative.");
-
-        MinRoomPrice = newPrice;
+        if (string.IsNullOrWhiteSpace(name))
+            return Result.Failure<Hotel>(new Error("Hotel.InvalidName", "Hotel name is required."));                                                        
+        return Result.Success(new Hotel(name, description, status, address, operatingHours));
+    }    
+    
+    // Update Price
+    public void UpdateMinRoomPrice(Money newPrice) => MinRoomPrice = newPrice;
+    
+    // Facilities
+    public void AddFacility(string name, FacilityCategory category)
+        => _hotelFacilities.Add(HotelFacility.Create(HotelId, name, category));
+    public void RemoveFacility(HotelFacilityId id)                                                                                          
+        => _hotelFacilities.RemoveAll(facility => facility.HotelFacilityId == id);
+    
+    // Update status
+    public void Activate() => Status = HotelStatus.Active;
+    public void Deactivate() => Status = HotelStatus.Inactive;
+    public void StartRenovation() => Status = HotelStatus.UnderRenovation;
+    public void Close() => Status = HotelStatus.PermanentlyClosed;
+    
+    // Update Rating
+    public void UpdateRating(double newAvgRating)
+    {
+        if (newAvgRating is < 0 or > 5)
+            throw new ArgumentOutOfRangeException(nameof(newAvgRating));
+        Rating = newAvgRating;
     }
 
 }
+

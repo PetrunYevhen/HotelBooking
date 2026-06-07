@@ -1,4 +1,4 @@
-namespace DTO.DTOs.HotelDto;
+namespace SharedKernel.DTOs.HotelDto;
 
 public record HotelRoomsDto(
     Guid Id,

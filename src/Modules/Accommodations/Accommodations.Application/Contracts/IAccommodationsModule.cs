@@ -1,6 +1,6 @@
-﻿namespace Hotels.Application.Contracts;
+﻿namespace Accommodations.Application.Contracts;
 
-public interface IHotelsModule
+public interface IAccommodationsModule
 {
     Task<TResult> ExecuteCommandAsync<TResult>(ICommand<TResult> command);
     Task ExecuteCommandAsync(ICommand command);

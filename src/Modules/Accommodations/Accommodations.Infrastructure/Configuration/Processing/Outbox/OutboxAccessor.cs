@@ -1,6 +1,6 @@
 ﻿using Application.Outbox;
 
-namespace Accommodations.Infrastructure.Processing.Outbox;
+namespace Accommodations.Infrastructure.Configuration.Processing.Outbox;
 
 public class OutboxAccessor : IOutbox
 {

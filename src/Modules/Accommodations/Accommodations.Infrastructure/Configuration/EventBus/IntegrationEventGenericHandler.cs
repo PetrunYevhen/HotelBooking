@@ -5,16 +5,16 @@ using Infrastructure.EventBus;
 using Infrastructure.Serialization;
 using Newtonsoft.Json;
 
-namespace Hotels.Infastructure.Configuration.EventBus;
+namespace Accommodations.Infrastructure.Configuration.EventBus;
 
 public class IntegrationEventGenericHandler<T> : IIntegrationEventHandler<T>
     where T : IntegrationEvent
 {
     public async Task Handle(T @event, CancellationToken cancellationToken = default)
     {
-        using (var scope = HotelsCompositoryRoot.BeginLifetimeScope())
+        using (var scope = AccommodationsCompositionRoot.BeginLifetimeScope())
         {
-            using (var connection = scope.Resolve<INpgsqlConnectionFactory>().CreateConnection())
+            using (var connection = scope.Resolve<INpgsqlConnectionFactory>().CreateNewConnection())
             {
                 string type = @event.GetType().FullName;
                 var data = JsonConvert.SerializeObject(@event, new JsonSerializerSettings

@@ -1,24 +1,20 @@
 ﻿using Accommodations.Application.Contracts;
-using Accommodations.Domain.Entities.Hotels;
+using Accommodations.Domain.Entities.Hotels.Enums;
+using BuildingBlock.Domain;
 
-namespace Accommodations.Application.Command.AddHotel;
+namespace Accommodations.Application.Command.Hotels.CreateHotel;
 
-public class CreateHotelCommand : CommandBase<Hotel>
+public class CreateHotelCommand : CommandBase<Result<Guid>>
 {
-    public CreateHotelCommand(string hotelName, string description, string imageUrl, double rating, decimal minRoomPrice)
-    {
-        HotelName = hotelName;
-        Description = description;
-        ImageUrl = imageUrl;
-        Rating = rating;
-        MinRoomPrice = minRoomPrice;
-    }
+    public string Name { get; init; }
+    public string Description { get; init; }
+    public HotelStatus Status { get; init; }
     
-
-    public string HotelName { get; init; } 
-    public string Description { get; init; } 
-    public string ImageUrl { get; init; } 
-    public double Rating { get; init; } 
-    public decimal MinRoomPrice { get; set; }
+    public string Street { get; init; }
+    public string City { get; init; }
+    public string Country { get; init; }
+    public string PostalCode { get; init; }
     
+    public TimeOnly CheckIn { get; init; }
+    public TimeOnly CheckOut { get; init; } 
 }

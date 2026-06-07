@@ -1,27 +1,27 @@
 ﻿using System.Text.Json.Serialization;
-using Accommodations.Infrastructure.Configuration;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Accommodations.Infrastructure.Configuration;
 using Bookings.Infrastructure.Configurations;
 using HotelBooking.API.Modules.Accommodations;
+using Payments.Infrastructure.Configuration;
 using HotelBooking.API.Modules.Bookings;
 using HotelBooking.API.Modules.Payments;
 using Infrastructure.Client;
-using Payments.Infrastructure.Configuration;
 using Serilog;
 using Serilog.Formatting.Compact;
 using ILogger = Serilog.ILogger;
 
 namespace HotelBooking.API;
 
-public class ApiStartup
+public class Startup
 {
     private const string ConnectionString = "DefaultConnection";
     private static ILogger _logger;
     private static ILogger _loggerForApi;
     private readonly IConfiguration _configuration;
 
-    public ApiStartup()
+    public Startup()
     {
         ConfigureLogger();
         
@@ -37,7 +37,7 @@ public class ApiStartup
     public void ConfigureContainer(ContainerBuilder containerBuilder)
     {
         containerBuilder.RegisterModule(new BookingsAutofacModule());
-        containerBuilder.RegisterModule(new HotelsAutofacModule());
+        containerBuilder.RegisterModule(new AccommodationsAutofacModule());
         containerBuilder.RegisterModule(new PaymentManagementAutofacModule());
     }
     
@@ -66,7 +66,6 @@ public class ApiStartup
             .WriteTo.Console(
                 outputTemplate:
                 "[{Timestamp:HH:mm:ss} {Level:u3}] [{Module}] [{Context}] {Message:lj}{NewLine}{Exception}")
-            .WriteTo.File(new CompactJsonFormatter(), "logs/logs")
             .CreateLogger();
 
         _loggerForApi = _logger.ForContext("Module", "API");

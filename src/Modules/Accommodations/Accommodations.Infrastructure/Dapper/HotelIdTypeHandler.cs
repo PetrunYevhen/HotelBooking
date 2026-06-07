@@ -1,11 +1,10 @@
 ﻿using System.Data;
+using Accommodations.Domain.Entities.Hotels;
 using Dapper;
-using Hotels.Domain.Entities;
-using Hotels.Domain.Entities.Hotels;
 
-namespace Hotels.Infastructure.Dapper;
+namespace Accommodations.Infrastructure.Dapper;
 
-public class HotelsIdTypeHandler : SqlMapper.TypeHandler<HotelId>
+public class HotelIdTypeHandler : SqlMapper.TypeHandler<HotelId>
 {
     public override void SetValue(IDbDataParameter parameter, HotelId? value)
         => parameter.Value = value?.Value;

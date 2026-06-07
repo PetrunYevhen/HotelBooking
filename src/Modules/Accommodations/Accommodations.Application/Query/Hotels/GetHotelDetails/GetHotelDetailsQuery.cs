@@ -1,14 +1,13 @@
 ﻿using Accommodations.Application.Contracts;
-using SharedKernel.DTOs.HotelDto;
 
-namespace Accommodations.Application.Query.Hotels.GetHotelInfo;
+namespace Accommodations.Application.Query.Hotels.GetHotelDetails;
 
 public class GetHotelDetailsQuery : QueryBase<HotelDetailsDto>
 {
+    public Guid HotelId { get; init; }
+    
     public GetHotelDetailsQuery(Guid id)
     {
-        Id = id;
+        HotelId = id;
     }
-    
-    public Guid Id { get; init; }
 }

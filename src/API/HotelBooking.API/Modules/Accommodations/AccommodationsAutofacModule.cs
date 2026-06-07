@@ -4,7 +4,7 @@ using Autofac;
 
 namespace HotelBooking.API.Modules.Accommodations;
 
-public class HotelsAutofacModule : Module
+public class AccommodationsAutofacModule : Module
 {
     protected override void Load(ContainerBuilder builder)
     {

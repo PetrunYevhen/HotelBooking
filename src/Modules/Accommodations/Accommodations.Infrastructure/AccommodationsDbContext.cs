@@ -1,24 +1,24 @@
-﻿using Application.Outbox;
-using Hotels.Domain.Entities;
-using Hotels.Domain.Entities.Hotels;
-using Hotels.Infastructure.EntityTypeConfiguration;
+﻿using Accommodations.Domain.Entities.Hotels;
+using Accommodations.Domain.Entities.Pricing;
+using Accommodations.Domain.Entities.Rooms;
+using Application.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Hotels.Infastructure;
+namespace Accommodations.Infrastructure;
 
-public class HotelDbContext : DbContext
+public class AccommodationsDbContext : DbContext
 {
     public DbSet<Hotel> Hotels { get; set; }
+    public DbSet<Room> Rooms { get; set; }
+    public DbSet<Pricing> Pricing { get; set; }
     public DbSet<OutboxMessage> OutboxMessages { get; set; }
-    public HotelDbContext(DbContextOptions<HotelDbContext> options, ILoggerFactory loggerFactory) 
+    public AccommodationsDbContext(DbContextOptions<AccommodationsDbContext> options, ILoggerFactory loggerFactory)
         : base(options) { }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new HotelsEntityTypeConfiguration());
-        
         modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
     }
 }
