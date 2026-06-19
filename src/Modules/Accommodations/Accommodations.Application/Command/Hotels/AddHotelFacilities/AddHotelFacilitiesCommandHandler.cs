@@ -1,7 +1,4 @@
-using Accommodations.Application.Command.Shared;
-using Accommodations.Application.Contracts;
 using Accommodations.Domain.Entities.Hotels;
-using Accommodations.Domain.Enums;
 using Accommodations.Domain.RepositoryContract.Hotels;
 using BuildingBlock.Domain;
 using MediatR;

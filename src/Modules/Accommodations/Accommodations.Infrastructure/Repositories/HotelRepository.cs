@@ -14,7 +14,7 @@ public class HotelRepository : IHotelRepository
     }
 
     public async Task<Hotel?> GetByIdAsync(HotelId hotelId, CancellationToken cancellationToken)
-    {
+    {   
         return await _hotelDbContext.Hotels
             .FirstOrDefaultAsync(h=>h.HotelId == hotelId, cancellationToken);
     }
@@ -24,7 +24,6 @@ public class HotelRepository : IHotelRepository
         if (hotel == null) throw new ArgumentNullException(nameof(hotel));
 
         await _hotelDbContext.Hotels.AddAsync(hotel, cancellationToken);
-        await _hotelDbContext.SaveChangesAsync(cancellationToken);
         return hotel;
     }
 

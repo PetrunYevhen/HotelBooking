@@ -2,6 +2,7 @@
 using Accommodations.Domain.Entities.Pricing;
 using Accommodations.Domain.Entities.Rooms;
 using Application.Outbox;
+using Infrastructure.Inbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -13,6 +14,7 @@ public class AccommodationsDbContext : DbContext
     public DbSet<Room> Rooms { get; set; }
     public DbSet<Pricing> Pricing { get; set; }
     public DbSet<OutboxMessage> OutboxMessages { get; set; }
+    public DbSet<InboxMessage> InboxMessages { get; set; }
     public AccommodationsDbContext(DbContextOptions<AccommodationsDbContext> options, ILoggerFactory loggerFactory)
         : base(options) { }
 

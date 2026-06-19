@@ -1,6 +1,4 @@
-﻿
-using Bookings.Application.Command.CancelBooking;
-using Bookings.Application.Command.CreateBooking;
+﻿using Bookings.Application.Command.CreateBooking;
 using Bookings.Application.Contracts;
 using Bookings.Application.Query.GetBookingById;
 using Microsoft.AspNetCore.Mvc;
@@ -11,32 +9,45 @@ namespace HotelBooking.API.Controllers;
 [Route("booking")]
 public class BookingController : ControllerBase
 {
-private readonly IBookingsModule _bookingManagementModule;
+private readonly IBookingsModule _bookingsModule;
     
-    public BookingController( IBookingsModule bookingManagementModule)
+    public BookingController( IBookingsModule bookingsModule)
     {
-        _bookingManagementModule = bookingManagementModule;
+        _bookingsModule = bookingsModule;
     }
 
+    // GET
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetBookingAsync(Guid id, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(BookingDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _bookingManagementModule.ExecuteQueryAsync(new GetByIdQuery(id));
-        return Ok(result);
+        var result = await _bookingsModule.ExecuteQueryAsync(new GetByIdQuery(id));
+        return result is null ? NotFound() : Ok(result);
     }
 
+    
+    // POST
     [HttpPost]
-    public async Task<IActionResult> CreateBookingAsync([FromBody] CreateBookingCommand command,
-        CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Create([FromBody] CreateBookingCommand command, CancellationToken cancellationToken)
     {
-        var result = await _bookingManagementModule.ExecuteCommandAsync(command);
-        return Ok(result);
+        var result = await _bookingsModule.ExecuteCommandAsync(command);
+        if (result.IsFailure)
+            return BadRequest(new { result.Error.Code, result.Error.Message });
+        return StatusCode(StatusCodes.Status201Created, result.Value);
     }
-
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> CancelBookingAsync(Guid id)
-    {
-        var result = await _bookingManagementModule.ExecuteCommandAsync(new CancelBookingCommand(id));
-        return Ok(result);
-    }
+    
+    // [HttpPost("{id:guid}/cancel")]
+    // [ProducesResponseType(StatusCodes.Status204NoContent)]
+    // [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    // [ProducesResponseType(StatusCodes.Status404NotFound)]
+    // public async Task<IActionResult> Cancel(Guid id, CancellationToken cancellationToken)
+    // {
+    //     var result = await _bookingsModule.ExecuteCommandAsync(new CancelBookingCommand(id));
+    //     if (result.IsFailure)
+    //         return BadRequest(new { result.Error.Code, result.Error.Message });
+    //     return NoContent();
+    // }
 }

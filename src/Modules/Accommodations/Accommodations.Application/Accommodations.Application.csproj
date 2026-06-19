@@ -12,13 +12,14 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\Common\BuildingBlocks\Infrastructure\Infrastructure.csproj" />
       <ProjectReference Include="..\..\..\SharedKernel\SharedKernel.csproj" />
+      <ProjectReference Include="..\..\Bookings\Bookings.IntegrationEvents\Bookings.IntegrationEvents.csproj" />
       <ProjectReference Include="..\Accommodations.Domain\Accommodations.Domain.csproj" />
     </ItemGroup>
 
     
 
     <ItemGroup>
-      <Folder Include="Command\Pricing\" />
+      <Folder Include="Events\EventNotifications\" />
       <Folder Include="Query\Pricing\" />
     </ItemGroup>
     

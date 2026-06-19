@@ -8,19 +8,29 @@ internal static class CommandsExecutor
 {
     internal static async Task Execute(ICommand command)
     {
-        using (var scope = AccommodationsCompositionRoot.BeginLifetimeScope())
+        await using var scope = AccommodationsCompositionRoot.BeginLifetimeScope();
+        try
         {
             var mediator = scope.Resolve<IMediator>();
             await mediator.Send(command);
+        }
+        catch (Exception ex)
+        {
+            throw ex;
         }
     }
     
     internal static async Task<TResult> Execute<TResult>(ICommand<TResult> command)
     {
-        using (var scope = AccommodationsCompositionRoot.BeginLifetimeScope())
+        await using var scope = AccommodationsCompositionRoot.BeginLifetimeScope();
+        try
         {
             var mediator = scope.Resolve<IMediator>();
             return await mediator.Send(command);
+        }
+        catch (Exception ex)
+        {
+            throw ex;
         }
     }
 }

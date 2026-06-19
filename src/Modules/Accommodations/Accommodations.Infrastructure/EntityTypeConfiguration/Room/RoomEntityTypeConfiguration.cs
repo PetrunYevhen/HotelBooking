@@ -18,6 +18,7 @@ public class RoomEntityTypeConfiguration : IEntityTypeConfiguration<Domain.Entit
         builder.Property(r => r.IsActive).IsRequired();
         builder.Property(r => r.Status).HasConversion<int>().IsRequired();
         builder.Property(r => r.Type).HasConversion<int>().IsRequired();
+        builder.Property(r => r.DemandScore).IsRequired().HasDefaultValue(0);
 
         builder.ComplexProperty(r => r.BasePrice, m =>
         {

@@ -169,7 +169,7 @@ namespace Accommodations.Infrastructure.Migrations
 
                     b.HasIndex("RoomId", "IsActive");
 
-                    b.ToTable("Pricings", "Accommodations");
+                    b.ToTable("Pricing", "Accommodations");
                 });
 
             modelBuilder.Entity("Accommodations.Domain.Entities.Rooms.Facility.RoomFacility", b =>
@@ -207,6 +207,11 @@ namespace Accommodations.Infrastructure.Migrations
 
                     b.Property<int>("Capacity")
                         .HasColumnType("integer");
+
+                    b.Property<int>("DemandScore")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -279,6 +284,31 @@ namespace Accommodations.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OutboxMessages", "Accommodations");
+                });
+
+            modelBuilder.Entity("Infrastructure.Inbox.InboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Data")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("OccurredOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ProcessedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InboxMessages", "Accommodations");
                 });
 
             modelBuilder.Entity("Accommodations.Domain.Entities.Hotels.Facility.HotelFacility", b =>

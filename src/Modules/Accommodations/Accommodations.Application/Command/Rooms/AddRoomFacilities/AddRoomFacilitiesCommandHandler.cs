@@ -1,4 +1,3 @@
-using Accommodations.Application.Command.Hotels.AddHotelFacilities;
 using Accommodations.Domain.Entities.Rooms;
 using Accommodations.Domain.RepositoryContract.Rooms;
 using BuildingBlock.Domain;

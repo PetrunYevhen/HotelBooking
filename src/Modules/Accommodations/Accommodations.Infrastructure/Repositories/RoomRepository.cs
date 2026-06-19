@@ -22,7 +22,15 @@ public class RoomRepository : IRoomRepository
     public async Task<Room?> GetCheapestRoomByHotelIdAsync(HotelId hotelId, CancellationToken cancellationToken)
     {
         return await _roomDbContext.Rooms
-            .Where(r => r.HotelId == hotelId)
+            .Where(r => r.HotelId == hotelId && r.IsActive == true)
+            .OrderBy(r => r.BasePrice.Amount)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<Room?> FindCheapestRemainingActiveRoomAsync(HotelId hotelId, RoomId excludeRoomId, CancellationToken cancellationToken)
+    {
+        return await _roomDbContext.Rooms
+            .Where(r => r.HotelId == hotelId && r.IsActive && r.RoomId != excludeRoomId)
             .OrderBy(r => r.BasePrice.Amount)
             .FirstOrDefaultAsync(cancellationToken);
     }
@@ -32,18 +40,17 @@ public class RoomRepository : IRoomRepository
         if (room == null) throw new ArgumentNullException(nameof(room));
 
         await _roomDbContext.Rooms.AddAsync(room, cancellationToken);
-        await _roomDbContext.SaveChangesAsync(cancellationToken);
         return room;
     }
 
     public async Task AddRangeAsync(List<Room> rooms, CancellationToken cancellationToken)
     {
         await _roomDbContext.Rooms.AddRangeAsync(rooms, cancellationToken);
-        await _roomDbContext.SaveChangesAsync(cancellationToken);
     }
 
     public Task UpdateAsync(Room room, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        _roomDbContext.Rooms.Update(room);
+        return Task.CompletedTask;
     }
 }

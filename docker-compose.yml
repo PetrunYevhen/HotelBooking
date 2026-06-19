@@ -7,7 +7,7 @@
     
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=host.docker.internal;Port=5432;Database=hotel_booking;Username=postgres;Password=password
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=hotel_booking;Username=postgres;Password=password
     ports:
       - "8080:8080"
         

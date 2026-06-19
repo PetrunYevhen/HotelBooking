@@ -19,7 +19,8 @@ public class Room : Entity, IAggregateRoot
     public string? Description { get; private set; }
     public RoomStatus Status { get; private set; }
     public Money BasePrice { get; private set; }
-    public bool IsActive { get; private set; }                                                                                              
+    public bool IsActive { get; private set; }
+    public int DemandScore { get; private set; }
 
     private readonly List<RoomFacility> _facilities = new();
     public IReadOnlyCollection<RoomFacility> Facilities => _facilities.AsReadOnly();
@@ -82,8 +83,13 @@ public class Room : Entity, IAggregateRoot
     
     // Room State
     public void Activate() => IsActive = true;
-    public void Deactivate() => IsActive = false;
-    
+
+    public void Deactivate()
+    {
+        IsActive = false;
+        AddDomainEvent(new RoomDeactivatedDomainEvent(RoomId, HotelId, BasePrice));
+    }
+
     // Facility
     public void AddFacility(string name, FacilityCategory category) 
         => _facilities.Add(RoomFacility.Create(RoomId, name, category));                                                                    
@@ -91,8 +97,8 @@ public class Room : Entity, IAggregateRoot
         => _facilities.RemoveAll(f => f.RoomFacilityId == id);
     
     // Update Status 
-    public void Reserve() => Status = RoomStatus.Reserved;
-    public void Book() => Status = RoomStatus.Booked;
+    public void Reserved() => Status = RoomStatus.Reserved;
+    public void Booked() => Status = RoomStatus.Booked;
     public void CheckIn() => Status = RoomStatus.Occupied;
     public void CheckOut() => Status = RoomStatus.Available;
     public void Maintenance() => Status = RoomStatus.Maintenance;
@@ -107,5 +113,8 @@ public class Room : Entity, IAggregateRoot
         AddDomainEvent(new RoomPriceUpdatedDomainEvent(RoomId, HotelId, newPrice));
         return Result.Success();
     }
+    
+    public void IncrementDemandScore() => DemandScore++;
+    public void DecrementDemandScore() => DemandScore = Math.Max(0, DemandScore - 1);
     
 }

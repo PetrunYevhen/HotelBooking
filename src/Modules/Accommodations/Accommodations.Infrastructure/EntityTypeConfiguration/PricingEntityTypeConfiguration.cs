@@ -8,7 +8,7 @@ public class PricingEntityTypeConfiguration : IEntityTypeConfiguration<Pricing>
 {
     public void Configure(EntityTypeBuilder<Pricing> builder)
     {
-        builder.ToTable("Pricings", "Accommodations");
+        builder.ToTable("Pricing", "Accommodations");
 
         builder.HasKey(p => p.PricingId);
         builder.Property(p => p.RoomId).IsRequired();

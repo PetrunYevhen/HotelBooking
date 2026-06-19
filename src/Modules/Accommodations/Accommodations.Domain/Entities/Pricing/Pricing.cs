@@ -32,7 +32,7 @@ public class Pricing : Entity
         IsActive = isActive;
     }
 
-    public static Result<Pricing> Create(RoomId roomId, Money price, PricingType type, DateRange validDates
+    private static Result<Pricing> Create(RoomId roomId, Money price, PricingType type, DateRange validDates
         )
     {
         if (roomId is null) 
@@ -43,6 +43,13 @@ public class Pricing : Entity
             return Result.Failure<Pricing>(new Error("Pricing.InvalidDates", "Dates are null"));
         return Result.Success(new Pricing(roomId, price, type, validDates, isActive: true));
     }
+    
+    public static Result<Pricing> CreatePromotional(RoomId roomId, Money price, DateRange validDates) =>
+        Create(roomId, price, PricingType.Promotional, validDates);
+
+    public static Result<Pricing> CreateStandard(RoomId roomId, Money price, DateRange validDates) =>
+        Create(roomId, price, PricingType.Standard, validDates);
+
     
     public void Activate() => IsActive = true;
     public void Deactivate() => IsActive = false;

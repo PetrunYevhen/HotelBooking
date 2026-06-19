@@ -9,7 +9,6 @@ using HotelBooking.API.Modules.Bookings;
 using HotelBooking.API.Modules.Payments;
 using Infrastructure.Client;
 using Serilog;
-using Serilog.Formatting.Compact;
 using ILogger = Serilog.ILogger;
 
 namespace HotelBooking.API;
@@ -113,7 +112,8 @@ public class Startup
         AccommodationsStartup.Initialize(
             GetConnectionString(),
             _logger,
-            null);
+            null,
+            client);
        
         
         PaymentsStartup.Initialize(

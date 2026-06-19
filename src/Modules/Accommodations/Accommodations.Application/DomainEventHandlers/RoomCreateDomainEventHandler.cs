@@ -8,20 +8,14 @@ namespace Accommodations.Application.DomainEventHandlers;
 public class RoomCreateDomainEventHandler : INotificationHandler<RoomCreatedDomainEvent>
 {
     private readonly IHotelRepository _hotelRepository;
-    private readonly IRoomRepository _roomRepository;
-    
+
     public RoomCreateDomainEventHandler(IHotelRepository hotelRepository, IRoomRepository roomRepository)
     {
         _hotelRepository = hotelRepository;
-        _roomRepository = roomRepository;
     }
 
     public async Task Handle(RoomCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        // var cheapestRoom = await _roomRepository.GetCheapestRoomByHotelIdAsync(notification.HotelId, cancellationToken);
-        // if (cheapestRoom == null)
-        //     return;
-        
         var hotel = await _hotelRepository.GetByIdAsync(notification.HotelId,  cancellationToken);
         if (hotel == null)
             return;

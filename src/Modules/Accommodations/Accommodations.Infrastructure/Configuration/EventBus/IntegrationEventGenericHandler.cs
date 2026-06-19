@@ -22,8 +22,11 @@ public class IntegrationEventGenericHandler<T> : IIntegrationEventHandler<T>
                     ContractResolver = new AllPropertiesContractResolver()
                 });
 
-                var sql = "INSERT INTO [meetings].[InboxMessages] (Id, OccurredOn, Type, Data) " +
-                          "VALUES (@Id, @OccurredOn, @Type, @Data)";
+                var sql = """
+                          INSERT INTO "Accommodations"."InboxMessages" ("Id", "OccurredOn", "Type", "Data")
+                          VALUES (@Id, @OccurredOn, @Type, @Data)
+                          ON CONFLICT ("Id") DO NOTHING
+                          """;
 
                 await connection.ExecuteScalarAsync(sql, new
                 {

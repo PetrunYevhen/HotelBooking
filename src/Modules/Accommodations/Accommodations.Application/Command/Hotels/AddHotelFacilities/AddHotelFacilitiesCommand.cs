@@ -1,6 +1,5 @@
 using Accommodations.Application.Command.Shared;
 using Accommodations.Application.Contracts;
-using Accommodations.Domain.Enums;
 using BuildingBlock.Domain;
 
 namespace Accommodations.Application.Command.Hotels.AddHotelFacilities;

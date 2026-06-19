@@ -15,4 +15,7 @@ public class RoomDetailsDto
     public bool IsActive { get; init; }
     public decimal BasePriceAmount { get; init; }
     public string BasePriceCurrency { get; init; }
+    
+    public decimal EffectivePriceAmount { get; init; }
+    public string EffectivePriceCurrency { get; init; }
 }

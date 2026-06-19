@@ -22,7 +22,7 @@ internal class EventBusModule : Module
         {
             builder.RegisterType<InMemoryEventBusClient>()
                 .As<IEventBus>()
-                .Named<IEventBus>("HotelManagementEventBus")
+                .Named<IEventBus>("AccommodationsEventBus")
                 .SingleInstance();
         }
     }

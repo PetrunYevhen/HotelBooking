@@ -26,6 +26,7 @@ public class BookingCreatedIntegrationEventHandler : INotificationHandler<Bookin
             throw new InvalidOperationException($"Room with id {roomId} not found");
         
         room.Reserved();
+        room.IncrementDemandScore();
         
         await _roomRepository.UpdateAsync(room, cancellationToken);
     }

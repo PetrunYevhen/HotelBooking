@@ -1,5 +1,4 @@
 ﻿using Accommodations.Application.Query.Shared;
-using Accommodations.Domain.Entities.Hotels;
 using Dapper;
 using Infrastructure.Data;
 using MediatR;

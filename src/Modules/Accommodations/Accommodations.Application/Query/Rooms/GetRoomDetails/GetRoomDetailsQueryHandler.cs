@@ -20,17 +20,30 @@ public class GetRoomDetailsQueryHandler : IRequestHandler<GetRoomDetailsQuery, R
 
         const string sql = """
             SELECT
-                "RoomId", "HotelId", "RoomNumber", "Type", "Beds",
-                "Capacity", "Description", "Status", "IsActive",
-                "BasePrice_Amount" AS "BasePriceAmount", 
-                "BasePrice_Currency" AS "BasePriceCurrency"
-            FROM "Accommodations"."Rooms"
-            WHERE "RoomId" = @RoomId
+                r."RoomId", r."HotelId", r."RoomNumber", r."Type", r."Beds",
+                r."Capacity", r."Description", r."Status", r."IsActive",
+                r."BasePrice_Amount" AS "BasePriceAmount", 
+                r."BasePrice_Currency" AS "BasePriceCurrency",
+                COALESCE(p."Price_Amount", r."BasePrice_Amount") AS "EffectivePriceAmount",
+                COALESCE(p."Price_Currency", r."BasePrice_Currency") AS "EffectivePriceCurrency"
+            FROM "Accommodations"."Rooms" r
+            LEFT JOIN LATERAL ( 
+                SELECT "Price_Amount", "Price_Currency"
+                FROM "Accommodations"."Pricing"
+                WHERE "RoomId" = r."RoomId"
+                AND "ValidFrom" <= @CheckIn AND "ValidTo" >= @CheckIn
+                AND "IsActive" = true
+                ORDER BY "Type" DESC
+                LIMIT 1
+             ) p ON true
+             WHERE r."RoomId" = @RoomId AND r."IsActive" = true
+             ORDER BY "RoomNumber" DESC
             """;
 
         var parameters = new
         {
-            RoomId = request.Id
+            RoomId = request.Id,
+            CheckIn = request.CheckIn,
         };
         return await connection
             .QueryFirstOrDefaultAsync<RoomDetailsDto>(new CommandDefinition(sql, parameters, cancellationToken: cancellationToken));
