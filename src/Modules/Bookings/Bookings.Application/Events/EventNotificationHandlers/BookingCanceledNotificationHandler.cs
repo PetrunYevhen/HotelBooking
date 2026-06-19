@@ -1,9 +1,9 @@
-using Bookings.Application.Events;
+using Bookings.Application.Events.EventNotifications;
 using Bookings.IntegrationEvents;
 using Infrastructure.EventBus;
 using MediatR;
 
-namespace Bookings.Application.DomainEventHandlers;
+namespace Bookings.Application.Events.EventNotificationHandlers;
 
 public class BookingCanceledNotificationHandler : INotificationHandler<BookingCanceledNotification>
 {

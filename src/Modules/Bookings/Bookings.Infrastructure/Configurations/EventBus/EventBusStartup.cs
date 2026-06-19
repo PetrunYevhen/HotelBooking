@@ -21,7 +21,10 @@ public static class EventBusStartup
     private static void SubscribeToIntegrationEvent<T>(IEventBus eventBus, ILogger logger)
         where T : IntegrationEvent
     {
-        logger.Information("Booking subscribe to {@IntegrationEvent}", typeof(T).FullName);
+        logger.Information(
+            "[{SourceModule}] Subscribing to integration event: {IntegrationEventType}", 
+            "Bookings", 
+            typeof(T).Name); 
         eventBus.Subscribe(
             new IntegrationEventGenericHandler<T>());
     }

@@ -1,5 +1,5 @@
 ﻿using Autofac;
-using Bookings.Application.Events;
+using Bookings.Application.Events.EventNotifications;
 using Bookings.Infrastructure.Configurations.Client;
 using Bookings.Infrastructure.Configurations.DataAccess;
 using Bookings.Infrastructure.Configurations.EventBus;
@@ -31,7 +31,7 @@ public class BookingsStartup
     {
         SqlMapper.AddTypeHandler(new BookingIdTypeHandler());
 
-        var moduleLogger = logger.ForContext("Module", "Facilities");
+        var moduleLogger = logger.ForContext("Module", "Bookings");
         
         ConfigureCompositionRoot(connectionString, moduleLogger, eventBus, client);
         
@@ -46,7 +46,7 @@ public class BookingsStartup
         IClient client)
     {
         var containerBuilder = new ContainerBuilder();
-        containerBuilder.RegisterModule(new LoggingModule(logger.ForContext("Module", "HotelManagement")));
+        containerBuilder.RegisterModule(new LoggingModule(logger.ForContext("Module", "Bookings")));
         var loggerFactory = new SerilogLoggerFactory(logger);
         
         containerBuilder.RegisterModule(new DataAccessModule(connectionString, loggerFactory));

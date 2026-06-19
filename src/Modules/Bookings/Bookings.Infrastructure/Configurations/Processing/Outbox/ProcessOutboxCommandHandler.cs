@@ -3,8 +3,11 @@ using Application.Outbox;
 using Dapper;
 using Infrastructure.Data;
 using Infrastructure.DomainEventDispatching;
+using Infrastructure.Serialization;
+using Infrastructure.UnitOfWork;
 using MediatR;
 using Newtonsoft.Json;
+using Serilog;
 using Serilog.Context;
 using Serilog.Core;
 using Serilog.Events;
@@ -16,12 +19,14 @@ public class ProcessOutboxCommandHandler : IRequestHandler<ProcessOutboxCommand>
     private readonly IMediator _mediator;
     private readonly INpgsqlConnectionFactory _npgsqlConnectionFactory;
     private readonly IDomainEventNotificationMapper _domainEventNotificationMapper;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ProcessOutboxCommandHandler(IMediator mediator, INpgsqlConnectionFactory npgsqlConnectionFactory, IDomainEventNotificationMapper domainEventNotificationMapper)
+    public ProcessOutboxCommandHandler(IMediator mediator, INpgsqlConnectionFactory npgsqlConnectionFactory, IDomainEventNotificationMapper domainEventNotificationMapper, IUnitOfWork unitOfWork)
     {
         _mediator = mediator;
         _npgsqlConnectionFactory = npgsqlConnectionFactory;
         _domainEventNotificationMapper = domainEventNotificationMapper;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task Handle(ProcessOutboxCommand command, CancellationToken cancellationToken)
@@ -33,7 +38,7 @@ public class ProcessOutboxCommandHandler : IRequestHandler<ProcessOutboxCommand>
                                 "OutboxMessage"."Id" AS "{nameof(OutboxMessage.Id)}", 
                                 "OutboxMessage"."Type" AS "{nameof(OutboxMessage.Type)}", 
                                 "OutboxMessage"."Data" AS "{nameof(OutboxMessage.Data)}" 
-                            FROM "BookingManagement"."OutboxMessages" AS "OutboxMessage" 
+                            FROM "Bookings"."OutboxMessages" AS "OutboxMessage" 
                             WHERE "OutboxMessage"."ProcessedDate" IS NULL 
                             ORDER BY "OutboxMessage"."OccurredOn"
                             """;
@@ -42,7 +47,7 @@ public class ProcessOutboxCommandHandler : IRequestHandler<ProcessOutboxCommand>
         var messagesList = messages.AsList();
 
         const string sqlUpdateProcessedDate = """
-                                              UPDATE "BookingManagement"."OutboxMessages" 
+                                              UPDATE "Bookings"."OutboxMessages" 
                                               SET "ProcessedDate" = @Date 
                                               WHERE "Id" = @Id
                                               """;
@@ -51,17 +56,24 @@ public class ProcessOutboxCommandHandler : IRequestHandler<ProcessOutboxCommand>
             foreach (var message in messagesList)
             {
                 var type = _domainEventNotificationMapper.GetType(message.Type);
-                var @event = JsonConvert.DeserializeObject(message.Data, type) as IDomainEventNotification;
+                var @event = JsonConvert.DeserializeObject(message.Data, type, new JsonSerializerSettings
+                {
+                    ContractResolver = new AllPropertiesContractResolver()
+                }) as IDomainEventNotification;
                 
                 using (LogContext.Push(new OutboxMessageContextEnricher(@event)))
                 {
-                    await _mediator.Publish(@event, cancellationToken);
-
-                    await connection.ExecuteAsync(sqlUpdateProcessedDate, new
+                    try
                     {
-                        Date = DateTime.UtcNow,
-                        message.Id
-                    });
+                        await _mediator.Publish(@event, cancellationToken);
+                        await _unitOfWork.CommitAsync(cancellationToken);
+                        await connection.ExecuteAsync(sqlUpdateProcessedDate, new { Date = DateTime.UtcNow, message.Id });
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "Outbox message {MessageId} failed: {Error}", message.Id, ex.Message);
+                        throw;
+                    }
                 }
             }
         }

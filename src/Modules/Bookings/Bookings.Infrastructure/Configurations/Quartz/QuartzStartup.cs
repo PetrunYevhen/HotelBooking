@@ -16,7 +16,7 @@ internal static class QuartzStartup
         logger.Information("Initializing Quartz Scheduler...");
 
         var schedulerConfiguration = new NameValueCollection();
-        schedulerConfiguration.Add("quartz.scheduler.instanceName", "BookingManagement");
+        schedulerConfiguration.Add("quartz.scheduler.instanceName", "Bookings");
 
         ISchedulerFactory schedulerFactory = new StdSchedulerFactory(schedulerConfiguration);
         _scheduler = schedulerFactory.GetScheduler().GetAwaiter().GetResult();

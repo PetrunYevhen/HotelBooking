@@ -1,4 +1,5 @@
 using Infrastructure.EventBus;
+using SharedKernel.ValueObjects;
 
 namespace Bookings.IntegrationEvents;
 
@@ -8,25 +9,25 @@ public class BookingCreatedIntegrationEvent : IntegrationEvent
     public Guid RoomId { get; set; }
     public DateTime CheckIn { get; set; }
     public DateTime CheckOut { get; set; }
-    public decimal TotalPrice { get; init; } 
-    public string Currency { get; init; }
-    
+    public decimal TotalAmount { get; set; }
+    public string Currency { get; set; }    
     
     public BookingCreatedIntegrationEvent(
+        Guid id,
+        DateTime occurredOn,
         Guid bookingId, 
         Guid roomId, 
         DateTime checkIn, 
         DateTime checkOut, 
-        decimal totalPrice,
-        string currency 
-        ) : base(Guid.NewGuid(), DateTime.UtcNow)
+        decimal totalAmount,
+        string currency
+        ) : base(id, occurredOn)
     {
         BookingId = bookingId;
         RoomId = roomId;
         CheckIn = checkIn;
         CheckOut = checkOut;
-        TotalPrice = totalPrice;
+        TotalAmount = totalAmount;
         Currency = currency;
-        
     }
 }

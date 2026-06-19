@@ -8,7 +8,7 @@ public class OutboxMessageEntityTypeConfiguration : IEntityTypeConfiguration<Out
 {
     public void Configure(EntityTypeBuilder<OutboxMessage> builder)
     {
-        builder.ToTable("OutboxMessages", "BookingManagement");
+        builder.ToTable("OutboxMessages", "Bookings");
 
         builder.HasKey(b => b.Id);
         builder.Property(b => b.Id).ValueGeneratedNever();

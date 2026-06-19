@@ -1,4 +1,5 @@
 using BuildingBlock.Domain.Events;
+using SharedKernel.ValueObjects;
 
 namespace Bookings.Domain.Entities.Events;
 
@@ -6,14 +7,12 @@ public class BookingConfirmedDomainEvent : DomainEventBase
 {
     public Guid BookingId { get; }
     public Guid RoomId { get; } 
-    public DateTime CheckInDate { get; } 
-    public DateTime CheckOutDate { get; }
+    public DateRange BookingDates { get; }
 
-    public BookingConfirmedDomainEvent(Guid bookingId, Guid roomId, DateTime checkInDate, DateTime checkOutDate)
+    public BookingConfirmedDomainEvent(Guid bookingId, Guid roomId, DateRange bookingDates)
     {
         BookingId = bookingId;
         RoomId = roomId;
-        CheckInDate = checkInDate;
-        CheckOutDate = checkOutDate;
+        BookingDates = bookingDates;
     }
 }

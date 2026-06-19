@@ -8,7 +8,7 @@ namespace Bookings.Infrastructure.EntityTypeConfiguration;
     {
         public void Configure(EntityTypeBuilder<InboxMessage> builder)
         {
-            builder.ToTable("InboxMessages", "BookingManagement"); 
+            builder.ToTable("InboxMessages", "Bookings"); 
         
             builder.HasKey(x => x.Id);
         }

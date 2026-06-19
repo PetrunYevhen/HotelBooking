@@ -1,5 +1,6 @@
 using Application.Events;
 using Autofac;
+using Bookings.Application.Behaviour;
 using Infrastructure.DomainEventDispatching;
 using Infrastructure.UnitOfWork;
 using MediatR;
@@ -10,8 +11,6 @@ public class ProcessingModule : Module
 {
     protected override void Load(ContainerBuilder builder)
     {
-        
-        
         builder.RegisterType<DomainEventDispatcher>()
             .As<IDomainEventDispatcher>()
             .InstancePerLifetimeScope();
@@ -24,14 +23,10 @@ public class ProcessingModule : Module
             .As<IUnitOfWork>()
             .InstancePerLifetimeScope();
 
-        builder.RegisterGenericDecorator(
-            typeof(UnitOfWorkCommandHandlerDecorator<>),
-            typeof(IRequestHandler<>));
-
-        builder.RegisterGenericDecorator(
-            typeof(UnitOfWorkCommandHandlerWithResultDecorator<,>),
-            typeof(IRequestHandler<,>));
-
+        builder.RegisterGeneric(typeof(TransactionalBehaviour<,>))
+            .As(typeof(IPipelineBehavior<,>))
+            .InstancePerLifetimeScope();
+        
         builder.RegisterAssemblyTypes(Assemblies.Application)
             .AsClosedTypesOf(typeof(IDomainEventNotification<>))
             .InstancePerDependency()

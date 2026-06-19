@@ -1,48 +1,63 @@
-using Bookings.Application.Gateways;
+using Bookings.Application.ClientContracts;
 using Bookings.Domain.Entities;
 using Bookings.Domain.RepositoryContracts;
+using BuildingBlock.Domain;
 using MediatR;
+using SharedKernel.ValueObjects;
 
 namespace Bookings.Application.Command.CreateBooking;
 
-public class CreateBookingCommandHandler : IRequestHandler<CreateBookingCommand, Guid>
+public class CreateBookingCommandHandler : IRequestHandler<CreateBookingCommand, Result<Guid>>
 {
-    private readonly IBookingWriteRepository _bookingWriteRepository;
-    private readonly IBookingReadRepository _bookingReadRepository;
-    private readonly IRoomGateway _roomGateway;
-    
-    public CreateBookingCommandHandler(IBookingWriteRepository bookingWriteRepository, IRoomGateway roomGateway, IBookingReadRepository bookingReadRepository)
+    private readonly IAccommodationsClient _accommodationsClient;
+    private readonly IBookingRepository _bookingRepository;
+
+    public CreateBookingCommandHandler(IAccommodationsClient accommodationsClient, IBookingRepository bookingRepository)
     {
-        _bookingWriteRepository = bookingWriteRepository;
-        _roomGateway = roomGateway;
-        _bookingReadRepository = bookingReadRepository;
+        _accommodationsClient = accommodationsClient;
+        _bookingRepository = bookingRepository;
     }
 
-    public async Task<Guid> Handle(CreateBookingCommand request,CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(CreateBookingCommand request, CancellationToken cancellationToken)
     {
-        var isAlreadyBooked = await _bookingReadRepository.IsBookedInRangeAsync(
-            request.RoomId, 
-            request.CheckInDate, 
-            request.CheckOutDate, 
-            cancellationToken);
-        
-        if (isAlreadyBooked)
-            throw new InvalidOperationException("Booking already exists");
-        
-        var totalPrice = await _roomGateway.GetPriceAsync(request.RoomId, request.CheckInDate, request.CheckOutDate, cancellationToken);
+        var bookingDatesResult = DateRange.Create(
+            DateTime.SpecifyKind(request.CheckIn, DateTimeKind.Utc),
+            DateTime.SpecifyKind(request.CheckOut, DateTimeKind.Utc));
+        if(bookingDatesResult.IsFailure)
+            return Result.Failure<Guid>(bookingDatesResult.Error);
 
-        var booking = Booking.CreateNew(
-            request.HotelId, 
-            request.RoomId, 
-            request.CheckInDate, 
-            request.CheckOutDate,
-            totalPrice,
-            currency: "UAH");
+        var isAvailable = await _accommodationsClient.IsRoomAvailableAsync(request.RoomId, cancellationToken);
+        if (!isAvailable)
+            return Result.Failure<Guid>(new Error("Booking.RoomUnavailable", "Room is not active."));
         
-        booking.Pending();
+        var priceResult = await _accommodationsClient.GetRoomPriceAsync(request.RoomId, bookingDatesResult.Value, cancellationToken);
         
-        await _bookingWriteRepository.CreateAsync(booking, cancellationToken);
+        var hasOverlap = await _bookingRepository.HasOverlappingBookingAsync(request.RoomId, bookingDatesResult.Value, cancellationToken);
+        if (hasOverlap)
+            return Result.Failure<Guid>(new Error("Booking.Overlap", "Room already booked for this period."));
+        
+        var totalPriceResult = priceResult.Value.Multiply(bookingDatesResult.Value.Nights);
+        if (totalPriceResult.IsFailure)
+            return Result.Failure<Guid>(totalPriceResult.Error);
+        
+        var guestInfoResult = GuestInfo.Create(request.FirstName, request.LastName, request.Email, request.PhoneNumber);
+        if (guestInfoResult.IsFailure)
+            return Result.Failure<Guid>(guestInfoResult.Error);
 
-        return booking.BookingId.Value;
+        var bookingResult = Booking.Create(
+            request.HotelId,
+            request.RoomId,
+            request.UserId,
+            totalPriceResult.Value,
+            bookingDatesResult.Value,
+            request.GuestCount,
+            guestInfoResult.Value,
+            request.SpecialRequest);
+        
+        if (bookingResult.IsFailure)
+            return Result.Failure<Guid>(bookingResult.Error);
+
+        await _bookingRepository.AddAsync(bookingResult.Value, cancellationToken);
+        return Result.Success(bookingResult.Value.BookingId.Value);
     }
 }

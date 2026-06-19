@@ -1,5 +1,5 @@
 using Autofac;
-using Bookings.Application.Gateways;
+using Bookings.Application.ClientContracts;
 using Infrastructure.Client;
 
 namespace Bookings.Infrastructure.Configurations.Client;
@@ -18,9 +18,9 @@ public class ClientModule : Module
         {
             builder.RegisterInstance(_client);
         }
-        
-        builder.RegisterType<RoomGateway>()
-            .As<IRoomGateway>()
-            .InstancePerLifetimeScope();
+       
+        builder.RegisterType<AccommodationsClient>()
+            .As<IAccommodationsClient>()
+            .SingleInstance();
     }
 }

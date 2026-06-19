@@ -1,8 +1,10 @@
-﻿namespace Bookings.Domain.Enums;
+﻿namespace Bookings.Domain.Entities.Enums;
 
 public enum BookingStatus
 {
-    Pending,
-    Confirmed,
-    Canceled
+    Pending = 0,
+    Confirmed = 1,
+    Completed = 2,
+    Cancelled = 3,
+    CheckedIn = 4,
 }

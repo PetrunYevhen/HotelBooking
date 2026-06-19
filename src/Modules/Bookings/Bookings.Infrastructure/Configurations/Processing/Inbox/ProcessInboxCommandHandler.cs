@@ -1,5 +1,6 @@
 using Dapper;
 using Infrastructure.Data;
+using Infrastructure.UnitOfWork;
 using MediatR;
 using Newtonsoft.Json;
 
@@ -9,12 +10,13 @@ public class ProcessInboxCommandHandler : IRequestHandler<ProcessInboxCommand>
 {
     private readonly INpgsqlConnectionFactory _npgsqlConnectionFactory;
     private readonly IMediator _mediator;
+    private readonly IUnitOfWork _unitOfWork;
 
-
-    public ProcessInboxCommandHandler(INpgsqlConnectionFactory npgsqlConnectionFactory, IMediator mediator)
+    public ProcessInboxCommandHandler(INpgsqlConnectionFactory npgsqlConnectionFactory, IMediator mediator, IUnitOfWork unitOfWork)
     {
         _npgsqlConnectionFactory = npgsqlConnectionFactory;
         _mediator = mediator;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task Handle(ProcessInboxCommand command, CancellationToken cancellationToken)
@@ -26,7 +28,7 @@ public class ProcessInboxCommandHandler : IRequestHandler<ProcessInboxCommand>
                                 "InboxMessages"."Id" AS "{nameof(InboxMessageDto.Id)}",
                                 "InboxMessages"."Type" AS "{nameof(InboxMessageDto.Type)}",
                                 "InboxMessages"."Data" AS "{nameof(InboxMessageDto.Data)}"
-                            FROM "BookingManagement"."InboxMessages" AS "InboxMessages"
+                            FROM "Bookings"."InboxMessages" AS "InboxMessages"
                             WHERE "InboxMessages"."ProcessedDate" IS NULL 
                             ORDER BY "InboxMessages"."OccurredOn"
                             """";
@@ -34,7 +36,7 @@ public class ProcessInboxCommandHandler : IRequestHandler<ProcessInboxCommand>
         var messages = await connection.QueryAsync<InboxMessageDto>(sql);
 
         const string sqlUpdateProcessedDate = """
-                                                  UPDATE "BookingManagement"."InboxMessages" 
+                                                  UPDATE "Bookings"."InboxMessages" 
                                                   SET "ProcessedDate" = @Date 
                                                   WHERE "Id" = @Id
                                               """;
@@ -56,6 +58,8 @@ public class ProcessInboxCommandHandler : IRequestHandler<ProcessInboxCommand>
             try
             {
                 await _mediator.Publish((INotification)request, cancellationToken);
+                await _unitOfWork.CommitAsync(cancellationToken); 
+
             }
             catch (Exception e)
             {

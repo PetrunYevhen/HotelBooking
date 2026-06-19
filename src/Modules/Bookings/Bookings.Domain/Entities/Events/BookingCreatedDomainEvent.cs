@@ -1,31 +1,28 @@
 using BuildingBlock.Domain.Events;
+using SharedKernel.ValueObjects;
 
 namespace Bookings.Domain.Entities.Events;
 
 public class BookingCreatedDomainEvent : DomainEventBase
 {
-    public BookingId BookingId { get; set; }
+    public BookingId BookingId { get; }
+    public Guid HotelId { get; set; }
     public Guid RoomId { get; set; }
-    public DateTime CheckInDate { get; set; }
-    public DateTime CheckOutDate { get; set; }
-    
-    // Додаємо ці дані тут
-    public decimal TotalPrice { get; set; }
-    public string Currency { get; set; }
+    public DateRange BookingDates { get; set; }
+    public Money TotalPrice { get; set; }
 
     public BookingCreatedDomainEvent(
         BookingId bookingId, 
+        Guid hotelId,
         Guid roomId, 
-        DateTime checkInDate, 
-        DateTime checkOutDate,
-        decimal totalPrice,   // Новий параметр
-        string currency)      // Новий параметр
+        DateRange bookingDates,
+        Money totalPrice
+        )      
     {
         BookingId = bookingId;
+        HotelId = hotelId;
         RoomId = roomId;
-        CheckInDate = checkInDate;
-        CheckOutDate = checkOutDate;
+        BookingDates = bookingDates;
         TotalPrice = totalPrice;
-        Currency = currency;
     }
 }
