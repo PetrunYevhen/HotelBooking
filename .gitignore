@@ -35,12 +35,6 @@ artifacts/
 # DotCover
 *.dotCover
 
-# Visual Studio
-.vs/
-*.dbmdl
-*.cache
-*.pdb
-
 # Logs
 *.log
 
@@ -62,3 +56,6 @@ publish/
 logs/
 **/logs/**/.DS_Store
 **/.DS_Store
+
+# env
+.env
