@@ -1,10 +1,10 @@
-namespace Payments.Domain.Enums;
+namespace Payments.Domain.Entities.Enums;
 
 public enum PaymentStatus
 {
-    Pending,
-    Processing,
-    Completed,
-    Failed,
-    Canceled,
+    Pending = 1,
+    Completed = 2,
+    Failed = 3,
+    Cancelled = 4,
+    Refunded = 5
 }

@@ -3,6 +3,7 @@ using Autofac;
 using Infrastructure.DomainEventDispatching;
 using Infrastructure.UnitOfWork;
 using MediatR;
+using Payments.Application.Behaviour;
 
 namespace Payments.Infrastructure.Configuration.Processing;
 
@@ -22,13 +23,9 @@ public class ProcessingModule : Module
             .As<IUnitOfWork>()
             .InstancePerLifetimeScope();
 
-        builder.RegisterGenericDecorator(
-            typeof(UnitOfWorkCommandHandlerDecorator<>),
-            typeof(IRequestHandler<>));
-
-        builder.RegisterGenericDecorator(
-            typeof(UnitOfWorkCommandHandlerWithResultDecorator<,>),
-            typeof(IRequestHandler<,>));
+        builder.RegisterGeneric(typeof(TransactionalBehaviour<,>))
+            .As(typeof(IPipelineBehavior<,>))
+            .InstancePerLifetimeScope();
 
         builder.RegisterAssemblyTypes(Assemblies.Application)
             .AsClosedTypesOf(typeof(IDomainEventNotification<>))

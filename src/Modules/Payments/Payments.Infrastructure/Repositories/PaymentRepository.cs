@@ -1,28 +1,35 @@
+using Microsoft.EntityFrameworkCore;
 using Payments.Domain.Entities;
 using Payments.Domain.RepositiryContracts;
 
 namespace Payments.Infrastructure.Repositories;
 
-public class PaymentWriteRepository : IPaymentWriteRepository
+public class PaymentRepository : IPaymentRepository
 {
     private readonly PaymentsDbContext _dbContext;
 
-    public PaymentWriteRepository(PaymentsDbContext dbContext)
+    public PaymentRepository(PaymentsDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public async Task<Guid> AddAsync(Payment payment)
+    public async Task<Payment?> GetByIdAsync(PaymentId paymentId, CancellationToken cancellationToken)
     {
-        await _dbContext.AddAsync(payment);
-        await _dbContext.SaveChangesAsync();
+        return await 
+            _dbContext.Payments.FirstOrDefaultAsync
+                (p => p.PaymentId == paymentId, cancellationToken);
+    }
+
+    public async Task<Guid> AddAsync(Payment payment,  CancellationToken cancellationToken)
+    {
+        await _dbContext.Payments.AddAsync(payment, cancellationToken);
 
         return payment.PaymentId.Value;
     }
 
-    public async Task UpdateAsync(Payment payment, CancellationToken cancellationToken)
+    public Task UpdateAsync(Payment payment, CancellationToken cancellationToken)
     {
-        _dbContext.Update(payment);
-        await _dbContext.SaveChangesAsync();
+        _dbContext.Payments.Update(payment);
+        return Task.CompletedTask;
     }
 }

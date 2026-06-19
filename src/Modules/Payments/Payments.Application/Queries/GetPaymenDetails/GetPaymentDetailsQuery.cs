@@ -1,13 +1,12 @@
 using Payments.Application.Contracts;
-using Payments.Domain.Entities;
 
-namespace Payments.Application.Queries.GetPaymentById;
+namespace Payments.Application.Queries.GetPaymenDetails;
 
-public class GetByIdQuery : QueryBase<PaymentDetailsDto>
+public class GetPaymentDetailsQuery : QueryBase<PaymentDetailsDto>
 {
     public Guid PaymentId { get; set; }
     
-    public GetByIdQuery(Guid paymentId)
+    public GetPaymentDetailsQuery(Guid paymentId)
     {
         PaymentId = paymentId;
     }

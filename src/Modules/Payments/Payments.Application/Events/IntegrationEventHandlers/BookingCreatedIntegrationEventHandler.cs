@@ -2,7 +2,7 @@ using Bookings.IntegrationEvents;
 using MediatR;
 using Payments.Application.Commands.CreatePayment;
 
-namespace Payments.Application.IntegrationEventHandlers;
+namespace Payments.Application.Events.IntegrationEventHandlers;
 
 public class BookingCreatedIntegrationEventHandler : INotificationHandler<BookingCreatedIntegrationEvent>
 {

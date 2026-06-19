@@ -17,11 +17,6 @@ public class PaymentsDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new PaymentsEntityTypeConfiguration());
-        modelBuilder.ApplyConfiguration(new OutboxMessageEntityTypeConfiguration());
-        modelBuilder.ApplyConfiguration(new InboxMessageEntityTypeConfiguration());
-        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
     }
-
-    
 }

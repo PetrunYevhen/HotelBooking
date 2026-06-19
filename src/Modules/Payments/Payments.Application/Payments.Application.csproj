@@ -15,4 +15,8 @@
       <ProjectReference Include="..\Payments.IntegrationEvents\Payments.IntegrationEvents.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="DomainEventHandlers\" />
+    </ItemGroup>
+
 </Project>

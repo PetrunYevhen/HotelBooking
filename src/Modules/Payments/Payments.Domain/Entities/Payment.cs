@@ -1,72 +1,91 @@
 using BuildingBlock.Domain;
+using Payments.Domain.Entities.Enums;
 using Payments.Domain.Entities.Events;
-using Payments.Domain.Enums;
+using SharedKernel.ValueObjects;
 
 namespace Payments.Domain.Entities;
 
 public class Payment :  Entity,  IAggregateRoot
 {
-    public PaymentId PaymentId { get; set; }
-    public Guid BookingId { get; set; }
-    public Guid ExternalTransactionId { get; set; }
+    public PaymentId PaymentId { get; private set; }
+    public Guid BookingId { get; private set; }
+    public string ExternalTransactionId { get; private set; }
     
-    public decimal Amount { get; set; }
-    public string Currency { get; set; }
-    public string? FailureReason { get; set; } = string.Empty;
+    public Money TotalAmount { get; private set; }
+    public string? FailureReason { get; private set; } = string.Empty;
      
-    public DateTime CreatedAt { get; set; }
-    public DateTime CompletedAt { get; set; }
+    public DateTime CreatedAt { get; private set; }
+    public DateTime CompletedAt { get; private set; }
     
-    public PaymentStatus Status { get; set; }
-    
+    public PaymentStatus Status { get; private set; }
     
     public Payment() { }
     
-    public Payment(PaymentId id, Guid bookingId, decimal amount, string currency)
+    private Payment(Guid bookingId, Money totalAmount)
     {
-        PaymentId = id;
+        PaymentId = PaymentId.New();
         BookingId = bookingId;
-        Amount = amount;
-        Currency = currency;
+        TotalAmount = totalAmount;
         Status = PaymentStatus.Pending;
         CreatedAt = DateTime.UtcNow;
+        
+        AddDomainEvent(new PaymentCreatedDomainEvent(PaymentId, BookingId, TotalAmount));
     }
 
-    public static Payment CreatePayment(PaymentId paymentId, Guid bookingId, decimal amount, string currency)
+    public static Result<Payment> Create(Guid bookingId, Money totalAmount)
     {
-        var payment = new Payment(paymentId, bookingId, amount, currency);
+        if (bookingId == Guid.Empty)
+            return Result.Failure<Payment>(new Error("Payment.InvalidBooking", "BookingId cannot be empty."));
+
+        if (totalAmount is null)
+            return Result.Failure<Payment>(new Error("Payment.InvalidAmount", "Amount is required."));
         
-        payment.AddDomainEvent(new PaymentCreatedDomainEvent(paymentId, bookingId, amount, currency));
-        
-        return payment; 
+        return Result.Success(new Payment(bookingId, totalAmount));
     }
     
-    public void Complete()
+    public Result Complete(string externalTransactionId)
     {
         if (Status != PaymentStatus.Pending)
-            throw new InvalidOperationException("Only pending payments can be completed.");
+            return Result.Failure(new Error("Payment.InvalidStatus", $"Cannot complete payment in status '{Status}'."));
+
+        if (string.IsNullOrWhiteSpace(externalTransactionId))
+            return Result.Failure(new Error("Payment.InvalidTransaction", "External transaction ID is required."));
 
         Status = PaymentStatus.Completed;
-        // ExternalTransactionId = externalTransactionId;
+        ExternalTransactionId = externalTransactionId;
         CompletedAt = DateTime.UtcNow;
 
-        AddDomainEvent(new PaymentCompletedDomainEvent(
-            this.PaymentId.Value,
-            this.BookingId,
-            this.Amount,
-            this.Currency,
-            this.CompletedAt
-            ));
+        AddDomainEvent(new PaymentCompletedDomainEvent(PaymentId.Value, BookingId, TotalAmount, CompletedAt));
+
+        return Result.Success();
     }
 
-    public void Fail(string reason)
+    public Result Fail(string reason)
     {
         if (Status != PaymentStatus.Pending)
-            throw new InvalidOperationException("Only pending payments can be failed.");
+            return Result.Failure(new Error("Payment.InvalidStatus", $"Cannot fail payment in status '{Status}'."));
+
+        if (string.IsNullOrWhiteSpace(reason))
+            return Result.Failure(new Error("Payment.InvalidReason", "Failure reason is required."));
 
         Status = PaymentStatus.Failed;
         FailureReason = reason;
 
+        AddDomainEvent(new PaymentFailedDomainEvent(PaymentId, BookingId, reason));
+
+        return Result.Success();
+    }
+
+    public Result Refund()
+    {
+        if (Status != PaymentStatus.Completed)
+            return Result.Failure(new Error("Payment.InvalidStatus", $"Cannot refund payment in status '{Status}'."));
+
+        Status = PaymentStatus.Refunded;
+
+        AddDomainEvent(new PaymentRefundedDomainEvent(PaymentId, BookingId, TotalAmount));
+
+        return Result.Success();
     }
     
 }

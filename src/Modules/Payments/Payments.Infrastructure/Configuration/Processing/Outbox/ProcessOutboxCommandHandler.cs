@@ -33,7 +33,7 @@ public class ProcessOutboxCommandHandler : IRequestHandler<ProcessOutboxCommand>
                                 "OutboxMessage"."Id" AS "{nameof(OutboxMessage.Id)}", 
                                 "OutboxMessage"."Type" AS "{nameof(OutboxMessage.Type)}", 
                                 "OutboxMessage"."Data" AS "{nameof(OutboxMessage.Data)}" 
-                            FROM "PaymentManagement"."OutboxMessages" AS "OutboxMessage" 
+                            FROM "Payments"."OutboxMessages" AS "OutboxMessage" 
                             WHERE "OutboxMessage"."ProcessedDate" IS NULL 
                             ORDER BY "OutboxMessage"."OccurredOn"
                             """;
@@ -42,7 +42,7 @@ public class ProcessOutboxCommandHandler : IRequestHandler<ProcessOutboxCommand>
         var messagesList = messages.AsList();
 
         const string sqlUpdateProcessedDate = """
-                                              UPDATE "PaymentManagement"."OutboxMessages" 
+                                              UPDATE "Payments"."OutboxMessages" 
                                               SET "ProcessedDate" = @Date 
                                               WHERE "Id" = @Id
                                               """;

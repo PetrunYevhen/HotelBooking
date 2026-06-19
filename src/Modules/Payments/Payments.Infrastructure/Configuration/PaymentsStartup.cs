@@ -3,6 +3,7 @@ using Dapper;
 using Infrastructure;
 using Infrastructure.EventBus;
 using Payments.Application.Events;
+using Payments.Application.Events.EventNotifications;
 using Payments.Infrastructure.Configuration.DataAccess;
 using Payments.Infrastructure.Configuration.EventBus;
 using Payments.Infrastructure.Configuration.Logging;
@@ -28,7 +29,7 @@ public class PaymentsStartup
    {
        SqlMapper.AddTypeHandler(new PaymentIdTypeHandler());
        
-       var moduleLogger = logger.ForContext("Module", "HotelManagement");
+       var moduleLogger = logger.ForContext("Module", "Payments");
        
        ConfigureCompositionRoot(connectionString, moduleLogger, eventBus);
        
@@ -42,7 +43,7 @@ public class PaymentsStartup
        IEventBus eventBus)
    {
        var containerBuilder = new ContainerBuilder();
-       containerBuilder.RegisterModule(new LoggingModule(logger.ForContext("Module", "HotelManagement")));
+       containerBuilder.RegisterModule(new LoggingModule(logger.ForContext("Module", "Payments")));
        
        var loggerFactory = new SerilogLoggerFactory(logger);
 

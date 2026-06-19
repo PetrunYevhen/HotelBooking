@@ -1,16 +1,14 @@
 using Dapper;
 using Infrastructure.Data;
 using MediatR;
-using Payments.Domain.Entities;
-using Payments.Domain.RepositiryContracts;
 
-namespace Payments.Application.Queries.GetPaymentById;
+namespace Payments.Application.Queries.GetPaymenDetails;
 
-public class GetByIdQueryHandler : IRequestHandler<GetPaymentDetailsQuery, PaymentDetailsDto>
+public class GetPaymentDetailsQueryHandler : IRequestHandler<GetPaymentDetailsQuery, PaymentDetailsDto>
 {
     private readonly INpgsqlConnectionFactory _connectionFactory;
 
-    public GetByIdQueryHandler(INpgsqlConnectionFactory connectionFactory)
+    public GetPaymentDetailsQueryHandler(INpgsqlConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory;
     }

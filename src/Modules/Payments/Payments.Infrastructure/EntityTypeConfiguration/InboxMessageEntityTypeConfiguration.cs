@@ -8,7 +8,7 @@ namespace Payments.Infrastructure.EntityTypeConfiguration;
     {
         public void Configure(EntityTypeBuilder<InboxMessage> builder)
         {
-            builder.ToTable("InboxMessages", "PaymentManagement"); 
+            builder.ToTable("InboxMessages", "Payments"); 
         
             builder.HasKey(x => x.Id);
         }

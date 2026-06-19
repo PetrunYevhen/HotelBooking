@@ -1,33 +1,33 @@
+using BuildingBlock.Domain;
 using MediatR;
 using Payments.Domain.Entities;
 using Payments.Domain.RepositiryContracts;
 
 namespace Payments.Application.Commands.CompletePayment;
 
-public class CompletePaymentCommandHandler : IRequestHandler<CompletePaymentCommand>
+public class CompletePaymentCommandHandler : IRequestHandler<CompletePaymentCommand, Result>
 {
-    private readonly IPaymentWriteRepository _paymentWriteRepository;
-    private readonly IPaymentReadRepository _paymentReadRepository;
+    private readonly IPaymentRepository _paymentRepository;
 
     public CompletePaymentCommandHandler(
-        IPaymentWriteRepository paymentWriteRepository, 
-        IPaymentReadRepository paymentReadRepository)
+        IPaymentRepository paymentRepository)
     {
-        _paymentWriteRepository = paymentWriteRepository;
-        _paymentReadRepository = paymentReadRepository;
+        _paymentRepository = paymentRepository;
     }
 
-    public async Task Handle(CompletePaymentCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(CompletePaymentCommand request, CancellationToken cancellationToken)
     {
         var paymentId = new PaymentId(request.PaymentId);
         
-        var payment = await _paymentReadRepository.GetByIdAsync(paymentId);
+        var payment = await _paymentRepository.GetByIdAsync(paymentId,  cancellationToken);
         if (payment == null)
             throw new InvalidOperationException($"Payment {request.PaymentId} not found.");
 
-        payment.Complete();
+        var result = payment.Complete(request.ExternalTransactionId);
+        if (result.IsFailure)
+            return result;
 
-        
-        await _paymentWriteRepository.UpdateAsync(payment, cancellationToken);
+        await _paymentRepository.UpdateAsync(payment, cancellationToken);
+        return Result.Success();
     }
 }
