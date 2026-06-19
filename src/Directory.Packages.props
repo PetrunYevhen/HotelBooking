@@ -12,7 +12,7 @@
         <!-- Application -->
         <PackageReference Include="MediatR" Version="12.5.0" />
         <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         
 
         <!-- Infrastructure -->

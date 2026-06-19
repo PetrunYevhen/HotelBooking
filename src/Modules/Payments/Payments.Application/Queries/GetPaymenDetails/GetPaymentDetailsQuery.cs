@@ -3,7 +3,7 @@ using Payments.Domain.Entities;
 
 namespace Payments.Application.Queries.GetPaymentById;
 
-public class GetByIdQuery : QueryBase<Payment>
+public class GetByIdQuery : QueryBase<PaymentDetailsDto>
 {
     public Guid PaymentId { get; set; }
     

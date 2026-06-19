@@ -17,7 +17,7 @@ public class DomainEventDispatcher : IDomainEventDispatcher
     private readonly ILifetimeScope _lifetimeScope;
     private readonly IDomainEventNotificationMapper _domainEventNotificationMapper;
 
-    
+
     public DomainEventDispatcher(IMediator mediator, IOutbox outbox, IDomainEventAccessor domainEventAccessor, ILifetimeScope lifetimeScope, IDomainEventNotificationMapper domainEventNotificationMapper)
     {
         _mediator = mediator;
@@ -55,8 +55,8 @@ public class DomainEventDispatcher : IDomainEventDispatcher
         }
 
         _domainEventAccessor.ClearAllDomainEvents();
-            
-        foreach(var domainEvent in domainEvents)
+
+        foreach (var domainEvent in domainEvents)
         {
             await _mediator.Publish(domainEvent);
         }
@@ -68,13 +68,13 @@ public class DomainEventDispatcher : IDomainEventDispatcher
             {
                 ContractResolver = new AllPropertiesContractResolver()
             });
-            
+
             var outboxMessage = new OutboxMessage(
                 domainEventNotification.Id,
                 domainEventNotification.DomainEvent.OccurredOn,
                 type,
                 data);
-            
+
             _outbox.Add(outboxMessage);
         }
     }
