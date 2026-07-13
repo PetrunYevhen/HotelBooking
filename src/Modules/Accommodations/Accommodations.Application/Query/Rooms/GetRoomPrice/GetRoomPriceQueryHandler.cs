@@ -1,4 +1,3 @@
-using Accommodations.Application.Services.Pricing;
 using BuildingBlock.Domain;
 using Dapper;
 using Infrastructure.Data;
@@ -25,7 +24,7 @@ public class GetRoomPriceQueryHandler : IRequestHandler<GetRoomPriceQuery, Resul
                                   "Price_Currency" AS "PriceCurrency"
                            FROM "Accommodations"."Pricing"
                            WHERE "RoomId" = @RoomId
-                             AND "ValidFrom" <= @CheckIn AND "ValidTo" >= @CheckIn
+                             AND "ValidFrom" <= @CheckIn AND "ValidTo" >= @CheckOut
                              AND "IsActive" = true
                            ORDER BY "Type" DESC
                            LIMIT 1
@@ -39,9 +38,24 @@ public class GetRoomPriceQueryHandler : IRequestHandler<GetRoomPriceQuery, Resul
         };
         var row = await connection.QueryFirstOrDefaultAsync<PriceRow>
             (new CommandDefinition(sql, parameters, cancellationToken: cancellationToken));
-        
-        
 
+        if (row == null)
+        {
+            const string fallbackSql = """
+                                       SELECT "BasePrice_Amount" AS "PriceAmount",
+                                       "BasePrice_Currency" AS "PriceCurrency"
+                                       FROM "Accommodations"."Rooms"
+                                       WHERE "RoomId" = @RoomId
+                                       LIMIT 1
+                                       """;
+            row = await connection.QueryFirstOrDefaultAsync<PriceRow>(
+                new CommandDefinition(fallbackSql, new { request.RoomId },
+                    cancellationToken: cancellationToken));
+        }
+
+        if (row == null)
+            return Result.Failure<Money>(Error.NotFound("Room"));
+        
         var moneyResult = Money.Create(row.PriceAmount, row.PriceCurrency);
         return moneyResult.IsFailure
             ? Result.Failure<Money>(moneyResult.Error)
@@ -52,7 +66,7 @@ public class GetRoomPriceQueryHandler : IRequestHandler<GetRoomPriceQuery, Resul
 internal sealed class PriceRow
 {
     public decimal PriceAmount { get; set; }
-    public string PriceCurrency { get; set; }
+    public string PriceCurrency { get; set; } = string.Empty;
 }
                 
             

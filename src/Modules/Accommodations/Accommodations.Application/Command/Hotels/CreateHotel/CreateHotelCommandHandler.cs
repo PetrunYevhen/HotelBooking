@@ -1,8 +1,8 @@
 ﻿using Accommodations.Domain.Entities.Hotels;
 using Accommodations.Domain.RepositoryContract.Hotels;
+using Accommodations.Domain.ValueObjects;
 using BuildingBlock.Domain;
 using MediatR;
-using SharedKernel.ValueObjects;
 
 namespace Accommodations.Application.Command.Hotels.CreateHotel;
 

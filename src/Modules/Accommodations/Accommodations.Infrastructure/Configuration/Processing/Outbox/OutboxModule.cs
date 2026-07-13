@@ -2,7 +2,7 @@
 using Autofac;
 using BuildingBlock.Domain.Events;
 using Infrastructure;
-using Infrastructure.IntegrationEventsDispatching;
+using Infrastructure.DomainEventDispatching;
 using MediatR;
 
 namespace Accommodations.Infrastructure.Configuration.Processing.Outbox;
@@ -25,11 +25,11 @@ public class OutboxModule : Module
 
         CheckMappings();
 
-        builder.RegisterType<IntegrationEventsMapper>()
-            .As<IIntegrationEventsMapper>()
+        builder.RegisterType<DomainEventNotificationMapper>()
+            .As<IDomainEventNotificationMapper>()
             .FindConstructorsWith(new AllConstructorFinder())
-            .WithParameter("integrationEventsMap", _integrationEventsMap)
-            .SingleInstance();
+            .WithParameter("domainNotificationsMap", _integrationEventsMap)
+            .InstancePerLifetimeScope();
     }
 
     private void CheckMappings()

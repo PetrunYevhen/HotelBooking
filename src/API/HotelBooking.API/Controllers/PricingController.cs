@@ -1,6 +1,5 @@
 using Accommodations.Application.Command.Pricing.SetRoomPricing;
 using Accommodations.Application.Contracts;
-using Accommodations.Domain.Entities.Pricing.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelBooking.API.Controllers;
@@ -27,10 +26,11 @@ public class PricingController : ControllerBase
                 request.Price,
                 request.Currency,
                 request.ValidFrom,
-                request.ValidTo));
+                request.ValidTo),
+            cancellationToken);
 
         if (result.IsFailure)
-            return BadRequest(new { result.Error.Code, result.Error.Message });
+            return this.ToProblem(result.Error);
 
         return StatusCode(StatusCodes.Status201Created);
     }

@@ -31,6 +31,7 @@ public class ProcessInboxCommandHandler : IRequestHandler<ProcessInboxCommand>
                             FROM "Bookings"."InboxMessages" AS "InboxMessages"
                             WHERE "InboxMessages"."ProcessedDate" IS NULL 
                             ORDER BY "InboxMessages"."OccurredOn"
+                            LIMIT 100
                             """";
 
         var messages = await connection.QueryAsync<InboxMessageDto>(sql);

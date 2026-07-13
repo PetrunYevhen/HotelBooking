@@ -15,9 +15,16 @@ public class PaymentRepository : IPaymentRepository
 
     public async Task<Payment?> GetByIdAsync(PaymentId paymentId, CancellationToken cancellationToken)
     {
-        return await 
+        return await
             _dbContext.Payments.FirstOrDefaultAsync
                 (p => p.PaymentId == paymentId, cancellationToken);
+    }
+
+    public async Task<Payment?> GetByBookingIdAsync(Guid bookingId, CancellationToken cancellationToken)
+    {
+        return await
+            _dbContext.Payments.FirstOrDefaultAsync
+                (p => p.BookingId == bookingId, cancellationToken);
     }
 
     public async Task<Guid> AddAsync(Payment payment,  CancellationToken cancellationToken)

@@ -4,7 +4,7 @@ using Payments.Infrastructure;
 
 namespace HotelBooking.API.Modules.Payments;
 
-public class PaymentManagementAutofacModule :  Module
+public class PaymentsAutofacModule :  Module
 {
     protected override void Load(ContainerBuilder builder)
     {

@@ -5,6 +5,7 @@ using Infrastructure.TypedIdConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Logging;
+using Module = Autofac.Module;
 
 namespace Bookings.Infrastructure.Configurations.DataAccess;
 

@@ -54,7 +54,7 @@ public class AccommodationsStartup
        containerBuilder.RegisterModule(new DataAccessModule(connectionString, loggerFactory));
        containerBuilder.RegisterModule(new MediatorModule());
        containerBuilder.RegisterModule(new ProcessingModule());
-       containerBuilder.RegisterModule(new ApplicationServicesModule());
+       containerBuilder.RegisterModule(new ServicesModule());
        containerBuilder.RegisterModule(new OutboxModule(new BiDictionary<string, Type>()));
        containerBuilder.RegisterModule(new EventBusModule(eventBus));
        containerBuilder.RegisterModule(new QuartzModule());

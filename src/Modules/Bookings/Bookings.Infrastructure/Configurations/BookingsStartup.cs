@@ -58,6 +58,7 @@ public class BookingsStartup
         domainNotificationMap.Add("BookingCreatedNotification", typeof(BookingCreatedNotification));
         domainNotificationMap.Add("BookingCanceledNotification", typeof(BookingCanceledNotification));
         domainNotificationMap.Add("BookingConfirmedNotification", typeof(BookingConfirmedNotification));
+        domainNotificationMap.Add("BookingCompletedNotification", typeof(BookingCompletedNotification));
         
         containerBuilder.RegisterModule(new OutboxModule(domainNotificationMap));
         containerBuilder.RegisterModule(new QuartzModule());

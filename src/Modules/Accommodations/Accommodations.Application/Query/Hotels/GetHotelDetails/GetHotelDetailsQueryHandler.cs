@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Accommodations.Application.Query.Hotels.GetHotelDetails;
 
-public class GetHotelDetailsQueryHandler : IRequestHandler<GetHotelDetailsQuery, HotelDetailsDto>
+public class GetHotelDetailsQueryHandler : IRequestHandler<GetHotelDetailsQuery, HotelDetailsDto?>
 {
     private readonly INpgsqlConnectionFactory _connectionFactory;
 
@@ -13,9 +13,9 @@ public class GetHotelDetailsQueryHandler : IRequestHandler<GetHotelDetailsQuery,
         _connectionFactory = connectionFactory;
     }
 
-    public async Task<HotelDetailsDto> Handle(GetHotelDetailsQuery request, CancellationToken cancellationToken)
+    public async Task<HotelDetailsDto?> Handle(GetHotelDetailsQuery request, CancellationToken cancellationToken)
     {
-        var connection = _connectionFactory.CreateNewConnection();
+        using var connection = _connectionFactory.CreateNewConnection();
 
         const string sql = """
                             SELECT "Name", "Description", "Rating", 
@@ -31,13 +31,8 @@ public class GetHotelDetailsQueryHandler : IRequestHandler<GetHotelDetailsQuery,
             HotelId = request.HotelId
         };
 
-        var query = await connection
+        return await connection
             .QueryFirstOrDefaultAsync<HotelDetailsDto>(new CommandDefinition
                 (sql, parameters, cancellationToken: cancellationToken));
-        
-        if (query == null)
-            throw new ArgumentNullException("Hotel not found", nameof(HotelDetailsDto));
-        
-        return query;
     }
 }

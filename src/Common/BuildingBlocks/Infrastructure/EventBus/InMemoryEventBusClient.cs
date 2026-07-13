@@ -22,7 +22,7 @@ public class InMemoryEventBusClient : IEventBus
         var sourceModule = @event.GetType().Assembly.GetName().Name?.Split('.').FirstOrDefault() ?? "Unknown";
         _logger.Information("[{SourceModule}] Publishing {Event}", sourceModule, @event.GetType().FullName);
     
-        await InMemoryEventBus.Instance.Publish(@event);
+        await InMemoryEventBus.Instance.Publish(@event, cancellationToken);
     }
 
     public void Subscribe<T>(IIntegrationEventHandler<T> handler) where T : IntegrationEvent
@@ -32,6 +32,6 @@ public class InMemoryEventBusClient : IEventBus
 
     public void StartConsuming()
     {
-        throw new NotImplementedException();
+        // The in-memory implementation dispatches immediately and has no consumer loop.
     }
 }

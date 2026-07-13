@@ -1,4 +1,6 @@
-﻿namespace Infrastructure.EventBus
+﻿using System.Collections.Concurrent;
+
+namespace Infrastructure.EventBus
 {
     public sealed class InMemoryEventBus
     {
@@ -8,12 +10,12 @@
 
         private InMemoryEventBus()
         {
-            _handlersDictionary = new Dictionary<string, List<IIntegrationEventHandler>>();
+            _handlersDictionary = new ConcurrentDictionary<string, ConcurrentDictionary<IIntegrationEventHandler, byte>>();
         }
 
         public static InMemoryEventBus Instance { get; } = new InMemoryEventBus();
 
-        private readonly IDictionary<string, List<IIntegrationEventHandler>> _handlersDictionary;
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<IIntegrationEventHandler, byte>> _handlersDictionary;
 
         public void Subscribe<T>(IIntegrationEventHandler<T> handler)
             where T : IntegrationEvent
@@ -21,19 +23,14 @@
             var eventType = typeof(T).FullName;
             if (eventType != null)
             {
-                if (_handlersDictionary.ContainsKey(eventType))
-                {
-                    var handlers = _handlersDictionary[eventType];
-                    handlers.Add(handler);
-                }
-                else
-                {
-                    _handlersDictionary.Add(eventType, [handler]);
-                }
+                var handlers = _handlersDictionary.GetOrAdd(
+                    eventType,
+                    _ => new ConcurrentDictionary<IIntegrationEventHandler, byte>());
+                handlers.TryAdd(handler, 0);
             }
         }
 
-        public async Task Publish<T>(T @event)
+        public async Task Publish<T>(T @event, CancellationToken cancellationToken = default)
             where T : IntegrationEvent
         {
             var eventType = @event.GetType().FullName;
@@ -43,15 +40,16 @@
                 return;
             }
 
-            List<IIntegrationEventHandler> integrationEventHandlers = _handlersDictionary[eventType];
+            if (!_handlersDictionary.TryGetValue(eventType, out var integrationEventHandlers))
+                return;
 
-            foreach (var integrationEventHandler in integrationEventHandlers)
-            {
-                if (integrationEventHandler is IIntegrationEventHandler<T> handler)
-                {
-                    await handler.Handle(@event);
-                }
-            }
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var tasks = integrationEventHandlers.Keys
+                .OfType<IIntegrationEventHandler<T>>()
+                .Select(handler => handler.Handle(@event, cancellationToken));
+
+            await Task.WhenAll(tasks);
         }
     }
 }

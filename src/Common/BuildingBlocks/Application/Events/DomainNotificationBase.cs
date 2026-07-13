@@ -10,4 +10,6 @@ public class DomainNotificationBase<T> : IDomainEventNotification<T>
         Id = id;
         DomainEvent = domainEvent;
     }
+
+    
 }

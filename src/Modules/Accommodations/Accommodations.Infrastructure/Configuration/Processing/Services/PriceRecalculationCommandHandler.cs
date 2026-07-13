@@ -1,5 +1,6 @@
 using Accommodations.Application.Services.Pricing;
 using Accommodations.Domain.Entities.Pricing.Enums;
+using BuildingBlock.Domain;
 using Dapper;
 using Infrastructure.Data;
 using MediatR;
@@ -7,7 +8,7 @@ using SharedKernel.ValueObjects;
 
 namespace Accommodations.Infrastructure.Configuration.Processing.Services;
 
-public class PriceRecalculationCommandHandler : IRequestHandler<PriceRecalculationCommand>
+public class PriceRecalculationCommandHandler : IRequestHandler<PriceRecalculationCommand, Result>
 {
     private readonly INpgsqlConnectionFactory _connectionFactory;
     private readonly IPriceCalculationService _calculationService;
@@ -18,7 +19,7 @@ public class PriceRecalculationCommandHandler : IRequestHandler<PriceRecalculati
         _calculationService = calculationService;
     }
 
-    public async Task Handle(PriceRecalculationCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(PriceRecalculationCommand request, CancellationToken cancellationToken)
     {
         using var connection = _connectionFactory.CreateNewConnection();
         const string selectRoomsSql = """
@@ -70,6 +71,9 @@ public class PriceRecalculationCommandHandler : IRequestHandler<PriceRecalculati
 
         await connection.ExecuteAsync(
             new CommandDefinition(upsertPricingSql, records, cancellationToken: cancellationToken));
+        
+        
+        return Result.Success();
         
     }
     internal sealed class RoomRow

@@ -1,28 +1,64 @@
 ﻿services:
-  hotel_booking_webapi:
+  hotel_booking_api:
     build:
       context: ./src/
       
-    container_name: hotel_booking_webapi
+    container_name: hotel_booking_api
     
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=hotel_booking;Username=postgres;Password=password
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      - Smtp__Host=mailhog
+      - Smtp__Port=1025
+      - Smtp__From=noreply@hotelbooking.local
+      - Stripe__ApiBase=https://api.stripe.com
+      - Stripe__ApiKey=${STRIPE_SECRET_KEY}
+      - Stripe__IsMock=false
     ports:
-      - "8080:8080"
-        
+      - "${API_PORT}:8080"
+
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
+
+  client:
+    build:
+      context: ./client/
+    container_name: hotel_booking_client
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_BASE_URL=http://localhost:${API_PORT}
+    depends_on:
+      - hotel_booking_api
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: hotel_booking_mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
   db:
     image: postgres:17-alpine
-    ports: 
-        - "5433:5432"
+    ports:
+        - "${DB_PORT}:5432"
     environment:
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: password
-        POSTGRES_DB: hotel_booking
+        POSTGRES_USER: ${POSTGRES_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
 volumes:  
   db_data:

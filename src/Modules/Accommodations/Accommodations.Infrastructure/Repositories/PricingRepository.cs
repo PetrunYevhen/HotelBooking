@@ -1,5 +1,6 @@
 using Accommodations.Domain.Entities.Pricing;
 using Accommodations.Domain.RepositoryContract.Pricing;
+using Microsoft.EntityFrameworkCore;
 
 namespace Accommodations.Infrastructure.Repositories;
 
@@ -18,8 +19,11 @@ public class PricingRepository : IPricingRepository
         return pricing;
     }
 
-    public Task DeactivateAsync(PricingId id, CancellationToken cancellationToken)
+    public async Task DeactivateAsync(PricingId id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var pricing = await _dbContext.Pricing
+            .SingleOrDefaultAsync(item => item.PricingId == id, cancellationToken);
+
+        pricing?.Deactivate();
     }
 }

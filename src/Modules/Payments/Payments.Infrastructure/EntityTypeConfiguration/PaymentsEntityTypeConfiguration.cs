@@ -45,7 +45,7 @@ public class PaymentsEntityTypeConfiguration : IEntityTypeConfiguration<Payment>
 
         builder.Property(p => p.CompletedAt);
 
-        builder.HasIndex(p => p.BookingId);
+        builder.HasIndex(p => p.BookingId).IsUnique();
         builder.HasIndex(p => p.Status);
         builder.HasIndex(p => p.ExternalTransactionId).IsUnique();
     }

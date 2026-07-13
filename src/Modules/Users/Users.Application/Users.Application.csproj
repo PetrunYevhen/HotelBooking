@@ -8,4 +8,8 @@
 
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Common\BuildingBlocks\Infrastructure\Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>

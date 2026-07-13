@@ -21,6 +21,8 @@ public class BookingConfirmedNotificationHandler : INotificationHandler<BookingC
             notification.DomainEvent.OccurredOn,
             notification.DomainEvent.BookingId,
             notification.DomainEvent.RoomId,
+            notification.DomainEvent.UserId,
+            notification.DomainEvent.RecipientEmail,
             notification.DomainEvent.BookingDates.Start,
             notification.DomainEvent.BookingDates.End), cancellationToken);
 

@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Bookings.IntegrationEvents;
 using Infrastructure.EventBus;
+using Reviews.IntegrationEvents;
 using Serilog;
 
 namespace Accommodations.Infrastructure.Configuration.EventBus;
@@ -18,6 +19,8 @@ public static class EventBusStartup
         SubscribeToIntegrationEvent<BookingCreatedIntegrationEvent>(eventBus, logger);
         SubscribeToIntegrationEvent<BookingConfirmedIntegrationEvent>(eventBus, logger);
         SubscribeToIntegrationEvent<BookingCanceledIntegrationEvent>(eventBus, logger);
+        SubscribeToIntegrationEvent<ReviewPublishedIntegrationEvent>(eventBus, logger);
+        SubscribeToIntegrationEvent<HotelRatingUpdatedIntegrationEvent>(eventBus, logger);
     }
 
     private static void SubscribeToIntegrationEvent<T>(IEventBus eventBus, ILogger logger)

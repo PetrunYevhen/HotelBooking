@@ -9,7 +9,7 @@ namespace Users.Infrastructure;
 
 public class UsersDbContext : DbContext
 {
-    public DbSet<User> Payments { get; set; }
+    public DbSet<User> Users { get; set; }
     public DbSet<OutboxMessage> OutboxMessages { get; set; }
     public DbSet<InboxMessage> InboxMessages { get; set; }
 

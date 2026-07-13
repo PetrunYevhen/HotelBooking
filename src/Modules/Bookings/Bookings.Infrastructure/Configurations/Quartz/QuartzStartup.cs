@@ -1,6 +1,7 @@
 using System.Collections.Specialized;
 using Bookings.Infrastructure.Configurations.Processing.Inbox;
 using Bookings.Infrastructure.Configurations.Processing.Outbox;
+using Bookings.Infrastructure.Configurations.Processing.Services;
 using Quartz;
 using Quartz.Impl;
 using Serilog;
@@ -79,6 +80,20 @@ internal static class QuartzStartup
 
         _scheduler
             .ScheduleJob(processInboxJob, trigger)
+            .GetAwaiter().GetResult();
+
+
+        //CompleteOverdueBookings
+        var completeOverdueBookingsJob = JobBuilder.Create<CompleteOverdueBookingsJob>().Build();
+        var completeOverdueBookingsTrigger =
+            TriggerBuilder
+                .Create()
+                .StartNow()
+                .WithSimpleSchedule(s => s.WithIntervalInMinutes(30).RepeatForever())
+                .Build();
+
+        _scheduler
+            .ScheduleJob(completeOverdueBookingsJob, completeOverdueBookingsTrigger)
             .GetAwaiter().GetResult();
     }
 }

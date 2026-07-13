@@ -1,5 +1,6 @@
 ﻿using Bookings.Domain.Entities.Enums;
 using Bookings.Domain.Entities.Events;
+using Bookings.Domain.ValueObjects;
 using BuildingBlock.Domain;
 using SharedKernel.ValueObjects;
 
@@ -11,7 +12,6 @@ public class Booking : Entity, IAggregateRoot
     public Guid HotelId { get; private set; }
     public Guid RoomId { get; private set; }
     public Guid UserId { get; private set; }
-    
     public Money TotalPrice { get; private set; }
     public BookingStatus Status { get; private set; }
     public DateRange BookingDates { get; private set; }
@@ -20,6 +20,8 @@ public class Booking : Entity, IAggregateRoot
     public string? SpecialRequest { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? ConfirmedAt { get; private set; }
+    public DateTime? CheckedInAt { get; private set; }
+    public DateTime? CompletedAt { get; private set; }
     public DateTime? CanceledAt { get; private set; }
     
     public CancellationInitiator? CancelledBy { get; private set; } 
@@ -90,12 +92,12 @@ public class Booking : Entity, IAggregateRoot
                 $"Cannot confirm booking in status {Status}."));
         Status = BookingStatus.Confirmed;
         ConfirmedAt = DateTime.UtcNow;
-        AddDomainEvent(new BookingConfirmedDomainEvent(HotelId, RoomId, BookingDates));
+        AddDomainEvent(new BookingConfirmedDomainEvent(BookingId.Value, RoomId, BookingDates, UserId, GuestInfo.Email));
         return Result.Success();
     }
     public Result Cancel(CancellationInitiator cancellationInitiator, string? cancellationReason = null)
     {
-        if(Status is BookingStatus.Cancelled or BookingStatus.Completed)
+        if (Status is not (BookingStatus.Pending or BookingStatus.Confirmed))
             return Result.Failure(new Error("Booking.InvalidState",
                 $"Cannot cancel booking in status {Status}."));
 
@@ -111,10 +113,14 @@ public class Booking : Entity, IAggregateRoot
     {
         if(Status != BookingStatus.Confirmed)
             return Result.Failure(new Error("Booking.InvalidState", $"Cannot check in booking in status {Status}."));
-        if (DateTime.UtcNow.Date < BookingDates.Start.Date)
+        var today = DateTime.UtcNow.Date;
+        if (today < BookingDates.Start.Date)
             return Result.Failure(new Error("Booking.EarlyCheckIn", "Check-in date has not arrived yet."));
+        if (today > BookingDates.End.Date)
+            return Result.Failure(new Error("Booking.LateCheckIn", "The booking checkout date has already passed."));
 
         Status = BookingStatus.CheckedIn;
+        CheckedInAt = DateTime.UtcNow;
         AddDomainEvent(new BookingCheckedInDomainEvent(RoomId, BookingId));
         return Result.Success();
     }
@@ -125,7 +131,8 @@ public class Booking : Entity, IAggregateRoot
             return Result.Failure(new Error("Booking.InvalidState", $"Cannot check out booking in status {Status}."));
 
         Status = BookingStatus.Completed;
-        AddDomainEvent(new BookingCompletedDomainEvent(BookingId, HotelId, RoomId, GuestInfo));
+        CompletedAt = DateTime.UtcNow;
+        AddDomainEvent(new BookingCompletedDomainEvent(BookingId, HotelId, RoomId, GuestInfo, UserId));
         return Result.Success();
     }
     
@@ -142,8 +149,13 @@ public class Booking : Entity, IAggregateRoot
         return Result.Success();
     }
 
-    public bool IsRefundable(int refundWindowDay)
+    public bool IsRefundable(int refundWindowDays, DateTime utcNow)
     {
-        return DateTime.Now.Date >= BookingDates.Start.Date.AddDays(-refundWindowDay);
+        if (refundWindowDays < 0)
+            throw new ArgumentOutOfRangeException(nameof(refundWindowDays));
+        if (utcNow.Kind != DateTimeKind.Utc)
+            throw new ArgumentException("The current time must be UTC.", nameof(utcNow));
+
+        return utcNow.Date <= BookingDates.Start.Date.AddDays(-refundWindowDays);
     }
 }

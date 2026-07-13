@@ -87,7 +87,7 @@ internal static class QuartzStartup
         var priceRecalcJob = JobBuilder.Create<PriceRecalculationJob>().Build();
         var dailyTrigger = TriggerBuilder.Create()
             .StartNow()
-            .WithCronSchedule("0 0/1 * * * ?") 
+            .WithCronSchedule("0 0 0 * * ?")
             .Build();
         _scheduler.ScheduleJob(priceRecalcJob, dailyTrigger).GetAwaiter().GetResult();
     }

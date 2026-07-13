@@ -30,4 +30,11 @@ public class AccommodationsClient : IAccommodationsClient
                 new { RoomId = roomId, dateRange.Start, dateRange.End }, 
                 cancellationToken);    
     }
+
+    public Task<int> GetHotelCheckOutHoursAsync(Guid hotelId, CancellationToken cancellationToken)
+    {
+        return _client.SendAsync<int>(
+            "accommodations/hotel-checkout-hours",
+            new { HotelId = hotelId }, cancellationToken);
+    }
 }

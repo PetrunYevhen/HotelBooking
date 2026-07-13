@@ -2,7 +2,7 @@ using Autofac;
 
 namespace Accommodations.Infrastructure.Configuration.Services;
 
-internal class ApplicationServicesModule : Module
+internal class ServicesModule : Module
 {
     protected override void Load(ContainerBuilder builder)
     {

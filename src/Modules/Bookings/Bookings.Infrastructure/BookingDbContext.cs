@@ -1,6 +1,5 @@
 ﻿using Application.Outbox;
 using Bookings.Domain.Entities;
-using Bookings.Infrastructure.EntityTypeConfiguration;
 using Infrastructure.Inbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

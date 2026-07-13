@@ -29,6 +29,7 @@ public class HotelRepository : IHotelRepository
 
     public Task UpdateAsync(Hotel hotel, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        _hotelDbContext.Hotels.Update(hotel);
+        return Task.CompletedTask;
     }
 }

@@ -9,7 +9,8 @@ namespace Bookings.Infrastructure.Repositories;
 public class BookingRepository : IBookingRepository
 {
     private readonly BookingDbContext _bookingDbContext;
-    
+    private IBookingRepository _bookingRepositoryImplementation;
+
     public BookingRepository (BookingDbContext bookingDbContext)
     {
         _bookingDbContext = bookingDbContext;
@@ -53,5 +54,14 @@ public class BookingRepository : IBookingRepository
                     b.BookingDates.Start < bookingDates.End &&
                     b.BookingDates.End > bookingDates.Start,
                 cancellationToken);
+    }
+
+    public async Task<List<Booking>> GetOverdueCheckedInBookingsAsync(CancellationToken cancellationToken)
+    {
+        var now = DateTime.UtcNow;
+        
+        return await _bookingDbContext.Bookings
+            .Where(b => b.Status == BookingStatus.CheckedIn && b.BookingDates.End < now)
+            .ToListAsync(cancellationToken);
     }
 }

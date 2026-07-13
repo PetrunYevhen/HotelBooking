@@ -1,7 +1,9 @@
 ﻿using Accommodations.Domain.Entities.Hotels.Enums;
 using Accommodations.Domain.Entities.Hotels.Events;
 using Accommodations.Domain.Entities.Hotels.Facility;
+using Accommodations.Domain.Entities.Hotels.Policies;
 using Accommodations.Domain.Enums;
+using Accommodations.Domain.ValueObjects;
 using BuildingBlock.Domain;
 using SharedKernel.ValueObjects;
 
@@ -14,9 +16,10 @@ public class Hotel : Entity, IAggregateRoot
     public string Description { get; private set; } = string.Empty;
     public Address Address { get; private set; }
     public OperatingHours OperatingHours { get; private set; } 
-    public double Rating { get; private set; }
+    public double? Rating { get; private set; }
     public Money? MinRoomPrice { get; private set; }
     public HotelStatus Status { get; private set; }
+    public HotelPolicies Policies { get; private set; } = HotelPolicies.Default;
     private readonly List<HotelFacility> _hotelFacilities = new();
     public IReadOnlyCollection<HotelFacility> HotelFacilities => _hotelFacilities.AsReadOnly();
     
@@ -30,7 +33,6 @@ public class Hotel : Entity, IAggregateRoot
         Address = address;
         OperatingHours = operatingHours;
         Status = status;
-        Rating = 0;
 
         AddDomainEvent(new HotelCreatedDomainEvent(HotelId));
     }
@@ -47,6 +49,8 @@ public class Hotel : Entity, IAggregateRoot
         return Result.Success(new Hotel(name, description, status, address, operatingHours));
     }    
     
+    public void UpdatePolicies(HotelPolicies policies) => Policies = policies;
+    
     // Update Price
     public void UpdateMinRoomPrice(Money newPrice) => MinRoomPrice = newPrice;
     
@@ -62,13 +66,8 @@ public class Hotel : Entity, IAggregateRoot
     public void StartRenovation() => Status = HotelStatus.UnderRenovation;
     public void Close() => Status = HotelStatus.PermanentlyClosed;
     
-    // Update Rating
-    public void UpdateRating(double newAvgRating)
-    {
-        if (newAvgRating is < 0 or > 5)
-            throw new ArgumentOutOfRangeException(nameof(newAvgRating));
-        Rating = newAvgRating;
-    }
+    // Rating
+    public void AddRating(double averageRating) => Rating = averageRating;
 
 }
 

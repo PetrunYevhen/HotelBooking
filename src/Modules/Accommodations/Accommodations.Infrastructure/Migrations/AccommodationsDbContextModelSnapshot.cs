@@ -63,7 +63,7 @@ namespace Accommodations.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<double>("Rating")
+                    b.Property<double?>("Rating")
                         .HasColumnType("double precision")
                         .HasColumnName("Rating");
 
@@ -105,11 +105,11 @@ namespace Accommodations.Infrastructure.Migrations
 
                             b1.Property<TimeOnly>("CheckIn")
                                 .HasColumnType("time without time zone")
-                                .HasColumnName("CheckIn");
+                                .HasColumnName("OperatingHours_Start");
 
                             b1.Property<TimeOnly>("CheckOut")
                                 .HasColumnType("time without time zone")
-                                .HasColumnName("CheckOut");
+                                .HasColumnName("OperatingHours_End");
                         });
 
                     b.HasKey("HotelId");
@@ -322,6 +322,75 @@ namespace Accommodations.Infrastructure.Migrations
 
             modelBuilder.Entity("Accommodations.Domain.Entities.Hotels.Hotel", b =>
                 {
+                    b.OwnsOne("Accommodations.Domain.Entities.Hotels.Policies.HotelPolicies", "Policies", b1 =>
+                        {
+                            b1.Property<Guid>("HotelId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("PetPolicy")
+                                .HasColumnType("integer")
+                                .HasColumnName("PetPolicy");
+
+                            b1.Property<int>("SmokingPolicy")
+                                .HasColumnType("integer")
+                                .HasColumnName("SmokingPolicy");
+
+                            b1.HasKey("HotelId");
+
+                            b1.ToTable("Hotels", "Accommodations");
+
+                            b1.WithOwner()
+                                .HasForeignKey("HotelId");
+
+                            b1.OwnsOne("Accommodations.Domain.Entities.Hotels.Policies.CancellationPolicy", "CancellationPolicy", b2 =>
+                                {
+                                    b2.Property<Guid>("HotelPoliciesHotelId")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<int?>("DeadlineDays")
+                                        .HasColumnType("integer")
+                                        .HasColumnName("Policies_Cancellation_DeadlineDays");
+
+                                    b2.Property<double?>("PercentagePenalty")
+                                        .HasColumnType("double precision")
+                                        .HasColumnName("Policies_Cancellation_PenaltyPercentage");
+
+                                    b2.Property<int>("Type")
+                                        .HasColumnType("integer")
+                                        .HasColumnName("Policies_CancellationType");
+
+                                    b2.HasKey("HotelPoliciesHotelId");
+
+                                    b2.ToTable("Hotels", "Accommodations");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("HotelPoliciesHotelId");
+                                });
+
+                            b1.OwnsOne("Accommodations.Domain.Entities.Hotels.Policies.CheckOutHoursPolicy", "CheckOutHoursPolicy", b2 =>
+                                {
+                                    b2.Property<Guid>("HotelPoliciesHotelId")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<int>("Hours")
+                                        .HasColumnType("integer")
+                                        .HasColumnName("CheckOutHoursPolicy");
+
+                                    b2.HasKey("HotelPoliciesHotelId");
+
+                                    b2.ToTable("Hotels", "Accommodations");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("HotelPoliciesHotelId");
+                                });
+
+                            b1.Navigation("CancellationPolicy")
+                                .IsRequired();
+
+                            b1.Navigation("CheckOutHoursPolicy")
+                                .IsRequired();
+                        });
+
                     b.OwnsOne("SharedKernel.ValueObjects.Money", "MinRoomPrice", b1 =>
                         {
                             b1.Property<Guid>("HotelId")
@@ -346,6 +415,9 @@ namespace Accommodations.Infrastructure.Migrations
                         });
 
                     b.Navigation("MinRoomPrice");
+
+                    b.Navigation("Policies")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Accommodations.Domain.Entities.Rooms.Facility.RoomFacility", b =>

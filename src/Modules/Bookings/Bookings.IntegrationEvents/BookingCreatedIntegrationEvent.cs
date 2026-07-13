@@ -1,5 +1,4 @@
 using Infrastructure.EventBus;
-using SharedKernel.ValueObjects;
 
 namespace Bookings.IntegrationEvents;
 

@@ -1,6 +1,7 @@
 using Bookings.Application.ClientContracts;
 using Bookings.Domain.Entities;
 using Bookings.Domain.RepositoryContracts;
+using Bookings.Domain.ValueObjects;
 using BuildingBlock.Domain;
 using MediatR;
 using SharedKernel.ValueObjects;
@@ -20,17 +21,25 @@ public class CreateBookingCommandHandler : IRequestHandler<CreateBookingCommand,
 
     public async Task<Result<Guid>> Handle(CreateBookingCommand request, CancellationToken cancellationToken)
     {
+        var checkOutHours = await _accommodationsClient.GetHotelCheckOutHoursAsync(request.HotelId, cancellationToken);
+        var checkOutDate = DateTime.SpecifyKind(request.CheckOut.Date, DateTimeKind.Utc)
+            .AddHours(checkOutHours);
+
         var bookingDatesResult = DateRange.Create(
             DateTime.SpecifyKind(request.CheckIn, DateTimeKind.Utc),
-            DateTime.SpecifyKind(request.CheckOut, DateTimeKind.Utc));
+            checkOutDate);
         if(bookingDatesResult.IsFailure)
             return Result.Failure<Guid>(bookingDatesResult.Error);
+        
 
         var isAvailable = await _accommodationsClient.IsRoomAvailableAsync(request.RoomId, cancellationToken);
         if (!isAvailable)
             return Result.Failure<Guid>(new Error("Booking.RoomUnavailable", "Room is not active."));
         
         var priceResult = await _accommodationsClient.GetRoomPriceAsync(request.RoomId, bookingDatesResult.Value, cancellationToken);
+        if (priceResult.IsFailure)
+            return Result.Failure<Guid>(priceResult.Error);
+        
         
         var hasOverlap = await _bookingRepository.HasOverlappingBookingAsync(request.RoomId, bookingDatesResult.Value, cancellationToken);
         if (hasOverlap)

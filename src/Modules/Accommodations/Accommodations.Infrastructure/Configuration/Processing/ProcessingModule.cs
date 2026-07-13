@@ -1,6 +1,6 @@
 using Accommodations.Application.Behaviour;
+using Application.Events;
 using Autofac;
-using Infrastructure;
 using Infrastructure.DomainEventDispatching;
 using Infrastructure.UnitOfWork;
 using MediatR;
@@ -27,9 +27,9 @@ public class ProcessingModule :  Module
             .As<IUnitOfWork>()
             .InstancePerLifetimeScope();
         
-        builder.RegisterType<DomainEventNotificationMapper>()
-            .As<IDomainEventNotificationMapper>()
-            .WithParameter("domainNotificationsMap", new BiDictionary<string, Type>())
-            .SingleInstance();
+        builder.RegisterAssemblyTypes(Assemblies.Application)
+            .AsClosedTypesOf(typeof(IDomainEventNotification<>))
+            .InstancePerDependency()
+            .FindConstructorsWith(new AllConstructorFinder());
     }
 }

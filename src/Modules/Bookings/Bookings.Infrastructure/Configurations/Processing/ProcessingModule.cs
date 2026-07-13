@@ -27,6 +27,8 @@ public class ProcessingModule : Module
             .As(typeof(IPipelineBehavior<,>))
             .InstancePerLifetimeScope();
         
+        
+        
         builder.RegisterAssemblyTypes(Assemblies.Application)
             .AsClosedTypesOf(typeof(IDomainEventNotification<>))
             .InstancePerDependency()

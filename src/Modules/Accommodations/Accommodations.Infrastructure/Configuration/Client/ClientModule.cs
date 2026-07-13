@@ -24,5 +24,6 @@ public class ClientModule : Module
     {
         new GetRoomAvailabilitySubscription().Subscride(_client, scope);
         new GetRoomPriceSubscription().Subscride(_client, scope);
+        new GetHotelCheckOutHoursSubscription().Subscride(_client, scope);
     }
 }

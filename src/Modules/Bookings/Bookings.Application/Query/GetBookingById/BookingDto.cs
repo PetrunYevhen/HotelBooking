@@ -7,6 +7,7 @@ public record BookingDto(
     DateTime CheckInDate,
     DateTime CheckOutDate,
     decimal TotalPrice,
+    string Currency,
     string Status,
     DateTime CreatedAt
 );

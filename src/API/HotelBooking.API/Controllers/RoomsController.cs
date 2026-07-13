@@ -29,25 +29,25 @@ public class RoomsController : ControllerBase
     [HttpGet("{roomId:guid}")]
     [ProducesResponseType(typeof(RoomDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetById(Guid roomId, DateTime checkIn)
+    public async Task<IActionResult> GetById(Guid roomId, DateTime checkIn, CancellationToken cancellationToken)
     {
-        var result = await _accommodationsModule.ExecuteQueryAsync(new GetRoomDetailsQuery(roomId, checkIn));
+        var result = await _accommodationsModule.ExecuteQueryAsync(new GetRoomDetailsQuery(roomId, checkIn), cancellationToken);
         return result is null ? NotFound() : Ok(result);
     }
 
     [HttpGet("{hotelId:guid}/rooms")]
     [ProducesResponseType(typeof(List<RoomDetailsDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetRooms(Guid hotelId, DateTime checkIn)
+    public async Task<IActionResult> GetRooms(Guid hotelId, DateTime checkIn, CancellationToken cancellationToken)
     {
-        var result = await _accommodationsModule.ExecuteQueryAsync(new GetRoomsByHotelIdQuery(hotelId, checkIn));        
+        var result = await _accommodationsModule.ExecuteQueryAsync(new GetRoomsByHotelIdQuery(hotelId, checkIn), cancellationToken);        
         return result is null ? NotFound() : Ok(result);
     }
     
     [HttpGet("{id:guid}/facilities")]
     [ProducesResponseType(typeof(List<FacilityDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetFacilities(Guid id)
+    public async Task<IActionResult> GetFacilities(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _accommodationsModule.ExecuteQueryAsync(new GetRoomFacilitiesQuery(id));
+        var result = await _accommodationsModule.ExecuteQueryAsync(new GetRoomFacilitiesQuery(id), cancellationToken);
         return Ok(result);
     }
     
@@ -61,10 +61,10 @@ public class RoomsController : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await _accommodationsModule.ExecuteQueryAsync(
-            new GetRoomPriceQuery(roomId, checkIn, checkOut));
+            new GetRoomPriceQuery(roomId, checkIn, checkOut), cancellationToken);
 
         if (result.IsFailure)
-            return BadRequest(new { result.Error.Code, result.Error.Message });
+            return this.ToProblem(result.Error);
 
         return Ok(result.Value);
     }
@@ -77,9 +77,9 @@ public class RoomsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] List<CreateRoomDto> rooms, CancellationToken cancellationToken)
     {
-        var result = await _accommodationsModule.ExecuteCommandAsync(new CreateRoomsCommand{Rooms = rooms});
+        var result = await _accommodationsModule.ExecuteCommandAsync(new CreateRoomsCommand{Rooms = rooms}, cancellationToken);
         if (result.IsFailure)
-            return BadRequest(new { result.Error.Code, result.Error.Message });
+            return this.ToProblem(result.Error);
 
         return StatusCode(StatusCodes.Status201Created, result.Value);
     }
@@ -91,10 +91,10 @@ public class RoomsController : ControllerBase
     public async Task<IActionResult> AddFacility(Guid id, [FromBody] List<FacilityRequest> facilities, CancellationToken cancellationToken)
     {
         var result = await _accommodationsModule
-            .ExecuteCommandAsync(new AddRoomFacilitiesCommand{RoomId = id, Facilities = facilities});
+            .ExecuteCommandAsync(new AddRoomFacilitiesCommand{RoomId = id, Facilities = facilities}, cancellationToken);
         
         if (result.IsFailure)
-            return BadRequest(new { result.Error.Code, result.Error.Message });
+            return this.ToProblem(result.Error);
 
         return NoContent();
     }
@@ -106,10 +106,10 @@ public class RoomsController : ControllerBase
     public async Task<IActionResult> Deactivate(Guid id, CancellationToken cancellationToken)
     {
         var result = await _accommodationsModule
-            .ExecuteCommandAsync(new DeactivateRoomCommand(id));
+            .ExecuteCommandAsync(new DeactivateRoomCommand(id), cancellationToken);
 
         if (result.IsFailure)
-            return BadRequest(new { result.Error.Code, result.Error.Message });
+            return this.ToProblem(result.Error);
 
         return NoContent();
     }

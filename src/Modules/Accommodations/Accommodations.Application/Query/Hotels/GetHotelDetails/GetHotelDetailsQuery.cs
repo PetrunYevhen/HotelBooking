@@ -2,7 +2,7 @@
 
 namespace Accommodations.Application.Query.Hotels.GetHotelDetails;
 
-public class GetHotelDetailsQuery : QueryBase<HotelDetailsDto>
+public class GetHotelDetailsQuery : QueryBase<HotelDetailsDto?>
 {
     public Guid HotelId { get; init; }
     

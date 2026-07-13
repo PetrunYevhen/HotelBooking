@@ -3,7 +3,6 @@ using Infrastructure.Inbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Payments.Domain.Entities;
-using Payments.Infrastructure.EntityTypeConfiguration;
 
 namespace Payments.Infrastructure;
 

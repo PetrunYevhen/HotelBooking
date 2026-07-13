@@ -36,6 +36,7 @@ public class ProcessOutboxCommandHandler : IRequestHandler<ProcessOutboxCommand>
                             FROM "Payments"."OutboxMessages" AS "OutboxMessage" 
                             WHERE "OutboxMessage"."ProcessedDate" IS NULL 
                             ORDER BY "OutboxMessage"."OccurredOn"
+                            LIMIT 100
                             """;
 
         var messages = await connection.QueryAsync<OutboxMessage>(sql);

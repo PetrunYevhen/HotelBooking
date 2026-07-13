@@ -1,4 +1,3 @@
-using Accommodations.Application.Services.Pricing;
 using Accommodations.Domain.Entities.Rooms;
 using Accommodations.Domain.RepositoryContract.Pricing;
 using Accommodations.Domain.RepositoryContract.Rooms;

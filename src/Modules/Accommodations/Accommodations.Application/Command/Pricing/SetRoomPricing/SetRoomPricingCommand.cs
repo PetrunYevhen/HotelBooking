@@ -1,5 +1,4 @@
 using Accommodations.Application.Contracts;
-using Accommodations.Domain.Entities.Pricing.Enums;
 using BuildingBlock.Domain;
 
 namespace Accommodations.Application.Command.Pricing.SetRoomPricing;

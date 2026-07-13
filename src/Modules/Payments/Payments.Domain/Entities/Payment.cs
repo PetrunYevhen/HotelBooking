@@ -9,13 +9,13 @@ public class Payment :  Entity,  IAggregateRoot
 {
     public PaymentId PaymentId { get; private set; }
     public Guid BookingId { get; private set; }
-    public string ExternalTransactionId { get; private set; }
+    public string? ExternalTransactionId { get; private set; }
     
     public Money TotalAmount { get; private set; }
     public string? FailureReason { get; private set; } = string.Empty;
      
     public DateTime CreatedAt { get; private set; }
-    public DateTime CompletedAt { get; private set; }
+    public DateTime? CompletedAt { get; private set; }
     
     public PaymentStatus Status { get; private set; }
     
@@ -55,7 +55,20 @@ public class Payment :  Entity,  IAggregateRoot
         ExternalTransactionId = externalTransactionId;
         CompletedAt = DateTime.UtcNow;
 
-        AddDomainEvent(new PaymentCompletedDomainEvent(PaymentId.Value, BookingId, TotalAmount, CompletedAt));
+        AddDomainEvent(new PaymentCompletedDomainEvent(PaymentId.Value, BookingId, TotalAmount, CompletedAt.Value));
+
+        return Result.Success();
+    }
+
+    public Result AttachGatewayReference(string paymentIntentId)
+    {
+        if (Status != PaymentStatus.Pending)
+            return Result.Failure(new Error("Payment.InvalidStatus", $"Cannot attach gateway reference to payment in status '{Status}'."));
+
+        if (string.IsNullOrWhiteSpace(paymentIntentId))
+            return Result.Failure(new Error("Payment.InvalidTransaction", "Payment intent ID is required."));
+
+        ExternalTransactionId = paymentIntentId;
 
         return Result.Success();
     }

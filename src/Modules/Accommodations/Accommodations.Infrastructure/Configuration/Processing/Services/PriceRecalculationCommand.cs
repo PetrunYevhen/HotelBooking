@@ -1,9 +1,9 @@
 using Accommodations.Application.Contracts;
-using Quartz;
+using BuildingBlock.Domain;
 
 namespace Accommodations.Infrastructure.Configuration.Processing.Services;
 
-public class PriceRecalculationCommand : CommandBase
+public class PriceRecalculationCommand : CommandBase<Result>
 {
     
 }
