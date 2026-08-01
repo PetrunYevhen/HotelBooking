@@ -10,5 +10,7 @@ public interface IBookingRepository
     Task UpdateAsync (Booking booking, CancellationToken cancellationToken);
     Task DeleteAsync(Booking booking, CancellationToken cancellationToken);
     Task<bool> HasOverlappingBookingAsync(Guid roomId, DateRange bookingDates, CancellationToken cancellationToken);
-    Task<List<Booking>> GetOverdueCheckedInBookingsAsync(CancellationToken cancellationToken);
+    Task<List<Booking>> GetOverdueCheckedInBookingsAsync(DateTime utcNow, CancellationToken cancellationToken);
+    Task<List<Booking>> GetExpiredPendingBookingsAsync(TimeSpan timeout, CancellationToken cancellationToken);
+    Task<List<Booking>> GetNoShowCandidatesAsync(CancellationToken cancellationToken);
 }

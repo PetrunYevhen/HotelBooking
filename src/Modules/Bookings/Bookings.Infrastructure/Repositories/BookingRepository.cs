@@ -56,12 +56,30 @@ public class BookingRepository : IBookingRepository
                 cancellationToken);
     }
 
-    public async Task<List<Booking>> GetOverdueCheckedInBookingsAsync(CancellationToken cancellationToken)
+    public async Task<List<Booking>> GetOverdueCheckedInBookingsAsync(
+        DateTime utcNow,
+        CancellationToken cancellationToken)
     {
-        var now = DateTime.UtcNow;
-        
         return await _bookingDbContext.Bookings
-            .Where(b => b.Status == BookingStatus.CheckedIn && b.BookingDates.End < now)
+            .Where(b => b.Status == BookingStatus.CheckedIn && b.BookingDates.End <= utcNow)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<List<Booking>> GetExpiredPendingBookingsAsync(TimeSpan timeout, CancellationToken cancellationToken)
+    {
+        var cutoff = DateTime.UtcNow - timeout;
+
+        return await _bookingDbContext.Bookings
+            .Where(b => b.Status == BookingStatus.Pending && b.CreatedAt <= cutoff)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<List<Booking>> GetNoShowCandidatesAsync(CancellationToken cancellationToken)
+    {
+        var today = DateTime.UtcNow.Date;
+
+        return await _bookingDbContext.Bookings
+            .Where(b => b.Status == BookingStatus.Confirmed && b.BookingDates.Start < today)
             .ToListAsync(cancellationToken);
     }
 }

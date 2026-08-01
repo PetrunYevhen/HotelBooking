@@ -10,6 +10,7 @@ using Users.Infrastructure.Configuration.Mediation;
 using Users.Infrastructure.Configuration.Processing;
 using Users.Infrastructure.Configuration.Processing.Outbox;
 using Users.Infrastructure.Configuration.Quartz;
+using Users.Infrastructure.Configuration.Services;
 using Users.Infrastructure.Dapper;
 using ILogger = Serilog.ILogger;
 
@@ -47,6 +48,7 @@ public class UsersStartup
 
        containerBuilder.RegisterModule(new DataAccessModule(connectionString, loggerFactory));
        containerBuilder.RegisterModule(new MediatorModule());
+       containerBuilder.RegisterModule(new ServicesModule());
        containerBuilder.RegisterModule(new EventBusModule(eventBus));
        containerBuilder.RegisterModule(new ProcessingModule());
        containerBuilder.RegisterModule(new QuartzModule());

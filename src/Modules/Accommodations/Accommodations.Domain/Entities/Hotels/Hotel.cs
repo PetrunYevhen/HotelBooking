@@ -19,9 +19,12 @@ public class Hotel : Entity, IAggregateRoot
     public double? Rating { get; private set; }
     public Money? MinRoomPrice { get; private set; }
     public HotelStatus Status { get; private set; }
+    // Deliberately a scalar, not a cross-module FK. Users owns identity data.
+    public Guid? OwnerUserId { get; private set; }
     public HotelPolicies Policies { get; private set; } = HotelPolicies.Default;
     private readonly List<HotelFacility> _hotelFacilities = new();
     public IReadOnlyCollection<HotelFacility> HotelFacilities => _hotelFacilities.AsReadOnly();
+    public bool IsLiked { get; private set; }
     
     private Hotel() { }
 
@@ -50,6 +53,7 @@ public class Hotel : Entity, IAggregateRoot
     }    
     
     public void UpdatePolicies(HotelPolicies policies) => Policies = policies;
+    public void AssignOwner(Guid ownerUserId) => OwnerUserId = ownerUserId == Guid.Empty ? null : ownerUserId;
     
     // Update Price
     public void UpdateMinRoomPrice(Money newPrice) => MinRoomPrice = newPrice;

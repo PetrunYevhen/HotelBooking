@@ -10,6 +10,7 @@ WORKDIR /src
 
 # Копіюємо тільки csproj файли для кешування restore
 COPY ["API/HotelBooking.API/HotelBooking.API.csproj", "API/HotelBooking.API/"]
+COPY ["Migrator/HotelBooking.Migrator/HotelBooking.Migrator.csproj", "Migrator/HotelBooking.Migrator/"]
 COPY ["Modules/Bookings/Bookings.Application/Bookings.Application.csproj", "Modules/Bookings/Bookings.Application/"]
 COPY ["Modules/Bookings/Bookings.Domain/Bookings.Domain.csproj", "Modules/Bookings/Bookings.Domain/"]
 COPY ["Modules/Bookings/Bookings.Infrastructure/Bookings.Infrastructure.csproj", "Modules/Bookings/Bookings.Infrastructure/"]
@@ -30,6 +31,9 @@ COPY ["Modules/Reviews/Reviews.Application/Reviews.Application.csproj", "Modules
 COPY ["Modules/Reviews/Reviews.Domain/Reviews.Domain.csproj", "Modules/Reviews/Reviews.Domain/"]
 COPY ["Modules/Reviews/Reviews.Infrastructure/Reviews.Infrastructure.csproj", "Modules/Reviews/Reviews.Infrastructure/"]
 COPY ["Modules/Reviews/Reviews.IntegrationEvents/Reviews.IntegrationEvents.csproj", "Modules/Reviews/Reviews.IntegrationEvents/"]
+COPY ["Modules/Users/Users.Application/Users.Application.csproj", "Modules/Users/Users.Application/"]
+COPY ["Modules/Users/Users.Domain/Users.Domain.csproj", "Modules/Users/Users.Domain/"]
+COPY ["Modules/Users/Users.Infrastructure/Users.Infrastructure.csproj", "Modules/Users/Users.Infrastructure/"]
 COPY ["Common/BuildingBlocks/Application/Application.csproj", "Common/BuildingBlocks/Application/"]
 COPY ["Common/BuildingBlocks/Domain/Domain.csproj", "Common/BuildingBlocks/Domain/"]
 COPY ["Common/BuildingBlocks/Infrastructure/Infrastructure.csproj", "Common/BuildingBlocks/Infrastructure/"]
@@ -39,21 +43,33 @@ COPY ["Directory.Build.props", "./"]
 
 # Restore packages
 RUN dotnet restore "API/HotelBooking.API/HotelBooking.API.csproj"
+RUN dotnet restore "Migrator/HotelBooking.Migrator/HotelBooking.Migrator.csproj"
 
 # Копіюємо решту файлів і збираємо
 COPY . .
 WORKDIR "/src/API/HotelBooking.API"
 RUN dotnet build "HotelBooking.API.csproj" -c Release -o /app/build
 
-# ============ PUBLISH IMAGE ============
-FROM build AS publish
+# ============ PUBLISH IMAGES ============
+FROM build AS publish-api
+WORKDIR "/src/API/HotelBooking.API"
 RUN dotnet publish "HotelBooking.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# ============ FINAL IMAGE ============
+FROM build AS publish-migrator
+WORKDIR "/src/Migrator/HotelBooking.Migrator"
+RUN dotnet publish "HotelBooking.Migrator.csproj" -c Release -o /app/migrator /p:UseAppHost=false
+
+# ============ MIGRATOR RUNTIME IMAGE ============
+FROM runtime AS migrator
+WORKDIR /app
+COPY --from=publish-migrator /app/migrator .
+ENTRYPOINT ["dotnet", "HotelBooking.Migrator.dll"]
+
+# ============ API RUNTIME IMAGE ============
 FROM runtime AS final
 ENV ASPNETCORE_ENVIRONMENT=Development
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=publish-api /app/publish .
 
 
 ENTRYPOINT ["dotnet", "HotelBooking.API.dll"]

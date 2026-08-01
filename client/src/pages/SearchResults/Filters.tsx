@@ -1,0 +1,11 @@
+import { SlidersHorizontal } from "lucide-react"
+
+interface FiltersProps { maximumPrice: number; minimumRating: number; onMaximumPriceChange: (value: number) => void; onMinimumRatingChange: (value: number) => void; onReset: () => void }
+
+export function SearchFilters(props: FiltersProps) {
+    return <><details className="rounded-xl border bg-white shadow-sm lg:hidden"><summary className="flex cursor-pointer list-none items-center gap-2 p-4 text-sm font-semibold text-primary-900"><SlidersHorizontal size={18} className="text-gold-600" />Filters</summary><div className="border-t p-5"><FiltersForm {...props} /></div></details><div className="sticky top-24 hidden rounded-xl border bg-white p-5 shadow-sm lg:block"><div className="mb-5 flex items-center gap-2"><SlidersHorizontal size={18} className="text-gold-600" /><h2 className="font-heading text-lg font-semibold text-primary-900">Filters</h2></div><FiltersForm {...props} /></div></>
+}
+
+function FiltersForm({ maximumPrice, minimumRating, onMaximumPriceChange, onMinimumRatingChange, onReset }: FiltersProps) {
+    return <div><fieldset><legend className="text-sm font-semibold text-primary-900">Maximum nightly price</legend><div className="mt-3 flex items-center justify-between text-xs text-text-muted"><span>$0</span><span className="font-semibold text-primary-800">${maximumPrice}</span></div><input type="range" min="0" max="500" step="10" value={maximumPrice} onChange={(event) => onMaximumPriceChange(Number(event.target.value))} className="mt-2 w-full accent-gold-500" aria-label="Maximum nightly price" /></fieldset><fieldset className="mt-6 border-t pt-5"><legend className="text-sm font-semibold text-primary-900">Minimum rating</legend><div className="mt-3 space-y-2.5">{[0, 3, 4, 4.5].map((rating) => <label key={rating} className="flex cursor-pointer items-center gap-2.5 text-sm text-text-secondary"><input type="radio" name="minimumRating" value={rating} checked={minimumRating === rating} onChange={() => onMinimumRatingChange(rating)} className="accent-gold-500" />{rating === 0 ? "Any rating" : `${rating}+ stars`}</label>)}</div></fieldset><button type="button" onClick={onReset} className="mt-6 w-full border-t pt-4 text-left text-sm font-semibold text-primary-700 hover:text-primary-900">Reset all filters</button></div>
+}

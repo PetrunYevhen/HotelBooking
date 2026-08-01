@@ -1,40 +1,60 @@
-import { Heart, Star} from "lucide-react";
-import { Link } from "react-router-dom";
+import { Heart, Star } from "lucide-react"
+import { Link } from "react-router-dom"
 
 interface HotelCardProps {
-    hotelId: string;
-    name: string;
-    location: string;
-    pricePerNight: number;
-    rating: number;
-    imageUrl: string;
+    hotelId: string
+    name: string
+    location: string
+    pricePerNight: number
+    rating: number
+    imageUrl: string
 }
 
-export function HotelCard({ hotelId, name, location, pricePerNight, imageUrl, rating}: HotelCardProps) {
+export function HotelCard({
+    hotelId,
+    name,
+    location,
+    pricePerNight,
+    imageUrl,
+    rating,
+}: HotelCardProps) {
     return (
-        <div className="relative rounded-xl overflow-hidden border w-64 shrink-0">
+        <article className="group relative w-full overflow-hidden rounded-lg border bg-card shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
             <Link to={`/hotels/${hotelId}`} className="block">
-                <div className="h-36">
-                    <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
+                <div className="aspect-[4/3] overflow-hidden bg-muted">
+                    <img
+                        src={imageUrl}
+                        alt={name}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                    />
                 </div>
-                <div className="p-3">
-                    <div className="flex items-center justify-between">
-                        <span className="font-medium text-sm">{name}</span>
-                        <span className="flex items-center gap-1 text-sm">
-            <Star size={14} className="fill-yellow-400 text-yellow-400" />
+
+                <div className="p-4">
+                    <div className="flex items-start justify-between gap-3">
+                        <h3 className="line-clamp-1 font-heading text-lg font-semibold leading-[1.4] text-primary-900">
+                            {name}
+                        </h3>
+                        <span className="flex shrink-0 items-center gap-1 text-sm font-medium text-text-secondary">
+                            <Star size={16} strokeWidth={1.75} className="fill-gold-500 text-gold-500" />
                             {rating}
-          </span>
+                        </span>
                     </div>
-                    <p className="text-gray-500 text-xs mt-1">{location}</p>
-                    <p className="mt-2 text-sm">
-                        <span className="font-semibold">${pricePerNight}</span>
-                        <span className="text-gray-500"> /night</span>
+
+                    <p className="mt-1 text-sm text-text-secondary">{location}</p>
+                    <p className="mt-4 text-sm text-text-secondary">
+                        <span className="text-xl font-bold text-primary-900">${pricePerNight}</span>
+                        <span> / night</span>
                     </p>
                 </div>
             </Link>
-            <button className="absolute top-2 right-2 bg-white/80 rounded-full p-1.5">
-                <Heart size={16} />
+
+            <button
+                type="button"
+                aria-label={`Add ${name} to favorites`}
+                className="absolute right-3 top-3 inline-flex size-9 items-center justify-center rounded-full bg-white/90 text-primary-800 shadow-sm backdrop-blur transition-colors hover:bg-white hover:text-gold-600"
+            >
+                <Heart size={18} strokeWidth={1.75} />
             </button>
-        </div>
+        </article>
     )
 }

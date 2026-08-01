@@ -1,178 +1,41 @@
-import { useState } from "react"
-import { Bed, Users } from "lucide-react"
+import { Bed, Check, Users } from "lucide-react"
+import { Link, useNavigate } from "react-router-dom"
 import type { RoomDetailsDto } from "@/api/rooms"
-import { createBooking } from "@/api/bookings"
-import { GUEST_USER_ID } from "@/lib/constants"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 
 interface RoomCardProps {
     room: RoomDetailsDto
     checkIn: string
     checkOut: string
+    initialGuestCount?: number
+    isSelected?: boolean
+    onSelect?: (room: RoomDetailsDto) => void
 }
 
-export function RoomCard({ room, checkIn, checkOut }: RoomCardProps) {
-    const [isFormOpen, setIsFormOpen] = useState(false)
-    const [isSubmitting, setIsSubmitting] = useState(false)
-    const [error, setError] = useState<string | null>(null)
-    const [bookingId, setBookingId] = useState<string | null>(null)
+const roomImages = [
+    "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=800&q=80",
+]
 
-    const [firstName, setFirstName] = useState("")
-    const [lastName, setLastName] = useState("")
-    const [email, setEmail] = useState("")
-    const [phoneNumber, setPhoneNumber] = useState("")
-    const [guestCount, setGuestCount] = useState(1)
-    const [specialRequest, setSpecialRequest] = useState("")
+function roomImageIndex(roomId: string) {
+    return Array.from(roomId).reduce((sum, character) => sum + character.charCodeAt(0), 0) % roomImages.length
+}
 
-    async function handleSubmit(e: React.FormEvent) {
-        e.preventDefault()
-        setIsSubmitting(true)
-        setError(null)
+export function RoomCard({ room, checkIn, checkOut, initialGuestCount = 1, isSelected = false, onSelect }: RoomCardProps) {
+    const navigate = useNavigate()
+    const stayNights = Math.max(1, Math.round((new Date(`${checkOut}T00:00:00`).getTime() - new Date(`${checkIn}T00:00:00`).getTime()) / 86_400_000))
+    const totalForStay = room.effectivePriceAmount * stayNights
+    const detailsSearch = new URLSearchParams({ checkIn, checkOut, guests: String(initialGuestCount) }).toString()
+    const detailsUrl = `/hotels/${room.hotelId}/rooms/${room.roomId}?${detailsSearch}`
 
-        try {
-            const id = await createBooking({
-                hotelId: room.hotelId,
-                roomId: room.roomId,
-                userId: GUEST_USER_ID,
-                checkIn,
-                checkOut,
-                guestCount,
-                firstName,
-                lastName,
-                email,
-                phoneNumber,
-                specialRequest: specialRequest || undefined,
-            })
-            setBookingId(id)
-            setIsFormOpen(false)
-        } catch {
-            setError("Could not create booking. Please check your details and try again.")
-        } finally {
-            setIsSubmitting(false)
-        }
+    function openDetails(event: React.MouseEvent<HTMLElement>) {
+        const target = event.target as HTMLElement
+        if (target.closest("a, button, input, label, select, textarea, form")) return
+        navigate(detailsUrl)
     }
 
-    return (
-        <div className="border rounded-xl overflow-hidden flex flex-col">
-            <div className="flex">
-                <img
-                    src="https://placehold.co/200x160"
-                    alt={room.type}
-                    className="w-48 h-40 object-cover shrink-0"
-                />
-
-                <div className="p-4 flex flex-1 items-center justify-between">
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <span className="font-medium">{room.type}</span>
-                            <span className="text-sm text-gray-500">№{room.roomNumber}</span>
-                        </div>
-                        <p className="text-sm text-gray-500 mt-1 flex items-center gap-3">
-                            <span className="flex items-center gap-1">
-                                <Bed size={14} /> {room.beds} beds
-                            </span>
-                            <span className="flex items-center gap-1">
-                                <Users size={14} /> up to {room.capacity} guests
-                            </span>
-                        </p>
-                        {room.description && <p className="text-sm text-gray-600 mt-2">{room.description}</p>}
-                    </div>
-
-                    <div className="text-right shrink-0">
-                        <p className="text-sm">
-                            <span className="font-semibold">
-                                {room.effectivePriceAmount} {room.effectivePriceCurrency}
-                            </span>
-                            <span className="text-gray-500"> /night</span>
-                        </p>
-                        <button
-                            disabled={!room.isActive}
-                            onClick={() => setIsFormOpen((open) => !open)}
-                            className="mt-2 px-4 py-1.5 rounded-lg bg-blue-600 text-white text-sm disabled:bg-gray-300"
-                        >
-                            Request to book
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {bookingId && (
-                <p className="px-4 pb-4 text-sm text-green-600">
-                    Booking created (id: {bookingId}). We'll email you a confirmation shortly.
-                </p>
-            )}
-
-            {isFormOpen && (
-                <form onSubmit={handleSubmit} className="border-t p-4 flex flex-col gap-3">
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="flex flex-col gap-1">
-                            <Label htmlFor={`firstName-${room.roomId}`}>First name</Label>
-                            <Input
-                                id={`firstName-${room.roomId}`}
-                                value={firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <Label htmlFor={`lastName-${room.roomId}`}>Last name</Label>
-                            <Input
-                                id={`lastName-${room.roomId}`}
-                                value={lastName}
-                                onChange={(e) => setLastName(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <Label htmlFor={`email-${room.roomId}`}>Email</Label>
-                            <Input
-                                id={`email-${room.roomId}`}
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <Label htmlFor={`phone-${room.roomId}`}>Phone number</Label>
-                            <Input
-                                id={`phone-${room.roomId}`}
-                                value={phoneNumber}
-                                onChange={(e) => setPhoneNumber(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <Label htmlFor={`guests-${room.roomId}`}>Guests</Label>
-                            <Input
-                                id={`guests-${room.roomId}`}
-                                type="number"
-                                min={1}
-                                max={room.capacity}
-                                value={guestCount}
-                                onChange={(e) => setGuestCount(Number(e.target.value))}
-                                required
-                            />
-                        </div>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                        <Label htmlFor={`request-${room.roomId}`}>Special request (optional)</Label>
-                        <Input
-                            id={`request-${room.roomId}`}
-                            value={specialRequest}
-                            onChange={(e) => setSpecialRequest(e.target.value)}
-                        />
-                    </div>
-
-                    {error && <p className="text-sm text-red-600">{error}</p>}
-
-                    <Button type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? "Booking..." : "Confirm request"}
-                    </Button>
-                </form>
-            )}
-        </div>
-    )
+    return <article id={`room-${room.roomId}`} onClick={openDetails} className={`flex cursor-pointer scroll-mt-24 flex-col overflow-hidden rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md ${isSelected ? "border-gold-500 ring-2 ring-gold-500/15" : ""}`}>
+        <div className="flex flex-col md:flex-row"><img src={roomImages[roomImageIndex(room.roomId)]} alt={room.type} className="h-48 w-full shrink-0 object-cover md:h-auto md:w-52" /><div className="min-w-0 flex-1 p-5"><div className="flex flex-wrap items-center gap-x-2 gap-y-1"><h3 className="font-heading text-xl font-semibold text-primary-900">{room.type}</h3><span className="rounded bg-bg-muted px-2 py-0.5 text-xs font-medium text-text-secondary">Room {room.roomNumber}</span></div><div className="mt-3 flex flex-wrap gap-2 text-xs text-text-secondary"><span className="inline-flex items-center gap-1 rounded-full bg-bg-muted px-2.5 py-1"><Bed size={14} /> {room.beds} {room.beds === 1 ? "bed" : "beds"}</span><span className="inline-flex items-center gap-1 rounded-full bg-bg-muted px-2.5 py-1"><Users size={14} /> Up to {room.capacity} guests</span></div>{room.description && <p className="mt-3 text-sm leading-5 text-text-secondary">{room.description}</p>}<p className="mt-3 flex items-center gap-1.5 text-xs font-semibold text-success-600"><Check size={15} /> Continue to secure checkout</p><Link to={detailsUrl} className="mt-3 inline-flex text-xs font-semibold text-primary-700 hover:text-gold-600">View room details →</Link></div><div className="flex shrink-0 items-center justify-between gap-4 border-t bg-bg-warm p-5 md:w-44 md:flex-col md:items-end md:justify-center md:border-t-0 md:border-l md:bg-white"><div className="md:text-right"><p className="text-xs text-text-secondary">{room.effectivePriceAmount} {room.effectivePriceCurrency} / night</p><p className="mt-1 font-heading text-xl font-semibold text-primary-900">{totalForStay} {room.effectivePriceCurrency}</p><p className="text-xs text-text-muted">{stayNights} {stayNights === 1 ? "night" : "nights"}</p></div><Button type="button" disabled={!room.isActive} onClick={() => { if (onSelect) { onSelect(room); return } navigate(`/checkout?hotelId=${encodeURIComponent(room.hotelId)}&roomId=${encodeURIComponent(room.roomId)}&${detailsSearch}`) }} className="shrink-0">{isSelected ? "Selected" : onSelect ? "Select room" : "Book room"}</Button></div></div>
+    </article>
 }

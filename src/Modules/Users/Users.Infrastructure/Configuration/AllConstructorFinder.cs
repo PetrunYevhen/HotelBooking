@@ -12,7 +12,9 @@ public class AllConstructorFinder : IConstructorFinder
     {
         var result = Cache.GetOrAdd(
             targetType,
-            t => t.GetTypeInfo().DeclaredConstructors.ToArray());
+            t => t.GetTypeInfo().DeclaredConstructors
+                .Where(constructor => !constructor.IsStatic)
+                .ToArray());
 
         return result.Length > 0 ? result : throw new NoConstructorsFoundException(targetType, this);
     }

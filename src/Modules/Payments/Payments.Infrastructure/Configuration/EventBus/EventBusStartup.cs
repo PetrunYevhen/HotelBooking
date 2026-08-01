@@ -18,6 +18,7 @@ public static class EventBusStartup
     {
          var eventBus = PaymentCompositoryRoot.BeginLifetimeScope().Resolve<IEventBus>();
          SubscribeToIntegrationEvent<BookingCreatedIntegrationEvent>(eventBus, logger);
+         SubscribeToIntegrationEvent<BookingCanceledIntegrationEvent>(eventBus, logger);
     }
 
     private static void SubscribeToIntegrationEvent<T>(IEventBus eventBus, ILogger logger)

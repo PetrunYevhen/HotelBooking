@@ -12,23 +12,25 @@ public class Payment :  Entity,  IAggregateRoot
     public string? ExternalTransactionId { get; private set; }
     
     public Money TotalAmount { get; private set; }
+    public Money RefundedAmount { get; private set; }
     public string? FailureReason { get; private set; } = string.Empty;
-     
+
     public DateTime CreatedAt { get; private set; }
     public DateTime? CompletedAt { get; private set; }
-    
+
     public PaymentStatus Status { get; private set; }
-    
+
     public Payment() { }
-    
+
     private Payment(Guid bookingId, Money totalAmount)
     {
         PaymentId = PaymentId.New();
         BookingId = bookingId;
         TotalAmount = totalAmount;
+        RefundedAmount = Money.Zero(totalAmount.Currency);
         Status = PaymentStatus.Pending;
         CreatedAt = DateTime.UtcNow;
-        
+
         AddDomainEvent(new PaymentCreatedDomainEvent(PaymentId, BookingId, TotalAmount));
     }
 
@@ -89,16 +91,26 @@ public class Payment :  Entity,  IAggregateRoot
         return Result.Success();
     }
 
-    public Result Refund()
+    public Result Refund(Money refundAmount)
     {
         if (Status != PaymentStatus.Completed)
             return Result.Failure(new Error("Payment.InvalidStatus", $"Cannot refund payment in status '{Status}'."));
 
-        Status = PaymentStatus.Refunded;
+        if (refundAmount is null)
+            return Result.Failure(new Error("Payment.InvalidAmount", "Refund amount is required."));
 
-        AddDomainEvent(new PaymentRefundedDomainEvent(PaymentId, BookingId, TotalAmount));
+        if (refundAmount.Currency != TotalAmount.Currency)
+            return Result.Failure(new Error("Payment.CurrencyMismatch", "Refund currency must match payment currency."));
+
+        if (refundAmount.Amount > TotalAmount.Amount)
+            return Result.Failure(new Error("Payment.RefundExceedsTotal", "Refund amount cannot exceed the original payment amount."));
+
+        Status = refundAmount.Amount == TotalAmount.Amount ? PaymentStatus.Refunded : PaymentStatus.PartiallyRefunded;
+        RefundedAmount = refundAmount;
+
+        AddDomainEvent(new PaymentRefundedDomainEvent(PaymentId, BookingId, refundAmount));
 
         return Result.Success();
     }
-    
+
 }

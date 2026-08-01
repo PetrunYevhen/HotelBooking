@@ -5,7 +5,7 @@ namespace Bookings.Application.Command.CreateBooking;
 
 public class CreateBookingCommand : CommandBase<Result<Guid>>
 {
-    public CreateBookingCommand(Guid hotelId, Guid roomId, Guid userId, DateTime checkIn, DateTime checkOut, int guestCount, string firstName, string lastName, string email, string phoneNumber, string? specialRequest)
+    public CreateBookingCommand(Guid hotelId, Guid roomId, Guid userId, DateTime checkIn, DateTime checkOut, int guestCount, string firstName, string lastName, string email, string phoneNumber, string? specialRequest, IReadOnlyCollection<CreateBookingAddOn>? addOns = null)
     {
         HotelId = hotelId;
         RoomId = roomId;
@@ -18,6 +18,7 @@ public class CreateBookingCommand : CommandBase<Result<Guid>>
         Email = email;
         PhoneNumber = phoneNumber;
         SpecialRequest = specialRequest;
+        AddOns = addOns ?? [];
     }
 
     public Guid HotelId { get; init; }
@@ -33,4 +34,7 @@ public class CreateBookingCommand : CommandBase<Result<Guid>>
     public string PhoneNumber { get; init; }
 
     public string? SpecialRequest { get; init; }
+    public IReadOnlyCollection<CreateBookingAddOn> AddOns { get; init; }
 }
+
+public sealed record CreateBookingAddOn(Guid HotelAddOnId, int Quantity);

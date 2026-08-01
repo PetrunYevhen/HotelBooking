@@ -20,7 +20,9 @@ public class BookingCanceledNotificationHandler : INotificationHandler<BookingCa
             notification.DomainEvent.Id,
             notification.DomainEvent.OccurredOn,
             notification.DomainEvent.BookingId.Value,
-            notification.DomainEvent.RoomId),
+            notification.DomainEvent.RoomId,
+            notification.DomainEvent.RefundAmount.Amount,
+            notification.DomainEvent.RefundAmount.Currency),
             cancellationToken);
     }
 }

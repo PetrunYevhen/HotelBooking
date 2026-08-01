@@ -2,6 +2,9 @@ using System.Collections.Specialized;
 using Bookings.Infrastructure.Configurations.Processing.Inbox;
 using Bookings.Infrastructure.Configurations.Processing.Outbox;
 using Bookings.Infrastructure.Configurations.Processing.Services;
+using Bookings.Infrastructure.Configurations.Processing.Services.CompleteOverdueBooking;
+using Bookings.Infrastructure.Configurations.Processing.Services.ExpirePendingBooking;
+using Bookings.Infrastructure.Configurations.Processing.Services.MarkNoShowBooking;
 using Quartz;
 using Quartz.Impl;
 using Serilog;
@@ -94,6 +97,34 @@ internal static class QuartzStartup
 
         _scheduler
             .ScheduleJob(completeOverdueBookingsJob, completeOverdueBookingsTrigger)
+            .GetAwaiter().GetResult();
+
+
+        //ExpirePendingBookings
+        var expirePendingBookingsJob = JobBuilder.Create<ExpirePendingBookingsJob>().Build();
+        var expirePendingBookingsTrigger =
+            TriggerBuilder
+                .Create()
+                .StartNow()
+                .WithSimpleSchedule(s => s.WithIntervalInMinutes(5).RepeatForever())
+                .Build();
+
+        _scheduler
+            .ScheduleJob(expirePendingBookingsJob, expirePendingBookingsTrigger)
+            .GetAwaiter().GetResult();
+
+
+        //MarkNoShowBookings
+        var markNoShowBookingsJob = JobBuilder.Create<MarkNoShowBookingsJob>().Build();
+        var markNoShowBookingsTrigger =
+            TriggerBuilder
+                .Create()
+                .StartNow()
+                .WithSimpleSchedule(s => s.WithIntervalInMinutes(30).RepeatForever())
+                .Build();
+
+        _scheduler
+            .ScheduleJob(markNoShowBookingsJob, markNoShowBookingsTrigger)
             .GetAwaiter().GetResult();
     }
 }

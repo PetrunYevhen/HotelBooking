@@ -67,4 +67,25 @@ public sealed class StripeMockPaymentGatewayClient : IPaymentGatewayClient
                 new Error("PaymentGateway.ConfirmFailed", exception.Message));
         }
     }
+
+    public async Task<Result<RefundResult>> RefundPaymentAsync(string paymentIntentId, Money amount, string idempotencyKey, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var options = new RefundCreateOptions
+            {
+                PaymentIntent = paymentIntentId,
+                Amount = StripePaymentGatewayClient.ToMinorUnits(amount.Amount)
+            };
+            var refund = await new RefundService(_stripeClient)
+                .CreateAsync(options, new RequestOptions { IdempotencyKey = idempotencyKey }, cancellationToken);
+
+            return Result.Success(new RefundResult(refund.Id, refund.Status));
+        }
+        catch (StripeException exception)
+        {
+            return Result.Failure<RefundResult>(
+                new Error("PaymentGateway.RefundFailed", exception.Message));
+        }
+    }
 }

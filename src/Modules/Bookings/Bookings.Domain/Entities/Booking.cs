@@ -18,10 +18,12 @@ public class Booking : Entity, IAggregateRoot
     public int GuestsCount { get; private set; }
     public GuestInfo GuestInfo { get; private set; }
     public string? SpecialRequest { get; private set; }
+    public ICollection<BookingAddOn> AddOns { get; private set; } = new List<BookingAddOn>();
     public DateTime CreatedAt { get; private set; }
     public DateTime? ConfirmedAt { get; private set; }
     public DateTime? CheckedInAt { get; private set; }
     public DateTime? CompletedAt { get; private set; }
+    public BookingCompletionReason? CompletionReason { get; private set; }
     public DateTime? CanceledAt { get; private set; }
     
     public CancellationInitiator? CancelledBy { get; private set; } 
@@ -37,7 +39,8 @@ public class Booking : Entity, IAggregateRoot
         DateRange bookingDates,
         int guestsCount,
         GuestInfo guestInfo,
-        string? specialRequest
+        string? specialRequest,
+        IReadOnlyCollection<BookingAddOnDetails>? addOns
 )
     {
         BookingId = BookingId.New();
@@ -55,6 +58,13 @@ public class Booking : Entity, IAggregateRoot
         AddDomainEvent(new BookingCreatedDomainEvent(
             BookingId, HotelId, RoomId,
             BookingDates, TotalPrice));
+
+        foreach (var addOn in addOns ?? [])
+        {
+            var addOnResult = BookingAddOn.Create(BookingId, addOn);
+            if (addOnResult.IsSuccess)
+                AddOns.Add(addOnResult.Value);
+        }
     }
 
     public static Result<Booking> Create(
@@ -65,7 +75,8 @@ public class Booking : Entity, IAggregateRoot
         DateRange bookingDates,
         int guestsCount,
         GuestInfo guestInfo,
-        string? specialRequest = null)
+        string? specialRequest = null,
+        IReadOnlyCollection<BookingAddOnDetails>? addOns = null)
     {
         if (hotelId == Guid.Empty)
             return Result.Failure<Booking>(new Error("Booking.InvalidHotelId", "HotelId is required."));
@@ -82,7 +93,10 @@ public class Booking : Entity, IAggregateRoot
         if (guestInfo is null)
             return Result.Failure<Booking>(new Error("Booking.InvalidGuestInfo", "GuestInfo is required."));
 
-        return Result.Success(new Booking(hotelId, roomId, userId, totalPrice,  bookingDates, guestsCount, guestInfo, specialRequest));
+        if (addOns?.Any(addOn => addOn.Quantity < 1 || addOn.UnitPrice.Currency != totalPrice.Currency || addOn.TotalPrice.Currency != totalPrice.Currency) == true)
+            return Result.Failure<Booking>(new Error("Booking.InvalidAddOns", "Add-ons must have a positive quantity and use the booking currency."));
+
+        return Result.Success(new Booking(hotelId, roomId, userId, totalPrice, bookingDates, guestsCount, guestInfo, specialRequest, addOns));
     }
 
     public Result Confirm()
@@ -95,7 +109,7 @@ public class Booking : Entity, IAggregateRoot
         AddDomainEvent(new BookingConfirmedDomainEvent(BookingId.Value, RoomId, BookingDates, UserId, GuestInfo.Email));
         return Result.Success();
     }
-    public Result Cancel(CancellationInitiator cancellationInitiator, string? cancellationReason = null)
+    public Result Cancel(CancellationInitiator cancellationInitiator, Money refundAmount, string? cancellationReason = null)
     {
         if (Status is not (BookingStatus.Pending or BookingStatus.Confirmed))
             return Result.Failure(new Error("Booking.InvalidState",
@@ -105,7 +119,7 @@ public class Booking : Entity, IAggregateRoot
         CanceledAt = DateTime.UtcNow;
         CancelledBy = cancellationInitiator;
         CancellationReason = cancellationReason;
-        AddDomainEvent(new BookingCanceledDomainEvent(BookingId, RoomId, cancellationInitiator));
+        AddDomainEvent(new BookingCanceledDomainEvent(BookingId, RoomId, cancellationInitiator, refundAmount));
         return Result.Success();
     }
 
@@ -125,14 +139,39 @@ public class Booking : Entity, IAggregateRoot
         return Result.Success();
     }
     
-    public Result CheckOut()
+    public Result CheckOutByStaff(DateTime utcNow)
+    {
+        return Complete(BookingCompletionReason.StaffCheckout, utcNow);
+    }
+
+    public Result CompleteAutomatically(DateTime utcNow)
     {
         if (Status != BookingStatus.CheckedIn)
-            return Result.Failure(new Error("Booking.InvalidState", $"Cannot check out booking in status {Status}."));
+            return Result.Failure(new Error("Booking.InvalidState", $"Cannot complete booking in status {Status}."));
+
+        if (utcNow.Kind != DateTimeKind.Utc)
+            return Result.Failure(new Error("Booking.InvalidUtc", "utcNow must be UTC."));
+
+        if (utcNow < BookingDates.End)
+            return Result.Failure(new Error(
+                "Booking.CheckOutNotDue",
+                "The booking checkout time has not arrived yet."));
+
+        return Complete(BookingCompletionReason.AutomaticCheckout, utcNow);
+    }
+
+    private Result Complete(BookingCompletionReason reason, DateTime utcNow)
+    {
+        if (utcNow.Kind != DateTimeKind.Utc)
+            return Result.Failure(new Error("Booking.InvalidUtc", "utcNow must be UTC."));
+
+        if (Status != BookingStatus.CheckedIn)
+            return Result.Failure(new Error("Booking.InvalidState", $"Cannot complete booking in status {Status}."));
 
         Status = BookingStatus.Completed;
-        CompletedAt = DateTime.UtcNow;
-        AddDomainEvent(new BookingCompletedDomainEvent(BookingId, HotelId, RoomId, GuestInfo, UserId));
+        CompletedAt = utcNow;
+        CompletionReason = reason;
+        AddDomainEvent(new BookingCompletedDomainEvent(BookingId, HotelId, RoomId, GuestInfo, UserId, reason));
         return Result.Success();
     }
     
@@ -149,6 +188,16 @@ public class Booking : Entity, IAggregateRoot
         return Result.Success();
     }
 
+    public Result MarkNoShow()
+    {
+        if (Status != BookingStatus.Confirmed)
+            return Result.Failure(new Error("Booking.InvalidState", $"Cannot mark no-show for booking in status {Status}."));
+
+        Status = BookingStatus.NoShow;
+        AddDomainEvent(new BookingNoShowDomainEvent(BookingId, RoomId));
+        return Result.Success();
+    }
+
     public bool IsRefundable(int refundWindowDays, DateTime utcNow)
     {
         if (refundWindowDays < 0)
@@ -157,5 +206,30 @@ public class Booking : Entity, IAggregateRoot
             throw new ArgumentException("The current time must be UTC.", nameof(utcNow));
 
         return utcNow.Date <= BookingDates.Start.Date.AddDays(-refundWindowDays);
+    }
+
+    public Result<Money> CalculateRefundAmount(
+        CancellationPolicyType policyType,
+        int? deadlineDays,
+        double? percentagePenalty,
+        DateTime utcNow)
+    {
+        if (utcNow.Kind != DateTimeKind.Utc)
+            return Result.Failure<Money>(new Error("Booking.InvalidUtc", "utcNow must be UTC."));
+
+        if (policyType == CancellationPolicyType.NonRefundable)
+            return Result.Success(Money.Zero(TotalPrice.Currency));
+
+        var deadline = BookingDates.Start.Date.AddDays(-(deadlineDays ?? 0));
+        var beforeDeadline = utcNow.Date <= deadline;
+
+        if (beforeDeadline)
+            return Result.Success(TotalPrice);
+
+        if (policyType == CancellationPolicyType.FreeCancellation)
+            return Result.Success(Money.Zero(TotalPrice.Currency));
+
+        var refundFraction = (decimal)(100 - (percentagePenalty ?? 0)) / 100m;
+        return TotalPrice.Multiply(refundFraction);
     }
 }

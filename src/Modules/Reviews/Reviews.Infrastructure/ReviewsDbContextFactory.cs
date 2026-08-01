@@ -27,6 +27,7 @@ public class ReviewsDbContextFactory : IDesignTimeDbContextFactory<ReviewsDbCont
         var configuration = new ConfigurationBuilder()
             .SetBasePath(basePath)
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddEnvironmentVariables()
             .Build();
 
         var connectionString = configuration.GetConnectionString("DefaultConnection");

@@ -28,6 +28,18 @@ public class PaymentsEntityTypeConfiguration : IEntityTypeConfiguration<Payment>
                 .IsRequired();
         });
 
+        builder.ComplexProperty<Money>(p => p.RefundedAmount, b =>
+        {
+            b.Property(m => m.Amount)
+                .HasColumnName("RefundedAmount_Amount")
+                .IsRequired();
+
+            b.Property(m => m.Currency)
+                .HasColumnName("RefundedAmount_Currency")
+                .HasMaxLength(3)
+                .IsRequired();
+        });
+
         builder.Property(p => p.Status)
             .HasConversion<int>()
             .IsRequired();

@@ -59,13 +59,19 @@ public class BookingsStartup
         domainNotificationMap.Add("BookingCanceledNotification", typeof(BookingCanceledNotification));
         domainNotificationMap.Add("BookingConfirmedNotification", typeof(BookingConfirmedNotification));
         domainNotificationMap.Add("BookingCompletedNotification", typeof(BookingCompletedNotification));
-        
+        domainNotificationMap.Add("BookingExpiredNotification", typeof(BookingExpiredNotification));
+        domainNotificationMap.Add("BookingNoShowNotification", typeof(BookingNoShowNotification));
+
         containerBuilder.RegisterModule(new OutboxModule(domainNotificationMap));
         containerBuilder.RegisterModule(new QuartzModule());
-        containerBuilder.RegisterModule(new ClientModule(client));
-        
+
+        var clientModule = new ClientModule(client);
+        containerBuilder.RegisterModule(clientModule);
+
         _container = containerBuilder.Build();
-        
+
+        clientModule.RegisterSubscriptions(_container);
+
         BookingCompositoryRoot.SetContainer(_container);
     }
 }

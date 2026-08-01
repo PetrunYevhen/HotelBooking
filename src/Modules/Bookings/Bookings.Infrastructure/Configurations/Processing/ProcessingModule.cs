@@ -11,6 +11,10 @@ public class ProcessingModule : Module
 {
     protected override void Load(ContainerBuilder builder)
     {
+        builder.RegisterInstance(TimeProvider.System)
+            .As<TimeProvider>()
+            .SingleInstance();
+
         builder.RegisterType<DomainEventDispatcher>()
             .As<IDomainEventDispatcher>()
             .InstancePerLifetimeScope();

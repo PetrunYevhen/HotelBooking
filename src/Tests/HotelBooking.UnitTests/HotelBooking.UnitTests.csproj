@@ -22,8 +22,12 @@
     <ProjectReference Include="../../SharedKernel/SharedKernel.csproj" />
     <ProjectReference Include="../../Modules/Accommodations/Accommodations.Domain/Accommodations.Domain.csproj" />
     <ProjectReference Include="../../Modules/Bookings/Bookings.Domain/Bookings.Domain.csproj" />
+    <ProjectReference Include="../../Modules/Bookings/Bookings.Application/Bookings.Application.csproj" />
     <ProjectReference Include="../../Modules/Notifications/Notifications.Domain/Notifications.Domain.csproj" />
     <ProjectReference Include="../../Modules/Payments/Payments.Domain/Payments.Domain.csproj" />
     <ProjectReference Include="../../Modules/Reviews/Reviews.Domain/Reviews.Domain.csproj" />
+    <ProjectReference Include="../../Modules/Users/Users.Domain/Users.Domain.csproj" />
+    <ProjectReference Include="../../Modules/Users/Users.Application/Users.Application.csproj" />
+    <ProjectReference Include="../../Modules/Users/Users.Infrastructure/Users.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

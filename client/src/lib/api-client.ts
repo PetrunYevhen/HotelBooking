@@ -22,6 +22,18 @@ export const apiClient = axios.create({
     headers: { "Content-Type": "application/json" },
 })
 
+const accessTokenKey = "hotelbooking_access_token"
+
+export const hasAccessToken = () => Boolean(localStorage.getItem(accessTokenKey))
+export const setAccessToken = (token: string) => localStorage.setItem(accessTokenKey, token)
+export const clearAccessToken = () => localStorage.removeItem(accessTokenKey)
+
+apiClient.interceptors.request.use((config) => {
+    const token = localStorage.getItem(accessTokenKey)
+    if (token) config.headers.Authorization = `Bearer ${token}`
+    return config
+})
+
 apiClient.interceptors.response.use(
     (response) => response,
     (error: unknown) => {

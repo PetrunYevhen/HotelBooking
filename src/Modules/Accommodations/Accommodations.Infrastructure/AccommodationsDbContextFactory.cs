@@ -30,9 +30,18 @@ public class AccommodationsDbContextFactory : IDesignTimeDbContextFactory<Accomm
         var configuration = new ConfigurationBuilder()
             .SetBasePath(basePath)
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddEnvironmentVariables()
             .Build();
         
         var connectionString = configuration.GetConnectionString("DefaultConnection");
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            var user = configuration["POSTGRES_USER"] ?? "postgres";
+            var password = configuration["POSTGRES_PASSWORD"] ?? "password";
+            var database = configuration["POSTGRES_DB"] ?? "hotel_booking";
+            var port = configuration["DB_PORT"] ?? "5433";
+            connectionString = $"Host=localhost;Port={port};Database={database};Username={user};Password={password}";
+        }
 
         if (string.IsNullOrEmpty(connectionString))
             throw new InvalidOperationException(

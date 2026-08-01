@@ -21,6 +21,8 @@ public class BookingEntityTypeConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(x => x.Status).HasConversion<int>().IsRequired();
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.ConfirmedAt);
+        builder.Property(x => x.CompletedAt);
+        builder.Property(x => x.CompletionReason).HasConversion<int?>();
         builder.Property(x => x.CanceledAt);
         builder.Property(x => x.CancelledBy).HasConversion<int?>();
         builder.Property(x => x.CancellationReason).HasMaxLength(500);

@@ -8,10 +8,12 @@ namespace Bookings.Application.Command.CheckOutBooking;
 public class CheckOutBookingCommandHandler : IRequestHandler<CheckOutBookingCommand, Result>
 {
     private readonly IBookingRepository _bookingRepository;
+    private readonly TimeProvider _timeProvider;
 
-    public CheckOutBookingCommandHandler(IBookingRepository bookingRepository)
+    public CheckOutBookingCommandHandler(IBookingRepository bookingRepository, TimeProvider timeProvider)
     {
         _bookingRepository = bookingRepository;
+        _timeProvider = timeProvider;
     }
 
     public async Task<Result> Handle(CheckOutBookingCommand request, CancellationToken cancellationToken)
@@ -21,7 +23,7 @@ public class CheckOutBookingCommandHandler : IRequestHandler<CheckOutBookingComm
         if (booking is null)
             return Result.Failure(new Error("Booking.NotFound", $"Booking {request.BookingId} not found."));
 
-        var result = booking.CheckOut();
+        var result = booking.CheckOutByStaff(_timeProvider.GetUtcNow().UtcDateTime);
         if (result.IsFailure)
             return result;
 

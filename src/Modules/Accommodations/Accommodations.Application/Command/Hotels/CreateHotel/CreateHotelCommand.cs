@@ -17,4 +17,5 @@ public class CreateHotelCommand : CommandBase<Result<Guid>>
     
     public TimeOnly CheckIn { get; init; }
     public TimeOnly CheckOut { get; init; } 
+    public Guid? OwnerUserId { get; init; }
 }

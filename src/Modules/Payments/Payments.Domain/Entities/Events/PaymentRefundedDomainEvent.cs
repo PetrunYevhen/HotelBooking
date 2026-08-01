@@ -5,14 +5,14 @@ namespace Payments.Domain.Entities.Events;
 
 public class PaymentRefundedDomainEvent : DomainEventBase
 {
-    public PaymentRefundedDomainEvent(PaymentId paymentId, Guid bookingId, Money totalAmount)
+    public PaymentRefundedDomainEvent(PaymentId paymentId, Guid bookingId, Money refundAmount)
     {
         PaymentId = paymentId;
         BookingId = bookingId;
-        TotalAmount = totalAmount;
+        RefundAmount = refundAmount;
     }
 
     public PaymentId PaymentId { get; }
     public Guid BookingId { get; }
-    public Money TotalAmount { get; }
+    public Money RefundAmount { get; }
 }

@@ -8,6 +8,7 @@ using Accommodations.Infrastructure.Configuration.Processing.Outbox;
 using Accommodations.Infrastructure.Configuration.Quartz;
 using Accommodations.Infrastructure.Configuration.Services;
 using Accommodations.Infrastructure.Dapper;
+using Accommodations.Application.Events.EventNotifications;
 using Autofac;
 using Dapper;
 using Infrastructure;
@@ -30,6 +31,7 @@ public class AccommodationsStartup
        long? internalProcessingPoolingInterval = null)
    {
        SqlMapper.AddTypeHandler(new HotelIdTypeHandler());
+       SqlMapper.AddTypeHandler(new HotelAddOnIdTypeHandler());
        
        var moduleLogger = logger.ForContext("Module", "Accommodations");
        
@@ -55,7 +57,10 @@ public class AccommodationsStartup
        containerBuilder.RegisterModule(new MediatorModule());
        containerBuilder.RegisterModule(new ProcessingModule());
        containerBuilder.RegisterModule(new ServicesModule());
-       containerBuilder.RegisterModule(new OutboxModule(new BiDictionary<string, Type>()));
+       var domainNotificationMap = new BiDictionary<string, Type>();
+       domainNotificationMap.Add("HotelAddOnUpsertedNotification", typeof(HotelAddOnUpsertedNotification));
+       domainNotificationMap.Add("HotelAddOnDeactivatedNotification", typeof(HotelAddOnDeactivatedNotification));
+       containerBuilder.RegisterModule(new OutboxModule(domainNotificationMap));
        containerBuilder.RegisterModule(new EventBusModule(eventBus));
        containerBuilder.RegisterModule(new QuartzModule());
        

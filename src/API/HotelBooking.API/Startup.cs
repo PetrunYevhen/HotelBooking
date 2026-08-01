@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Text;
+using System.Security.Cryptography;
+using System.Text.Json.Serialization;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Accommodations.Infrastructure.Configuration;
@@ -14,6 +16,15 @@ using Infrastructure.Emails;
 using Notifications.Infrastructure.Configuration;
 using Reviews.Infrastructure.Configuration;
 using Serilog;
+using Users.Infrastructure.Configuration;
+using HotelBooking.API.Authentication;
+using HotelBooking.API.Modules.Users;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Users.Application.Services;
+using Users.Application.Command.Users.CreateAdmin;
+using Users.Application.Contracts;
 using ILogger = Serilog.ILogger;
 
 namespace HotelBooking.API;
@@ -43,6 +54,7 @@ public class Startup
         containerBuilder.RegisterModule(new AccommodationsAutofacModule());
         containerBuilder.RegisterModule(new PaymentsAutofacModule());
         containerBuilder.RegisterModule(new ReviewsAutofacModule());
+        containerBuilder.RegisterModule(new UsersAutofacModule());
     }
     
     public void ConfigureServices(IServiceCollection services)
@@ -53,11 +65,25 @@ public class Startup
         });
         
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
+        services.AddSwaggerGen(options =>
+        {
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                Description = "Paste an access token obtained from /api/auth/login."
+            });
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } }] = []
+            });
+        });
         services.AddProblemDetails();
         services.AddExceptionHandler<ApiExceptionHandler>();
         services.AddHealthChecks();
         ConfigureClient(services);
+        ConfigureAuthentication(services);
         
         services.AddCors(options =>
         {
@@ -68,7 +94,8 @@ public class Startup
 
                 policy.WithOrigins(allowedOrigins)
                     .AllowAnyHeader()
-                    .AllowAnyMethod();
+                    .AllowAnyMethod()
+                    .AllowCredentials();
             });
         });
     }
@@ -77,6 +104,39 @@ public class Startup
     {
         services.AddSingleton<InMemoryModuleClient>();
         services.AddSingleton<IClient>(sp => sp.GetRequiredService<InMemoryModuleClient>());
+    }
+
+    private void ConfigureAuthentication(IServiceCollection services)
+    {
+        var settings = _configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>() ?? new JwtSettings();
+        settings.Validate();
+        services.AddSingleton(settings);
+        services.AddSingleton<IJwtTokenService, JwtTokenService>();
+
+        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.SigningKey));
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.MapInboundClaims = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = settings.Issuer,
+                    ValidateAudience = true,
+                    ValidAudience = settings.Audience,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = signingKey,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,
+                    NameClaimType = "unique_name",
+                    RoleClaimType = "role"
+                };
+            });
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+            options.AddPolicy("AuthenticatedUser", policy => policy.RequireAuthenticatedUser());
+        });
     }
 
     private static void ConfigureLogger()
@@ -139,6 +199,8 @@ public class Startup
 
         app.UseRouting();
         app.UseCors("AllowReactApp");
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>
         {
@@ -179,5 +241,42 @@ public class Startup
             _logger,
             null,
             GetSmtpSettings());
+
+        UsersStartup.Initialize(
+            GetConnectionString(),
+            _logger,
+            null
+        );
+
+        TryBootstrapFirstAdmin(container);
+    }
+
+    private void TryBootstrapFirstAdmin(ILifetimeScope container)
+    {
+        var suppliedSecret = Environment.GetEnvironmentVariable("HOTELBOOKING_BOOTSTRAP_ADMIN_SECRET");
+        var expectedSecret = _configuration["BootstrapAdmin:Secret"];
+        if (string.IsNullOrWhiteSpace(suppliedSecret) || string.IsNullOrWhiteSpace(expectedSecret) ||
+            !CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(suppliedSecret), Encoding.UTF8.GetBytes(expectedSecret)))
+            return;
+
+        var username = _configuration["BootstrapAdmin:Username"];
+        var password = _configuration["BootstrapAdmin:Password"];
+        var email = _configuration["BootstrapAdmin:Email"];
+        var firstName = _configuration["BootstrapAdmin:FirstName"];
+        var lastName = _configuration["BootstrapAdmin:LastName"];
+        var phoneNumber = _configuration["BootstrapAdmin:PhoneNumber"];
+        if (new[] { username, password, email, firstName, lastName, phoneNumber }.Any(string.IsNullOrWhiteSpace))
+        {
+            _loggerForApi.Warning("Bootstrap admin was requested but its configuration is incomplete");
+            return;
+        }
+
+        var users = container.Resolve<IUsersModule>();
+        var result = users.ExecuteCommandAsync(new CreateAdminCommand
+        {
+            Username = username!, Password = password!, Email = email!, FirstName = firstName!, LastName = lastName!, PhoneNumber = phoneNumber!
+        }).GetAwaiter().GetResult();
+        if (result.IsSuccess)
+            _loggerForApi.Information("Bootstrap administrator created");
     }
 }

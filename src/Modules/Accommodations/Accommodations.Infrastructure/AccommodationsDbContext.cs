@@ -11,6 +11,7 @@ namespace Accommodations.Infrastructure;
 public class AccommodationsDbContext : DbContext
 {
     public DbSet<Hotel> Hotels { get; set; }
+    public DbSet<Domain.Entities.HotelAddOns.HotelAddOn> HotelAddOns { get; set; }
     public DbSet<Room> Rooms { get; set; }
     public DbSet<Pricing> Pricing { get; set; }
     public DbSet<OutboxMessage> OutboxMessages { get; set; }

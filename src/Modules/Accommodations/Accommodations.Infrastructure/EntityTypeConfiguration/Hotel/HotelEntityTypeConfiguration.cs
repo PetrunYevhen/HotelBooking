@@ -27,6 +27,7 @@ public class HotelEntityTypeConfiguration : IEntityTypeConfiguration<Domain.Enti
         });
         builder.Property(h => h.Rating).HasColumnName("Rating");
         builder.Property(h => h.Status).HasConversion<int>().IsRequired();
+        builder.Property(h => h.OwnerUserId);
 
         builder.OwnsOne(h => h.MinRoomPrice, m =>
         {
@@ -63,6 +64,7 @@ public class HotelEntityTypeConfiguration : IEntityTypeConfiguration<Domain.Enti
 
         builder.HasIndex(h => h.Status);
         builder.HasIndex(h => h.Rating);
+        builder.HasIndex(h => h.OwnerUserId);
     }
     
 }

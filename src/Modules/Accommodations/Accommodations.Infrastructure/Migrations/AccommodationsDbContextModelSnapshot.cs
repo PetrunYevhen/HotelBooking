@@ -23,6 +23,57 @@ namespace Accommodations.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Accommodations.Domain.Entities.HotelAddOns.HotelAddOn", b =>
+                {
+                    b.Property<Guid>("HotelAddOnId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid>("HotelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<int>("PricingType")
+                        .HasColumnType("integer");
+
+                    b.ComplexProperty<Dictionary<string, object>>("Price", "Accommodations.Domain.Entities.HotelAddOns.HotelAddOn.Price#Money", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<decimal>("Amount")
+                                .HasColumnType("decimal(18,2)")
+                                .HasColumnName("Price_Amount");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasMaxLength(3)
+                                .HasColumnType("character varying(3)")
+                                .HasColumnName("Price_Currency");
+                        });
+
+                    b.HasKey("HotelAddOnId");
+
+                    b.HasIndex("HotelId", "Code")
+                        .IsUnique();
+
+                    b.ToTable("HotelAddOns", "Accommodations");
+                });
+
             modelBuilder.Entity("Accommodations.Domain.Entities.Hotels.Facility.HotelFacility", b =>
                 {
                     b.Property<Guid>("HotelFacilityId")
@@ -58,6 +109,9 @@ namespace Accommodations.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<bool>("IsLiked")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -66,6 +120,9 @@ namespace Accommodations.Infrastructure.Migrations
                     b.Property<double?>("Rating")
                         .HasColumnType("double precision")
                         .HasColumnName("Rating");
+
+                    b.Property<Guid?>("OwnerUserId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -115,6 +172,8 @@ namespace Accommodations.Infrastructure.Migrations
                     b.HasKey("HotelId");
 
                     b.HasIndex("Rating");
+
+                    b.HasIndex("OwnerUserId");
 
                     b.HasIndex("Status");
 

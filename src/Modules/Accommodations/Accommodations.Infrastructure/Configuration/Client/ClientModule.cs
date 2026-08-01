@@ -1,3 +1,4 @@
+using Accommodations.Application.ClientContracts;
 using Accommodations.Infrastructure.Configuration.Client.Subsctiptions;
 using Autofac;
 using Infrastructure.Client;
@@ -18,6 +19,10 @@ public class ClientModule : Module
         {
             builder.RegisterInstance(_client);
         }
+
+        builder.RegisterType<BookingsClient>()
+            .As<IBookingsClient>()
+            .SingleInstance();
     }
     
     public void RegisterSubscriptions(ILifetimeScope scope)
@@ -25,5 +30,7 @@ public class ClientModule : Module
         new GetRoomAvailabilitySubscription().Subscride(_client, scope);
         new GetRoomPriceSubscription().Subscride(_client, scope);
         new GetHotelCheckOutHoursSubscription().Subscride(_client, scope);
+        new GetHotelCancellationPolicySubscription().Subscride(_client, scope);
+        new GetHotelAddOnSubscription().Subscride(_client, scope);
     }
 }

@@ -33,7 +33,7 @@ public sealed class PaymentTests
     {
         var payment = Payment.Create(Guid.NewGuid(), Money.Create(500, "UAH").Value).Value;
 
-        var result = payment.Refund();
+        var result = payment.Refund(Money.Create(500, "UAH").Value);
 
         Assert.True(result.IsFailure);
         Assert.Equal(PaymentStatus.Pending, payment.Status);

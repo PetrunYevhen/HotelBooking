@@ -1,0 +1,17 @@
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import type { HotelierBooking, HotelierRoom } from "@/api/hotelier"
+
+interface Props { rooms: HotelierRoom[]; bookings: HotelierBooking[]; start: Date; onPrevious: () => void; onNext: () => void; onBooking: (booking: HotelierBooking) => void; onRoom: (room: HotelierRoom) => void }
+
+const iso = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+const dateAt = (date: string) => new Date(`${date.slice(0, 10)}T00:00:00`)
+const visibleDays = (start: Date) => Array.from({ length: 14 }, (_, index) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + index))
+
+export function OccupancyCalendar({ rooms, bookings, start, onPrevious, onNext, onBooking, onRoom }: Props) {
+    const days = visibleDays(start)
+    const today = iso(new Date())
+    return <section className="overflow-hidden rounded-xl border bg-white shadow-sm">
+        <div className="flex items-center justify-between border-b p-4"><div><p className="section-eyebrow">Room occupancy</p><h2 className="section-title mt-1">Availability calendar</h2></div><div className="flex items-center gap-2"><button onClick={onPrevious} aria-label="Previous 14 days" className="inline-flex size-9 items-center justify-center rounded-full text-primary-800 hover:bg-gold-100"><ChevronLeft size={18} /></button><span className="hidden text-sm font-semibold text-primary-900 sm:inline">{start.toLocaleDateString("en-US", { month: "short", day: "numeric" })} – {days.at(-1)?.toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span><button onClick={onNext} aria-label="Next 14 days" className="inline-flex size-9 items-center justify-center rounded-full text-primary-800 hover:bg-gold-100"><ChevronRight size={18} /></button></div></div>
+        <div className="overflow-x-auto"><div className="min-w-[980px]"><div className="grid grid-cols-[180px_repeat(14,minmax(56px,1fr))] border-b bg-bg-muted text-xs"><div className="p-3 font-semibold text-text-secondary">Room</div>{days.map(day => <div key={iso(day)} className={`border-l p-2 text-center ${iso(day) === today ? "bg-gold-100 text-gold-600" : "text-text-muted"}`}><span className="block font-semibold">{day.toLocaleDateString("en-US", { weekday: "short" })}</span><span>{day.getDate()}</span></div>)}</div>{rooms.map(room => { const roomBookings = bookings.filter(booking => booking.roomId === room.roomId); return <div key={room.roomId} className="grid grid-cols-[180px_repeat(14,minmax(56px,1fr))] border-b last:border-0"><button onClick={() => onRoom(room)} className="p-3 text-left hover:bg-bg-warm"><span className="block text-sm font-semibold text-primary-900">Room {room.roomNumber}</span><span className="text-xs text-text-muted">{room.type}</span></button>{days.map(day => { const booking = roomBookings.find(item => dateAt(item.checkInDate) <= day && day < dateAt(item.checkOutDate)); return <div key={iso(day)} className={`relative min-h-16 border-l ${iso(day) === today ? "bg-gold-100/50" : ""}`}>{booking && <button onClick={() => onBooking(booking)} title={`${booking.guestName}: ${booking.status}`} className={`absolute inset-y-2 inset-x-1 rounded px-1 text-left text-[10px] font-semibold text-white ${booking.status === "Pending" ? "bg-warning-600" : "bg-primary-700"}`}>{dateAt(booking.checkInDate).getTime() === day.getTime() ? booking.guestName.split(" ")[0] : ""}</button>}</div>})}</div>})}</div></div>
+    </section>
+}

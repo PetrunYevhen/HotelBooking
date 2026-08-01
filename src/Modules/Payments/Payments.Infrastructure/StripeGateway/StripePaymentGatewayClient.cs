@@ -59,6 +59,27 @@ public class StripePaymentGatewayClient : IPaymentGatewayClient
         }
     }
 
+    public async Task<Result<RefundResult>> RefundPaymentAsync(string paymentIntentId, Money amount, string idempotencyKey, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var options = new RefundCreateOptions
+            {
+                PaymentIntent = paymentIntentId,
+                Amount = ToMinorUnits(amount.Amount)
+            };
+
+            var service = new RefundService(_stripeClient);
+            var refund = await service.CreateAsync(options, new RequestOptions { IdempotencyKey = idempotencyKey }, cancellationToken);
+
+            return Result.Success(new RefundResult(refund.Id, refund.Status));
+        }
+        catch (StripeException ex)
+        {
+            return Result.Failure<RefundResult>(new Error("PaymentGateway.RefundFailed", ex.Message));
+        }
+    }
+
     internal static long ToMinorUnits(decimal amount) =>
         Convert.ToInt64(Math.Round(amount * 100m, MidpointRounding.AwayFromZero));
 }

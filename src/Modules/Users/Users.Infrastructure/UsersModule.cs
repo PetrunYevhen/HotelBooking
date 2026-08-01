@@ -8,23 +8,21 @@ namespace Users.Infrastructure;
 
 public class UsersModule : IUsersModule
 {
-    public async Task<TResult> ExecuteCommandAsync<TResult>(ICommand<TResult> command)
+    public async Task<TResult> ExecuteCommandAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken = default)
     {
-        return await CommandsExecutor.Execute(command);
+        return await CommandsExecutor.Execute(command, cancellationToken);
     }
 
-    public async Task ExecuteCommandAsync(ICommand command)
+    public async Task ExecuteCommandAsync(ICommand command, CancellationToken cancellationToken = default)
     {
-        await CommandsExecutor.Execute(command);
+        await CommandsExecutor.Execute(command, cancellationToken);
     }
     
 
-    public Task<TResult> ExecuteQueryAsync<TResult>(IQuery<TResult> query)
+    public async Task<TResult> ExecuteQueryAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken = default)
     {
-        using (var scope = UserCompositoryRoot.BeginLifetimeScope())
-        {
-            var mediator = scope.Resolve<IMediator>();
-            return mediator.Send(query);
-        }
+        using var scope = UserCompositoryRoot.BeginLifetimeScope();
+        var mediator = scope.Resolve<IMediator>();
+        return await mediator.Send(query, cancellationToken);
     }
 }

@@ -11,6 +11,8 @@ public class BookingDbContext : DbContext
     private readonly ILoggerFactory _loggerFactory;
     
     public DbSet<Booking> Bookings { get; set; }
+    public DbSet<BookingAddOn> BookingAddOns { get; set; }
+    public DbSet<HotelAddOnSnapshot> HotelAddOnSnapshots { get; set; }
     public DbSet<OutboxMessage> OutboxMessages { get; set; }
     public DbSet<InboxMessage>  InboxMessages { get; set; }
     

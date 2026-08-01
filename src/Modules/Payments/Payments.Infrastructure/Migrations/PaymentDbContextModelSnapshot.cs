@@ -97,6 +97,21 @@ namespace Payments.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.ComplexProperty<Dictionary<string, object>>("RefundedAmount", "Payments.Domain.Entities.Payment.RefundedAmount#Money", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<decimal>("Amount")
+                                .HasColumnType("numeric")
+                                .HasColumnName("RefundedAmount_Amount");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasMaxLength(3)
+                                .HasColumnType("character varying(3)")
+                                .HasColumnName("RefundedAmount_Currency");
+                        });
+
                     b.ComplexProperty<Dictionary<string, object>>("TotalAmount", "Payments.Domain.Entities.Payment.TotalAmount#Money", b1 =>
                         {
                             b1.IsRequired();

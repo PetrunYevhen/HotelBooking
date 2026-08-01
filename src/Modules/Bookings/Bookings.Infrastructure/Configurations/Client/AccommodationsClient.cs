@@ -37,4 +37,17 @@ public class AccommodationsClient : IAccommodationsClient
             "accommodations/hotel-checkout-hours",
             new { HotelId = hotelId }, cancellationToken);
     }
+
+    public Task<CancellationPolicyDto> GetHotelCancellationPolicyAsync(Guid hotelId, CancellationToken cancellationToken)
+    {
+        return _client.SendAsync<CancellationPolicyDto>(
+            "accommodations/hotel-cancellation-policy",
+            new { HotelId = hotelId }, cancellationToken);
+    }
+
+    public Task<HotelAddOnConfigurationDto?> GetHotelAddOnAsync(Guid hotelId, Guid hotelAddOnId, CancellationToken cancellationToken)
+    {
+        return _client.SendAsync<HotelAddOnConfigurationDto?>(
+            "accommodations/hotel-add-on", new { HotelId = hotelId, HotelAddOnId = hotelAddOnId }, cancellationToken);
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Infrastructure.EventBus;
 using Payments.IntegrationEvents;
+using Accommodations.IntegrationEvents;
 using Serilog;
 
 namespace Bookings.Infrastructure.Configurations.EventBus;
@@ -16,6 +17,8 @@ public static class EventBusStartup
     {
         var eventBus = BookingCompositoryRoot.BeginLifetimeScope().Resolve<IEventBus>();
         SubscribeToIntegrationEvent<PaymentCompletedIntegrationEvent>(eventBus, logger);
+        SubscribeToIntegrationEvent<HotelAddOnUpsertedIntegrationEvent>(eventBus, logger);
+        SubscribeToIntegrationEvent<HotelAddOnDeactivatedIntegrationEvent>(eventBus, logger);
     }
     
     private static void SubscribeToIntegrationEvent<T>(IEventBus eventBus, ILogger logger)
