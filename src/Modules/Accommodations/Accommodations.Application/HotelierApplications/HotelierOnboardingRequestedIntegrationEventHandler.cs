@@ -6,18 +6,18 @@ using SharedKernel.Contracts;
 
 namespace Accommodations.Application.HotelierApplications;
 
-public sealed class HotelierOnboardingRequestedIntegrationEventHandler(IHotelierApplicationRepository applications)
+public sealed class HotelierOnboardingRequestedIntegrationEventHandler(IHotelierApplicationRepository hotelierApplicationRepository)
     : INotificationHandler<ContractIntegrationEvent<HotelierOnboardingRequested>>
 {
     public async Task Handle(ContractIntegrationEvent<HotelierOnboardingRequested> notification, CancellationToken cancellationToken)
     {
         var applicantId = new AccountId(notification.Data.ApplicantId);
         // Registration initiates only the first application. Replays must not create a resubmission.
-        if (await applications.GetLatestByApplicantAsync(applicantId, cancellationToken) is not null) return;
+        if (await hotelierApplicationRepository.GetLatestByApplicantAsync(applicantId, cancellationToken) is not null) return;
         var details = notification.Data.Details;
         var application = HotelierApplication.Create(applicantId, details.LegalBusinessName, details.RegistrationNumber,
             details.TaxNumber, details.BusinessEmail, details.BusinessPhoneNumber, details.FirstPropertyName, details.FirstPropertyAddress);
         if (application.IsFailure) throw new InvalidOperationException(application.Error.Code);
-        await applications.AddAsync(application.Value, cancellationToken);
+        await hotelierApplicationRepository.AddAsync(application.Value, cancellationToken);
     }
 }

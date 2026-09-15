@@ -12,11 +12,11 @@ namespace Accommodations.Application.Command.Rooms.CreateRooms;
 public class CreateRoomsCommandHandler : IRequestHandler<CreateRoomsCommand, Result<List<Guid>>>
 {
     private readonly IRoomRepository _roomRepository;
-    private readonly IHotelRepository _hotels;
+    private readonly IHotelRepository _hotelRepository;
 
-    public CreateRoomsCommandHandler(IRoomRepository roomRepository, IHotelRepository hotels)
+    public CreateRoomsCommandHandler(IRoomRepository roomRepository, IHotelRepository hotelRepository)
     {
-        _hotels = hotels;
+        _hotelRepository = hotelRepository;
         _roomRepository = roomRepository;
     }
 
@@ -26,7 +26,7 @@ public class CreateRoomsCommandHandler : IRequestHandler<CreateRoomsCommand, Res
         
         foreach (var room in roomuest.Rooms)
         {
-             var access = await InventoryAuthorization.CheckAsync(_hotels, new HotelId(room.HotelId), roomuest.ActorId, roomuest.IsAdmin, cancellationToken);
+             var access = await InventoryAuthorization.CheckAsync(_hotelRepository, new HotelId(room.HotelId), roomuest.ActorId, roomuest.IsAdmin, cancellationToken);
              if (access.IsFailure) return Result.Failure<List<Guid>>(access.Error);
              var basePriceResult = Money.Create(room.BasePriceAmount, room.BasePriceCurrency);
              if (basePriceResult.IsFailure)

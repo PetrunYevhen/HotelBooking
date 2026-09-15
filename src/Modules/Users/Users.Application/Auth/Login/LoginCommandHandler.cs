@@ -8,13 +8,13 @@ namespace Users.Application.Auth.Login;
 public sealed class LoginCommandHandler : IRequestHandler<LoginCommand, Result<AuthSession>>
 {
     private static readonly Error InvalidCredentials = new("Auth.InvalidCredentials", "Invalid credentials.");
-    private readonly IUserRepository _users;
+    private readonly IUserRepository _userRepository;
     private readonly IPasswordHashingService _passwords;
     private readonly IRefreshTokenService _refreshTokens;
 
-    public LoginCommandHandler(IUserRepository users, IPasswordHashingService passwords, IRefreshTokenService refreshTokens)
+    public LoginCommandHandler(IUserRepository userRepository, IPasswordHashingService passwords, IRefreshTokenService refreshTokens)
     {
-        _users = users;
+        _userRepository = userRepository;
         _passwords = passwords;
         _refreshTokens = refreshTokens;
     }
@@ -25,8 +25,8 @@ public sealed class LoginCommandHandler : IRequestHandler<LoginCommand, Result<A
         if (string.IsNullOrWhiteSpace(identifier))
             return Result.Failure<AuthSession>(InvalidCredentials);
         var user = identifier.Contains('@')
-            ? await _users.GetByEmailAsync(identifier.ToLowerInvariant(), cancellationToken)
-            : await _users.GetByUsernameAsync(identifier, cancellationToken);
+            ? await _userRepository.GetByEmailAsync(identifier.ToLowerInvariant(), cancellationToken)
+            : await _userRepository.GetByUsernameAsync(identifier, cancellationToken);
 
         if (user is null || !_passwords.Verify(request.Password ?? string.Empty, user.PasswordHash))
             return Result.Failure<AuthSession>(InvalidCredentials);
@@ -36,7 +36,7 @@ public sealed class LoginCommandHandler : IRequestHandler<LoginCommand, Result<A
         if (setResult.IsFailure)
             return Result.Failure<AuthSession>(InvalidCredentials);
 
-        await _users.UpdateAsync(user, cancellationToken);
+        await _userRepository.UpdateAsync(user, cancellationToken);
         return Result.Success(AuthSession.FromUser(user, refreshToken));
     }
 }

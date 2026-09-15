@@ -8,8 +8,8 @@ namespace Bookings.Application.Events.IntegrationEventHandlers;
 
 public sealed class HotelAddOnUpsertedIntegrationEventHandler : INotificationHandler<HotelAddOnUpsertedIntegrationEvent>
 {
-    private readonly IHotelAddOnSnapshotRepository _snapshotRepository;
-    public HotelAddOnUpsertedIntegrationEventHandler(IHotelAddOnSnapshotRepository snapshotRepository) => _snapshotRepository = snapshotRepository;
+    private readonly IHotelAddOnSnapshotRepository _hotelAddOnSnapshotRepository;
+    public HotelAddOnUpsertedIntegrationEventHandler(IHotelAddOnSnapshotRepository hotelAddOnSnapshotRepository) => _hotelAddOnSnapshotRepository = hotelAddOnSnapshotRepository;
 
     public async Task Handle(HotelAddOnUpsertedIntegrationEvent notification, CancellationToken cancellationToken)
     {
@@ -26,6 +26,6 @@ public sealed class HotelAddOnUpsertedIntegrationEventHandler : INotificationHan
             IsActive = notification.IsActive
         });
         if (snapshotResult.IsSuccess)
-            await _snapshotRepository.UpsertAsync(snapshotResult.Value, cancellationToken);
+            await _hotelAddOnSnapshotRepository.UpsertAsync(snapshotResult.Value, cancellationToken);
     }
 }

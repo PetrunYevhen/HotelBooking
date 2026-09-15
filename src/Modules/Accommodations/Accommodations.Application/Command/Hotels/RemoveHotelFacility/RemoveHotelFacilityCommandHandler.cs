@@ -7,15 +7,15 @@ using MediatR;
 
 namespace Accommodations.Application.Command.Hotels.RemoveHotelFacility;
 
-public sealed class RemoveHotelFacilityCommandHandler(IHotelRepository hotels) : IRequestHandler<RemoveHotelFacilityCommand, Result>
+public sealed class RemoveHotelFacilityCommandHandler(IHotelRepository hotelRepository) : IRequestHandler<RemoveHotelFacilityCommand, Result>
 {
     public async Task<Result> Handle(RemoveHotelFacilityCommand request, CancellationToken cancellationToken)
     {
         var hotelId = new HotelId(request.HotelId);
-        var hotel = await hotels.GetByIdAsync(hotelId, cancellationToken);
+        var hotel = await hotelRepository.GetByIdAsync(hotelId, cancellationToken);
         if (hotel is null) return Result.Failure(new Error("Hotel.NotFound", "Hotel not found."));
 
-        var access = await InventoryAuthorization.CheckAsync(hotels, hotelId, request.ActorId, request.IsAdmin, cancellationToken);
+        var access = await InventoryAuthorization.CheckAsync(hotelRepository, hotelId, request.ActorId, request.IsAdmin, cancellationToken);
         if (access.IsFailure) return access;
 
         hotel.RemoveFacility(new HotelFacilityId(request.FacilityId));
