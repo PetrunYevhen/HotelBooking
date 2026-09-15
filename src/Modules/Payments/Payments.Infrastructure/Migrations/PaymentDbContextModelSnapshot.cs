@@ -74,6 +74,7 @@ namespace Payments.Infrastructure.Migrations
 
             modelBuilder.Entity("Payments.Domain.Entities.Payment", b =>
                 {
+                    b.Property<uint>("Version").IsConcurrencyToken().ValueGeneratedOnAddOrUpdate().HasColumnType("xid").HasColumnName("xmin");
                     b.Property<Guid>("PaymentId")
                         .HasColumnType("uuid");
 

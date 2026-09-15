@@ -11,4 +11,6 @@ public sealed class RegisterUserCommand : CommandBase<Result<AuthSession>>
     public string FirstName { get; init; } = string.Empty;
     public string LastName { get; init; } = string.Empty;
     public string PhoneNumber { get; init; } = string.Empty;
+    public string Intent { get; init; } = "guest";
+    public SharedKernel.Contracts.HotelierApplicationDetails? Onboarding { get; init; }
 }

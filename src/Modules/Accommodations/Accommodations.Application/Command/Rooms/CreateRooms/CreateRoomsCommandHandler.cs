@@ -3,6 +3,8 @@ using Accommodations.Domain.Entities.Rooms;
 using Accommodations.Domain.RepositoryContract.Rooms;
 using BuildingBlock.Domain;
 using MediatR;
+using Accommodations.Application.Command.Shared;
+using Accommodations.Domain.RepositoryContract.Hotels;
 using SharedKernel.ValueObjects;
 
 namespace Accommodations.Application.Command.Rooms.CreateRooms;
@@ -10,9 +12,11 @@ namespace Accommodations.Application.Command.Rooms.CreateRooms;
 public class CreateRoomsCommandHandler : IRequestHandler<CreateRoomsCommand, Result<List<Guid>>>
 {
     private readonly IRoomRepository _roomRepository;
+    private readonly IHotelRepository _hotels;
 
-    public CreateRoomsCommandHandler(IRoomRepository roomRepository)
+    public CreateRoomsCommandHandler(IRoomRepository roomRepository, IHotelRepository hotels)
     {
+        _hotels = hotels;
         _roomRepository = roomRepository;
     }
 
@@ -22,6 +26,8 @@ public class CreateRoomsCommandHandler : IRequestHandler<CreateRoomsCommand, Res
         
         foreach (var room in roomuest.Rooms)
         {
+             var access = await InventoryAuthorization.CheckAsync(_hotels, new HotelId(room.HotelId), roomuest.ActorId, roomuest.IsAdmin, cancellationToken);
+             if (access.IsFailure) return Result.Failure<List<Guid>>(access.Error);
              var basePriceResult = Money.Create(room.BasePriceAmount, room.BasePriceCurrency);
              if (basePriceResult.IsFailure)
                  return Result.Failure<List<Guid>>(basePriceResult.Error);

@@ -10,6 +10,9 @@ using Users.Application.Auth.Refresh;
 using Users.Application.Auth.Register;
 using Users.Application.Contracts;
 using Users.Application.Query.GetUserById;
+using Accommodations.Application.HotelierApplications;
+using Accommodations.Application.Contracts;
+using SharedKernel.Contracts;
 using Users.Application.Services;
 using Users.Domain.Entities;
 using Users.Domain.Enums;
@@ -24,21 +27,23 @@ public sealed class UsersController : ControllerBase
     private const string CsrfCookie = "hotelbooking_csrf";
     private const string CsrfHeader = "X-CSRF-TOKEN";
     private readonly IUsersModule _users;
+    private readonly IAccommodationsModule _accommodations;
     private readonly IJwtTokenService _jwtTokens;
     private readonly IWebHostEnvironment _environment;
     private readonly JwtSettings _jwtSettings;
 
-    public UsersController(IUsersModule users, IJwtTokenService jwtTokens, IWebHostEnvironment environment, JwtSettings jwtSettings)
+    public UsersController(IUsersModule users, IJwtTokenService jwtTokens, IWebHostEnvironment environment, JwtSettings jwtSettings, IAccommodationsModule accommodations)
     {
         _users = users;
+        _accommodations = accommodations;
         _jwtTokens = jwtTokens;
         _environment = environment;
         _jwtSettings = jwtSettings;
     }
 
-    [HttpPost("register")]
+    [HttpPost("signup")]
     [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status201Created)]
-    public async Task<IActionResult> Register(RegisterRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> SignUp(SignUpRequest request, CancellationToken cancellationToken)
     {
         var result = await _users.ExecuteCommandAsync(new RegisterUserCommand
         {
@@ -47,7 +52,12 @@ public sealed class UsersController : ControllerBase
             Email = request.Email,
             FirstName = request.FirstName,
             LastName = request.LastName,
-            PhoneNumber = request.PhoneNumber
+            PhoneNumber = request.PhoneNumber,
+            Intent = request.Intent,
+            Onboarding = request.BusinessApplication is { } details
+                ? new HotelierApplicationDetails(details.LegalBusinessName, details.RegistrationNumber, details.TaxNumber,
+                    details.BusinessEmail, details.BusinessPhoneNumber, details.FirstPropertyName, details.FirstPropertyAddress)
+                : null
         }, cancellationToken);
         if (result.IsFailure)
             return this.ToProblem(result.Error);
@@ -55,10 +65,10 @@ public sealed class UsersController : ControllerBase
         return Created(string.Empty, CreateAuthenticatedResponse(result.Value));
     }
 
-    [HttpPost("login")]
+    [HttpPost("signin")]
     [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Login(LoginRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> SignIn(SignInRequest request, CancellationToken cancellationToken)
     {
         var result = await _users.ExecuteCommandAsync(new LoginCommand
         {
@@ -116,6 +126,29 @@ public sealed class UsersController : ControllerBase
         return user is null ? Unauthorized() : Ok(user);
     }
 
+    [Authorize]
+    [HttpGet("hotelier-application")]
+    public async Task<IActionResult> GetHotelierApplication(CancellationToken cancellationToken)
+    {
+        if (!TryGetCurrentUserId(out var userId)) return Unauthorized();
+        return Ok(await _accommodations.ExecuteQueryAsync(new GetMyHotelierApplicationQuery(new AccountId(userId)), cancellationToken));
+    }
+
+    [Authorize]
+    [HttpPost("hotelier-application")]
+    public async Task<IActionResult> SubmitHotelierApplication(BusinessApplicationRequest request, CancellationToken cancellationToken)
+    {
+        if (!TryGetCurrentUserId(out var userId)) return Unauthorized();
+        var result = await _accommodations.ExecuteCommandAsync(new SubmitHotelierApplicationCommand
+        {
+            ApplicantId = new AccountId(userId), LegalBusinessName = request.LegalBusinessName,
+            RegistrationNumber = request.RegistrationNumber, TaxNumber = request.TaxNumber,
+            BusinessEmail = request.BusinessEmail, BusinessPhoneNumber = request.BusinessPhoneNumber,
+            FirstPropertyName = request.FirstPropertyName, FirstPropertyAddress = request.FirstPropertyAddress
+        }, cancellationToken);
+        return result.IsFailure ? this.ToProblem(result.Error) : StatusCode(StatusCodes.Status201Created);
+    }
+
     private AuthResponse CreateAuthenticatedResponse(AuthSession session)
     {
         SetRefreshCookie(session.RefreshToken);
@@ -171,6 +204,7 @@ public sealed class UsersController : ControllerBase
         Guid.TryParse(User.FindFirst("sub")?.Value, out userId);
 }
 
-public sealed record RegisterRequest(string Username, string Password, string Email, string FirstName, string LastName, string PhoneNumber);
-public sealed record LoginRequest(string UsernameOrEmail, string Password);
+public sealed record SignUpRequest(string Username, string Password, string Email, string FirstName, string LastName, string PhoneNumber, string Intent = "guest", BusinessApplicationRequest? BusinessApplication = null);
+public sealed record BusinessApplicationRequest(string LegalBusinessName, string RegistrationNumber, string? TaxNumber, string BusinessEmail, string BusinessPhoneNumber, string FirstPropertyName, string FirstPropertyAddress);
+public sealed record SignInRequest(string UsernameOrEmail, string Password);
 public sealed record AuthResponse(string AccessToken, string TokenType, int ExpiresIn, string CsrfToken);

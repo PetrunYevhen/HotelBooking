@@ -50,7 +50,8 @@ public class CreateBookingCommandHandler : IRequestHandler<CreateBookingCommand,
             request.GuestCount,
             guestInfoResult.Value,
             request.SpecialRequest,
-            quote.BookingAddOns);
+            quote.BookingAddOns,
+            quote.ScheduledCheckOutAt);
         
         if (bookingResult.IsFailure)
             return Result.Failure<Guid>(bookingResult.Error);

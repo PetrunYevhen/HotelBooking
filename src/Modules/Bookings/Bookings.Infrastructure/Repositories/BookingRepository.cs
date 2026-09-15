@@ -61,7 +61,7 @@ public class BookingRepository : IBookingRepository
         CancellationToken cancellationToken)
     {
         return await _bookingDbContext.Bookings
-            .Where(b => b.Status == BookingStatus.CheckedIn && b.BookingDates.End <= utcNow)
+            .Where(b => b.Status == BookingStatus.CheckedIn && b.ScheduledCheckOutAt <= utcNow)
             .ToListAsync(cancellationToken);
     }
 

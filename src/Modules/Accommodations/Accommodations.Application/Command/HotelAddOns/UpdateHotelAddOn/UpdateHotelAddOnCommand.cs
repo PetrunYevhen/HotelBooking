@@ -25,4 +25,6 @@ public sealed class UpdateHotelAddOnCommand : CommandBase<Result>
     public decimal PriceAmount { get; }
     public string PriceCurrency { get; }
     public PricingType PricingType { get; }
+    public Guid ActorId { get; init; }
+    public bool IsAdmin { get; init; }
 }

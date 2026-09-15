@@ -8,6 +8,8 @@ namespace Users.Domain.Entities;
 
 public class User : Entity, IAggregateRoot
 {
+    public void RequestHotelierOnboarding(SharedKernel.Contracts.HotelierApplicationDetails details) =>
+        AddDomainEvent(new HotelierOnboardingRequestedDomainEvent(UserId, details));
     public UserId UserId { get; private set; } = null!;
     public string Username { get; private set; } = string.Empty;
     public string PasswordHash { get; private set; } = string.Empty;

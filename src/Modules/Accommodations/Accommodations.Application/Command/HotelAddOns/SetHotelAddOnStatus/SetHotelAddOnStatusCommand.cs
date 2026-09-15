@@ -14,4 +14,6 @@ public sealed class SetHotelAddOnStatusCommand : CommandBase<Result>
     public Guid HotelId { get; }
     public Guid HotelAddOnId { get; }
     public bool IsActive { get; }
+    public Guid ActorId { get; init; }
+    public bool IsAdmin { get; init; }
 }

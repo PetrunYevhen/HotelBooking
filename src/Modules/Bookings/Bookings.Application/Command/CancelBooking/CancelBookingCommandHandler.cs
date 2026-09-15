@@ -35,7 +35,8 @@ public class CancelBookingCommandHandler : IRequestHandler<CancelBookingCommand,
         if (refundResult.IsFailure)
             return Result.Failure(refundResult.Error);
 
-        var cancelResult = booking.Cancel(CancellationInitiator.Guest, refundResult.Value, request.Reason);
+        var refund = booking.Status == BookingStatus.Pending ? booking.TotalPrice : refundResult.Value;
+        var cancelResult = booking.Cancel(CancellationInitiator.Guest, refund, request.Reason);
         if (cancelResult.IsFailure)
             return cancelResult;
 

@@ -60,8 +60,10 @@ public class AccommodationsController : ControllerBase
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateAddOn(Guid id, [FromBody] CreateHotelAddOnRequest request, CancellationToken cancellationToken)
     {
+        if (!TryUser(out var actorId)) return Unauthorized();
         var result = await _accommodationsModule.ExecuteCommandAsync(new CreateHotelAddOnCommand(
-            id, request.Code, request.Name, request.Description, request.PriceAmount, request.PriceCurrency, request.PricingType), cancellationToken);
+            id, request.Code, request.Name, request.Description, request.PriceAmount, request.PriceCurrency, request.PricingType)
+            { ActorId = actorId, IsAdmin = User.IsInRole("Admin") }, cancellationToken);
         if (result.IsFailure)
             return this.ToProblem(result.Error);
         return StatusCode(StatusCodes.Status201Created, result.Value);
@@ -71,8 +73,10 @@ public class AccommodationsController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateAddOn(Guid hotelId, Guid addOnId, [FromBody] UpdateHotelAddOnRequest request, CancellationToken cancellationToken)
     {
+        if (!TryUser(out var actorId)) return Unauthorized();
         var result = await _accommodationsModule.ExecuteCommandAsync(new UpdateHotelAddOnCommand(
-            hotelId, addOnId, request.Code, request.Name, request.Description, request.PriceAmount, request.PriceCurrency, request.PricingType), cancellationToken);
+            hotelId, addOnId, request.Code, request.Name, request.Description, request.PriceAmount, request.PriceCurrency, request.PricingType)
+            { ActorId = actorId, IsAdmin = User.IsInRole("Admin") }, cancellationToken);
         return result.IsFailure ? this.ToProblem(result.Error) : NoContent();
     }
 
@@ -88,7 +92,9 @@ public class AccommodationsController : ControllerBase
 
     private async Task<IActionResult> SetAddOnStatus(Guid hotelId, Guid addOnId, bool isActive, CancellationToken cancellationToken)
     {
-        var result = await _accommodationsModule.ExecuteCommandAsync(new SetHotelAddOnStatusCommand(hotelId, addOnId, isActive), cancellationToken);
+        if (!TryUser(out var actorId)) return Unauthorized();
+        var result = await _accommodationsModule.ExecuteCommandAsync(new SetHotelAddOnStatusCommand(hotelId, addOnId, isActive)
+            { ActorId = actorId, IsAdmin = User.IsInRole("Admin") }, cancellationToken);
         return result.IsFailure ? this.ToProblem(result.Error) : NoContent();
     }
 
@@ -130,7 +136,7 @@ public class AccommodationsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateHotelCommand command, CancellationToken cancellationToken)
     {
-        if (!Guid.TryParse(User.FindFirst("sub")?.Value, out var currentUserId))
+        if (!TryUser(out var currentUserId))
             return Unauthorized();
 
         var ownerUserId = User.IsInRole("Admin") ? command.OwnerUserId : currentUserId;
@@ -148,23 +154,27 @@ public class AccommodationsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = result.Value }, new { id = result.Value });    
     }
     
+    [Authorize]
     [HttpPost("{id:guid}/facilities")]
     public async Task<IActionResult> AddFacility(Guid id, [FromBody] List<FacilityRequest> facilities, CancellationToken cancellationToken)
     {
+        if (!TryUser(out var actorId)) return Unauthorized();
         var result = await _accommodationsModule
-            .ExecuteCommandAsync(new AddHotelFacilitiesCommand(){HotelId = id, Facilities = facilities}, cancellationToken);
-        
+            .ExecuteCommandAsync(new AddHotelFacilitiesCommand { HotelId = id, Facilities = facilities, ActorId = actorId, IsAdmin = User.IsInRole("Admin") }, cancellationToken);
+
         if (result.IsFailure)
             return this.ToProblem(result.Error);
 
         return NoContent();
     }
-    
+
+    [Authorize]
     [HttpPut("{id:guid}/policies")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SetPolicies(Guid id, [FromBody] SetHotelPoliciesCommand command, CancellationToken cancellationToken)
     {
+        if (!TryUser(out var actorId)) return Unauthorized();
         var result = await _accommodationsModule.ExecuteCommandAsync(new SetHotelPoliciesCommand
         (
             id,
@@ -174,12 +184,14 @@ public class AccommodationsController : ControllerBase
             command.PetPolicy,
             command.SmokingPolicy,
             command.CheckOutHoursPolicy
-        ), cancellationToken);
+        ) { ActorId = actorId, IsAdmin = User.IsInRole("Admin") }, cancellationToken);
         if (result.IsFailure)
             return this.ToProblem(result.Error);
 
         return NoContent();
     }
+
+    private bool TryUser(out Guid userId) => Guid.TryParse(User.FindFirst("sub")?.Value, out userId);
 }
 
 public sealed record CreateHotelAddOnRequest(string Code, string Name, string? Description, decimal PriceAmount, string PriceCurrency, Accommodations.Domain.Entities.HotelAddOns.Enums.PricingType PricingType);

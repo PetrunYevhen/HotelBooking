@@ -11,7 +11,8 @@ public class BookingEntityTypeConfiguration : IEntityTypeConfiguration<Booking>
     public void Configure(EntityTypeBuilder<Booking> builder)
     {
         builder.ToTable("Bookings", "Bookings");
-        builder.HasKey(x => x.BookingId);
+       builder.HasKey(x => x.BookingId);
+        builder.Property<uint>("Version").IsRowVersion();
         
         builder.Property(x => x.HotelId).IsRequired();
         builder.Property(x => x.RoomId).IsRequired();

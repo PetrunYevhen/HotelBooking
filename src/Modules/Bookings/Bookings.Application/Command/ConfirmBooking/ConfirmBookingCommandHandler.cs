@@ -21,7 +21,9 @@ public class ConfirmBookingCommandHandler : IRequestHandler<ConfirmBookingComman
         if (booking is null)
             return Result.Failure(new Error("Booking.NotFound", $"Booking {request.BookingId} not found."));
 
-        var result = booking.Confirm();
+        var amount = SharedKernel.ValueObjects.Money.Create(request.TotalAmount, request.Currency);
+        if (amount.IsFailure) return Result.Failure(amount.Error);
+        var result = booking.AcceptPayment(amount.Value);
         if (result.IsFailure)
             return result;
         

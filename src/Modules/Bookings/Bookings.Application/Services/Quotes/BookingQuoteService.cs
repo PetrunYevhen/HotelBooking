@@ -23,14 +23,18 @@ public sealed class BookingQuoteService : IBookingQuoteService
 
         var checkOutHours = await _accommodationsClient.GetHotelCheckOutHoursAsync(request.HotelId, cancellationToken);
         var bookingDatesResult = DateRange.Create(
-            DateTime.SpecifyKind(request.CheckIn, DateTimeKind.Utc),
-            DateTime.SpecifyKind(request.CheckOut.Date, DateTimeKind.Utc).AddHours(checkOutHours));
+            DateTime.SpecifyKind(request.CheckIn.Date, DateTimeKind.Utc),
+            DateTime.SpecifyKind(request.CheckOut.Date, DateTimeKind.Utc));
         if (bookingDatesResult.IsFailure)
             return Result.Failure<BookingQuote>(bookingDatesResult.Error);
 
-        var isAvailable = await _accommodationsClient.IsRoomAvailableAsync(request.RoomId, cancellationToken);
-        if (!isAvailable)
+        var room = await _accommodationsClient.GetRoomBookingDetailsAsync(request.RoomId, cancellationToken);
+        if (room is null || !room.IsActive)
             return Result.Failure<BookingQuote>(new Error("Booking.RoomUnavailable", "Room is not active."));
+        if (room.HotelId != request.HotelId)
+            return Result.Failure<BookingQuote>(new Error("Booking.HotelMismatch", "Room does not belong to this hotel."));
+        if (request.GuestCount > room.Capacity)
+            return Result.Failure<BookingQuote>(new Error("Booking.CapacityExceeded", "Room capacity is exceeded."));
 
         var priceResult = await _accommodationsClient.GetRoomPriceAsync(request.RoomId, bookingDatesResult.Value, cancellationToken);
         if (priceResult.IsFailure)
@@ -50,6 +54,7 @@ public sealed class BookingQuoteService : IBookingQuoteService
             return Result.Failure<BookingQuote>(totalResult.Error);
 
         return Result.Success(new BookingQuote(bookingDatesResult.Value, baseTotalResult.Value, addOnResult.Value.Lines,
-            addOnResult.Value.BookingAddOns, addOnResult.Value.SnapshotsToCache, totalResult.Value));
+            addOnResult.Value.BookingAddOns, addOnResult.Value.SnapshotsToCache, totalResult.Value,
+            bookingDatesResult.Value.End.AddHours(checkOutHours)));
     }
 }

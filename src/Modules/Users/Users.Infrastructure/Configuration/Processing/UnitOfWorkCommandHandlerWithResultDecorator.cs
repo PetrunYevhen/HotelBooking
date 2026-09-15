@@ -19,6 +19,7 @@ public class UnitOfWorkCommandHandlerWithResultDecorator<T, TResult> : IRequestH
     public async Task<TResult> Handle(T request, CancellationToken cancellationToken)
     {
         var result = await _decorated.Handle(request, cancellationToken);
+        if (result is BuildingBlock.Domain.Result { IsFailure: true }) return result;
         await _unitOfWork.CommitAsync(cancellationToken);
         return result;
     }

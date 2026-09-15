@@ -1,8 +1,8 @@
 using Bookings.Application.ClientContracts;
 using Bookings.Application.Services.AddOns;
-using Bookings.Domain.Entities;
-using Bookings.Domain.Entities.Enums;
+using Bookings.Application.Services.Quotes;
 using BuildingBlock.Domain;
+using SharedKernel.Contracts;
 using SharedKernel.ValueObjects;
 using Xunit;
 
@@ -10,64 +10,88 @@ namespace HotelBooking.UnitTests.Bookings;
 
 public sealed class AddOnPriceCalculationServiceTests
 {
-    [Fact]
-    public async Task CalculateAsync_AppliesEveryPricingType()
+    [Theory]
+    [InlineData(1, 20)]
+    [InlineData(2, 60)]
+    [InlineData(3, 120)]
+    public async Task CalculatesPricingTypes(int pricingType, decimal expected)
     {
-        var hotelId = Guid.NewGuid();
-        var perStay = Snapshot(hotelId, HotelAddOnPricingType.PerStay);
-        var perGuest = Snapshot(hotelId, HotelAddOnPricingType.PerGuest);
-        var perGuestPerNight = Snapshot(hotelId, HotelAddOnPricingType.PerGuestPerNight);
-        var service = new AddOnPriceCalculationService(new SnapshotReader(perStay, perGuest, perGuestPerNight), new AccommodationsClientStub());
-
-        var result = await service.CalculateAsync(hotelId,
-            [new(perStay.HotelAddOnId, 2), new(perGuest.HotelAddOnId, 2), new(perGuestPerNight.HotelAddOnId, 2)],
-            guestCount: 3, nights: 2, currency: "EUR", CancellationToken.None);
-
+        var client = new BookingCatalogStub();
+        client.AddOn.PricingType = pricingType;
+        var result = await new AddOnPriceCalculationService(client).CalculateAsync(client.HotelId,
+            [new(client.AddOn.HotelAddOnId, 2)], 3, 2, "EUR", default);
         Assert.True(result.IsSuccess);
-        Assert.Equal(20m, result.Value.Lines.Single(x => x.HotelAddOnId == perStay.HotelAddOnId).LineTotal.Amount);
-        Assert.Equal(60m, result.Value.Lines.Single(x => x.HotelAddOnId == perGuest.HotelAddOnId).LineTotal.Amount);
-        Assert.Equal(120m, result.Value.Lines.Single(x => x.HotelAddOnId == perGuestPerNight.HotelAddOnId).LineTotal.Amount);
-        Assert.Equal(200m, result.Value.Total.Amount);
+        Assert.Equal(expected, result.Value.Total.Amount);
+        Assert.Empty(result.Value.SnapshotsToCache);
     }
 
     [Fact]
-    public async Task CalculateAsync_WhenSnapshotIsMissing_UsesCurrentConfigurationAndReturnsItForCaching()
+    public async Task ExistingServiceUsesUpdatedPriceAndRejectsDeactivation()
     {
-        var hotelId = Guid.NewGuid();
-        var configuration = new HotelAddOnConfigurationDto
-        {
-            HotelAddOnId = Guid.NewGuid(), HotelId = hotelId, Code = "transfer", Name = "Transfer",
-            PriceAmount = 45m, PriceCurrency = "EUR", PricingType = (int)HotelAddOnPricingType.PerStay, IsActive = true
-        };
-        var service = new AddOnPriceCalculationService(new SnapshotReader(), new AccommodationsClientStub(configuration));
-
-        var result = await service.CalculateAsync(hotelId, [new(configuration.HotelAddOnId, 1)], 2, 3, "EUR", CancellationToken.None);
-
-        Assert.True(result.IsSuccess);
-        Assert.Single(result.Value.SnapshotsToCache);
-        Assert.Equal(45m, result.Value.Total.Amount);
+        var client = new BookingCatalogStub();
+        var service = new AddOnPriceCalculationService(client);
+        var selection = new[] { new RequestedHotelAddOn(client.AddOn.HotelAddOnId, 1) };
+        Assert.Equal(10m, (await service.CalculateAsync(client.HotelId, selection, 1, 1, "EUR", default)).Value.Total.Amount);
+        client.AddOn.PriceAmount = 25m;
+        Assert.Equal(25m, (await service.CalculateAsync(client.HotelId, selection, 1, 1, "EUR", default)).Value.Total.Amount);
+        client.AddOn.IsActive = false;
+        Assert.True((await service.CalculateAsync(client.HotelId, selection, 1, 1, "EUR", default)).IsFailure);
     }
 
-    private static HotelAddOnSnapshot Snapshot(Guid hotelId, HotelAddOnPricingType pricingType) =>
-        HotelAddOnSnapshot.Create(Guid.NewGuid(), hotelId, pricingType.ToString(), pricingType.ToString(), null,
-            Money.Create(10m, "EUR").Value, pricingType, true).Value;
-
-    private sealed class SnapshotReader : IHotelAddOnSnapshotReader
+    [Fact]
+    public async Task LargeQuantityDoesNotOverflowIntegerMultiplier()
     {
-        private readonly IReadOnlyDictionary<Guid, HotelAddOnSnapshot> _snapshots;
-        public SnapshotReader(params HotelAddOnSnapshot[] snapshots) => _snapshots = snapshots.ToDictionary(x => x.HotelAddOnId);
-        public Task<HotelAddOnSnapshot?> GetByIdAsync(Guid hotelAddOnId, CancellationToken cancellationToken) =>
-            Task.FromResult(_snapshots.GetValueOrDefault(hotelAddOnId));
+        var client = new BookingCatalogStub();
+        client.AddOn.PricingType = 3;
+        var result = await new AddOnPriceCalculationService(client).CalculateAsync(client.HotelId,
+            [new(client.AddOn.HotelAddOnId, int.MaxValue)], 3, 2, "EUR", default);
+        Assert.Equal((decimal)int.MaxValue * 6 * 10, result.Value.Total.Amount);
     }
 
-    private sealed class AccommodationsClientStub : IAccommodationsClient
+    [Fact]
+    public async Task QuoteRejectsWrongHotelAndExcessGuests()
     {
-        private readonly HotelAddOnConfigurationDto? _configuration;
-        public AccommodationsClientStub(HotelAddOnConfigurationDto? configuration = null) => _configuration = configuration;
-        public Task<bool> IsRoomAvailableAsync(Guid roomId, CancellationToken cancellationToken) => Task.FromResult(true);
-        public Task<Result<Money>> GetRoomPriceAsync(Guid roomId, DateRange dateRange, CancellationToken cancellationToken) => Task.FromResult(Result.Success(Money.Create(1m, "EUR").Value));
-        public Task<int> GetHotelCheckOutHoursAsync(Guid hotelId, CancellationToken cancellationToken) => Task.FromResult(12);
-        public Task<CancellationPolicyDto> GetHotelCancellationPolicyAsync(Guid hotelId, CancellationToken cancellationToken) => Task.FromResult(new CancellationPolicyDto());
-        public Task<HotelAddOnConfigurationDto?> GetHotelAddOnAsync(Guid hotelId, Guid hotelAddOnId, CancellationToken cancellationToken) => Task.FromResult(_configuration?.HotelAddOnId == hotelAddOnId ? _configuration : null);
+        var client = new BookingCatalogStub();
+        var service = new BookingQuoteService(client, new AddOnPriceCalculationService(client));
+        var start = new DateTime(2026, 10, 1, 0, 0, 0, DateTimeKind.Utc);
+        var wrongHotel = await service.GetQuoteAsync(new(Guid.NewGuid(), client.RoomId, start, start.AddDays(1), 1, []), default);
+        var tooManyGuests = await service.GetQuoteAsync(new(client.HotelId, client.RoomId, start, start.AddDays(1), 3, []), default);
+        Assert.Equal("Booking.HotelMismatch", wrongHotel.Error.Code);
+        Assert.Equal("Booking.CapacityExceeded", tooManyGuests.Error.Code);
     }
+
+    [Fact]
+    public async Task ConsecutiveStaysDoNotOverlapAndRetainOperationalCheckoutTime()
+    {
+        var client = new BookingCatalogStub();
+        var service = new BookingQuoteService(client, new AddOnPriceCalculationService(client));
+        var start = new DateTime(2026, 10, 1, 0, 0, 0, DateTimeKind.Utc);
+        var first = (await service.GetQuoteAsync(new(client.HotelId, client.RoomId, start, start.AddDays(1), 1, []), default)).Value;
+        var next = (await service.GetQuoteAsync(new(client.HotelId, client.RoomId, start.AddDays(1), start.AddDays(2), 1, []), default)).Value;
+        Assert.False(first.BookingDates.Overlaps(next.BookingDates));
+        Assert.Equal(start.AddDays(1).AddHours(12), first.ScheduledCheckOutAt);
+        Assert.Equal(1, first.BookingDates.Nights);
+    }
+}
+
+internal sealed class BookingCatalogStub : IAccommodationsClient
+{
+    public Guid HotelId { get; } = Guid.NewGuid();
+    public Guid RoomId { get; } = Guid.NewGuid();
+    public HotelAddOnConfigurationDto AddOn { get; }
+    public BookingCatalogStub() => AddOn = new()
+    {
+        HotelAddOnId = Guid.NewGuid(), HotelId = HotelId, Code = "transfer", Name = "Transfer",
+        PriceAmount = 10, PriceCurrency = "EUR", PricingType = 1, IsActive = true
+    };
+    public Task<RoomBookingDetails?> GetRoomBookingDetailsAsync(Guid roomId, CancellationToken cancellationToken) =>
+        Task.FromResult<RoomBookingDetails?>(new(RoomId, HotelId, 2, true));
+    public Task<bool> IsRoomAvailableAsync(Guid roomId, CancellationToken cancellationToken) => Task.FromResult(true);
+    public Task<Result<Money>> GetRoomPriceAsync(Guid roomId, DateRange dates, CancellationToken cancellationToken) =>
+        Task.FromResult(Result.Success(Money.Create(100, "EUR").Value));
+    public Task<int> GetHotelCheckOutHoursAsync(Guid hotelId, CancellationToken cancellationToken) => Task.FromResult(12);
+    public Task<CancellationPolicyDto> GetHotelCancellationPolicyAsync(Guid hotelId, CancellationToken cancellationToken) =>
+        Task.FromResult(new CancellationPolicyDto());
+    public Task<HotelAddOnConfigurationDto?> GetHotelAddOnAsync(Guid hotelId, Guid id, CancellationToken cancellationToken) =>
+        Task.FromResult(id == AddOn.HotelAddOnId ? AddOn : null);
 }

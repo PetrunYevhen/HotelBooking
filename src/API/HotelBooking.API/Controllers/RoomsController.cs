@@ -9,6 +9,7 @@ using Accommodations.Application.Query.Rooms.GetRoomPrice;
 using Accommodations.Application.Query.Rooms.GetRoomsByHotelId;
 using Accommodations.Application.Query.Shared;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using SharedKernel.ValueObjects;
 using RoomDetailsDto = Accommodations.Application.Query.Shared.RoomDetailsDto;
 
@@ -73,11 +74,13 @@ public class RoomsController : ControllerBase
     
     // POST
     [HttpPost]
+    [Authorize(Roles = "Admin,Hotelier")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] List<CreateRoomDto> rooms, CancellationToken cancellationToken)
     {
-        var result = await _accommodationsModule.ExecuteCommandAsync(new CreateRoomsCommand{Rooms = rooms}, cancellationToken);
+        if (!Guid.TryParse(User.FindFirst("sub")?.Value, out var actorId)) return Unauthorized();
+        var result = await _accommodationsModule.ExecuteCommandAsync(new CreateRoomsCommand{Rooms = rooms, ActorId = actorId, IsAdmin = User.IsInRole("Admin")}, cancellationToken);
         if (result.IsFailure)
             return this.ToProblem(result.Error);
 
@@ -85,13 +88,15 @@ public class RoomsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/facilities")]
+    [Authorize(Roles = "Admin,Hotelier")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddFacility(Guid id, [FromBody] List<FacilityRequest> facilities, CancellationToken cancellationToken)
     {
+        if (!Guid.TryParse(User.FindFirst("sub")?.Value, out var actorId)) return Unauthorized();
         var result = await _accommodationsModule
-            .ExecuteCommandAsync(new AddRoomFacilitiesCommand{RoomId = id, Facilities = facilities}, cancellationToken);
+            .ExecuteCommandAsync(new AddRoomFacilitiesCommand{RoomId = id, Facilities = facilities, ActorId = actorId, IsAdmin = User.IsInRole("Admin")}, cancellationToken);
         
         if (result.IsFailure)
             return this.ToProblem(result.Error);
@@ -100,13 +105,15 @@ public class RoomsController : ControllerBase
     }
     
     [HttpPost("{id:guid}/deactivate")]
+    [Authorize(Roles = "Admin,Hotelier")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Deactivate(Guid id, CancellationToken cancellationToken)
     {
+        if (!Guid.TryParse(User.FindFirst("sub")?.Value, out var actorId)) return Unauthorized();
         var result = await _accommodationsModule
-            .ExecuteCommandAsync(new DeactivateRoomCommand(id), cancellationToken);
+            .ExecuteCommandAsync(new DeactivateRoomCommand(id) { ActorId = actorId, IsAdmin = User.IsInRole("Admin") }, cancellationToken);
 
         if (result.IsFailure)
             return this.ToProblem(result.Error);

@@ -54,6 +54,7 @@ public class UsersStartup
        containerBuilder.RegisterModule(new QuartzModule());
        
        var domainNotificationsMap = new BiDictionary<string, Type>();
+       domainNotificationsMap.Add("HotelierOnboardingRequestedNotification", typeof(Users.Application.Events.HotelierOnboardingRequestedNotification));
        
        containerBuilder.RegisterModule(new OutboxModule(domainNotificationsMap));
        

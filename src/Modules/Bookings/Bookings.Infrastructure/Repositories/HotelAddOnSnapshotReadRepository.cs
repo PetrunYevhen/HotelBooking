@@ -1,7 +1,6 @@
 using Bookings.Application.Services.AddOns;
 using Bookings.Domain.Entities;
 using Bookings.Domain.Entities.Enums;
-using BuildingBlock.Domain;
 using Dapper;
 using Infrastructure.Data;
 using SharedKernel.ValueObjects;

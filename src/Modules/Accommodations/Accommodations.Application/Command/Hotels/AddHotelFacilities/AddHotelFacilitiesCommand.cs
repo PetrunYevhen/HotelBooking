@@ -8,4 +8,6 @@ public class AddHotelFacilitiesCommand : CommandBase<Result>
 {
     public Guid HotelId { get; init; }
     public List<FacilityRequest> Facilities { get; set; }
+    public Guid ActorId { get; init; }
+    public bool IsAdmin { get; init; }
 }

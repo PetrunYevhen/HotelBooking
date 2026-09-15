@@ -1,3 +1,4 @@
+using Accommodations.Application.Command.Shared;
 using Accommodations.Domain.Entities.HotelAddOns;
 using Accommodations.Domain.Entities.Hotels;
 using Accommodations.Domain.RepositoryContract.HotelAddOns;
@@ -24,6 +25,9 @@ public sealed class CreateHotelAddOnCommandHandler : IRequestHandler<CreateHotel
         var hotelId = new HotelId(request.HotelId);
         if (await _hotelRepository.GetByIdAsync(hotelId, cancellationToken) is null)
             return Result.Failure<Guid>(Error.NotFound("Hotel"));
+
+        var access = await InventoryAuthorization.CheckAsync(_hotelRepository, hotelId, request.ActorId, request.IsAdmin, cancellationToken);
+        if (access.IsFailure) return Result.Failure<Guid>(access.Error);
 
         var price = Money.Create(request.PriceAmount, request.PriceCurrency);
         if (price.IsFailure)

@@ -7,6 +7,8 @@ namespace Bookings.Infrastructure.Configurations.Client;
 
 public class AccommodationsClient : IAccommodationsClient
 {
+    public Task<SharedKernel.Contracts.RoomBookingDetails?> GetRoomBookingDetailsAsync(Guid roomId, CancellationToken cancellationToken) =>
+        _client.SendAsync<SharedKernel.Contracts.RoomBookingDetails?>("accommodations/room-booking-details", new { RoomId = roomId }, cancellationToken);
     private readonly IClient _client;
 
     public AccommodationsClient(IClient client)

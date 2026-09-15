@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: review_tests
+      POSTGRES_PASSWORD: review_tests
+      POSTGRES_DB: postgres
+    ports:
+      - "127.0.0.1:55439:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U review_tests -d postgres"]
+      interval: 1s
+      timeout: 3s
+      retries: 30

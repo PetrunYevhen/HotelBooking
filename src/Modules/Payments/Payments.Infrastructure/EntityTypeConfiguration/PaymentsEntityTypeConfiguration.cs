@@ -11,7 +11,7 @@ public class PaymentsEntityTypeConfiguration : IEntityTypeConfiguration<Payment>
     {
         builder.ToTable("Payments", "Payments");
         builder.HasKey(p => p.PaymentId);
-        builder.HasKey(p => p.PaymentId);
+        builder.Property<uint>("Version").IsRowVersion();
         
         builder.Property(p => p.BookingId)
             .IsRequired();

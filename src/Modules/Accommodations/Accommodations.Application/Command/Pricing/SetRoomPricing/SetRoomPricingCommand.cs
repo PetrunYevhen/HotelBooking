@@ -5,6 +5,8 @@ namespace Accommodations.Application.Command.Pricing.SetRoomPricing;
 
 public class SetRoomPricingCommand : CommandBase<Result>
 {
+    public Guid ActorId { get; init; }
+    public bool IsAdmin { get; init; }
     public SetRoomPricingCommand(Guid roomId, decimal price, string currency, DateTime validFrom, DateTime validTo)
     {
         RoomId = roomId;

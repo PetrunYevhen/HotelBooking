@@ -23,7 +23,7 @@ public class IntegrationEventGenericHandler<T> : IIntegrationEventHandler<T>
                 });
 
                 var sql = @"
-                        INSERT INTO ""Users"".""InboxMessages"" (""Id"", ""OccurredOn"", ""Type"", ""Data"")
+                        INSERT INTO ""Identity"".""InboxMessages"" (""Id"", ""OccurredOn"", ""Type"", ""Data"")
                         VALUES (@Id, @OccurredOn, @Type, @Data::jsonb)
                         ON CONFLICT (""Id"") DO NOTHING";
 

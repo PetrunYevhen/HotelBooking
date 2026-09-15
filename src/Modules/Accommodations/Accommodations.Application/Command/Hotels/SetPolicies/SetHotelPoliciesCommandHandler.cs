@@ -1,3 +1,4 @@
+using Accommodations.Application.Command.Shared;
 using Accommodations.Domain.Entities.Hotels;
 using Accommodations.Domain.Entities.Hotels.Policies;
 using Accommodations.Domain.RepositoryContract.Hotels;
@@ -21,6 +22,9 @@ public class SetHotelPoliciesCommandHandler : IRequestHandler<SetHotelPoliciesCo
         var hotel = await _hotelRepository.GetByIdAsync(hotelId, cancellationToken);
         if (hotel is null)
             return Result.Failure(new Error("Hotel.NotFound", "Hotel not found."));
+
+        var access = await InventoryAuthorization.CheckAsync(_hotelRepository, hotelId, request.ActorId, request.IsAdmin, cancellationToken);
+        if (access.IsFailure) return access;
 
         var cancellationPolicyResult = CancellationPolicy.Apply(
             request.CancellationPolicyType,
