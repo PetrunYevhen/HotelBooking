@@ -10,11 +10,11 @@ namespace Accommodations.Application.Command.Rooms.DeactivateRoom;
 public class DeactivateRoomCommandHandler : IRequestHandler<DeactivateRoomCommand, Result>
 {
     private readonly IRoomRepository _roomRepository;
-    private readonly IHotelRepository _hotels;
+    private readonly IHotelRepository _hotelRepository;
 
-    public DeactivateRoomCommandHandler(IRoomRepository roomRepository, IHotelRepository hotels)
+    public DeactivateRoomCommandHandler(IRoomRepository roomRepository, IHotelRepository hotelRepository)
     {
-        _hotels = hotels;
+        _hotelRepository = hotelRepository;
         _roomRepository = roomRepository;
     }
 
@@ -23,8 +23,8 @@ public class DeactivateRoomCommandHandler : IRequestHandler<DeactivateRoomComman
         var room = await _roomRepository.GetByIdAsync(new RoomId(request.RoomId), cancellationToken);
         if (room is null)
             return Result.Failure(new Error("Room.NotFound", "Room not found."));
-        
-        var access = await InventoryAuthorization.CheckAsync(_hotels, room.HotelId, request.ActorId, request.IsAdmin, cancellationToken);
+
+        var access = await InventoryAuthorization.CheckAsync(_hotelRepository, room.HotelId, request.ActorId, request.IsAdmin, cancellationToken);
         if (access.IsFailure) return access;
         room.Deactivate();
         return Result.Success();

@@ -9,13 +9,13 @@ namespace Users.Application.Auth.Register;
 
 public sealed class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, Result<AuthSession>>
 {
-    private readonly IUserRepository _users;
+    private readonly IUserRepository _userRepository;
     private readonly IPasswordHashingService _passwords;
     private readonly IRefreshTokenService _refreshTokens;
 
-    public RegisterUserCommandHandler(IUserRepository users, IPasswordHashingService passwords, IRefreshTokenService refreshTokens)
+    public RegisterUserCommandHandler(IUserRepository userRepository, IPasswordHashingService passwords, IRefreshTokenService refreshTokens)
     {
-        _users = users;
+        _userRepository = userRepository;
         _passwords = passwords;
         _refreshTokens = refreshTokens;
     }
@@ -36,9 +36,9 @@ public sealed class RegisterUserCommandHandler : IRequestHandler<RegisterUserCom
             return Result.Failure<AuthSession>(userResult.Error);
 
         var user = userResult.Value;
-        if (await _users.GetByUsernameAsync(user.Username, cancellationToken) is not null)
+        if (await _userRepository.GetByUsernameAsync(user.Username, cancellationToken) is not null)
             return Result.Failure<AuthSession>(new Error("User.UsernameAlreadyExists", "A user with this username already exists."));
-        if (await _users.GetByEmailAsync(user.Email, cancellationToken) is not null)
+        if (await _userRepository.GetByEmailAsync(user.Email, cancellationToken) is not null)
             return Result.Failure<AuthSession>(new Error("User.EmailAlreadyExists", "A user with this email address already exists."));
 
         if (request.Intent == "list-property")
@@ -55,7 +55,7 @@ public sealed class RegisterUserCommandHandler : IRequestHandler<RegisterUserCom
         if (tokenResult.IsFailure)
             return Result.Failure<AuthSession>(tokenResult.Error);
 
-        await _users.AddAsync(user, cancellationToken);
+        await _userRepository.AddAsync(user, cancellationToken);
         return Result.Success(AuthSession.FromUser(user, refreshToken));
     }
 }

@@ -11,16 +11,16 @@ namespace Bookings.Application.Command.CreateBooking;
 public class CreateBookingCommandHandler : IRequestHandler<CreateBookingCommand, Result<Guid>>
 {
     private readonly IBookingRepository _bookingRepository;
-    private readonly IHotelAddOnSnapshotRepository _snapshotRepository;
+    private readonly IHotelAddOnSnapshotRepository _hotelAddOnSnapshotRepository;
     private readonly IBookingQuoteService _quoteService;
 
     public CreateBookingCommandHandler(
         IBookingRepository bookingRepository,
-        IHotelAddOnSnapshotRepository snapshotRepository,
+        IHotelAddOnSnapshotRepository hotelAddOnSnapshotRepository,
         IBookingQuoteService quoteService)
     {
         _bookingRepository = bookingRepository;
-        _snapshotRepository = snapshotRepository;
+        _hotelAddOnSnapshotRepository = hotelAddOnSnapshotRepository;
         _quoteService = quoteService;
     }
 
@@ -57,7 +57,7 @@ public class CreateBookingCommandHandler : IRequestHandler<CreateBookingCommand,
             return Result.Failure<Guid>(bookingResult.Error);
 
         foreach (var snapshot in quote.SnapshotsToCache)
-            await _snapshotRepository.UpsertAsync(snapshot, cancellationToken);
+            await _hotelAddOnSnapshotRepository.UpsertAsync(snapshot, cancellationToken);
 
         await _bookingRepository.AddAsync(bookingResult.Value, cancellationToken);
         return Result.Success(bookingResult.Value.BookingId.Value);

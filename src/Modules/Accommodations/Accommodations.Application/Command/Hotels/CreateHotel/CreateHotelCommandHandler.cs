@@ -8,14 +8,14 @@ namespace Accommodations.Application.Command.Hotels.CreateHotel;
 
 public class CreateHotelCommandHandler : IRequestHandler<CreateHotelCommand, Result<Guid>>
 {
-    private readonly IHotelRepository _hotelWriteRepository;
+    private readonly IHotelRepository _hotelRepository;
     private readonly Accommodations.Domain.RepositoryContract.HotelAddOns.IHotelAddOnRepository _hotelAddOnRepository;
 
     public CreateHotelCommandHandler(
-        IHotelRepository hotelWriteRepository,
+        IHotelRepository hotelRepository,
         Accommodations.Domain.RepositoryContract.HotelAddOns.IHotelAddOnRepository hotelAddOnRepository)
     {
-        _hotelWriteRepository = hotelWriteRepository;
+        _hotelRepository = hotelRepository;
         _hotelAddOnRepository = hotelAddOnRepository;
     }
 
@@ -42,7 +42,7 @@ public class CreateHotelCommandHandler : IRequestHandler<CreateHotelCommand, Res
         if (request.OwnerUserId.HasValue)
             hotelResult.Value.AssignOwner(request.OwnerUserId.Value);
 
-        var hotel = await _hotelWriteRepository.AddAsync(hotelResult.Value, cancellationToken);
+        var hotel = await _hotelRepository.AddAsync(hotelResult.Value, cancellationToken);
         foreach (var definition in DefaultAddOns())
         {
             var price = SharedKernel.ValueObjects.Money.Create(definition.Price, "EUR").Value;

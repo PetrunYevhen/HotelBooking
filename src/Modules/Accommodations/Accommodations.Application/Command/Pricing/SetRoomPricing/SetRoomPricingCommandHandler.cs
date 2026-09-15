@@ -13,11 +13,11 @@ public class SetRoomPricingCommandHandler : IRequestHandler<SetRoomPricingComman
 {
     private readonly IPricingRepository _pricingRepository;
     private readonly IRoomRepository _roomRepository;
-    private readonly IHotelRepository _hotels;
+    private readonly IHotelRepository _hotelRepository;
 
-    public SetRoomPricingCommandHandler(IPricingRepository pricingRepository, IRoomRepository roomRepository, IHotelRepository hotels)
+    public SetRoomPricingCommandHandler(IPricingRepository pricingRepository, IRoomRepository roomRepository, IHotelRepository hotelRepository)
     {
-        _hotels = hotels;
+        _hotelRepository = hotelRepository;
         _pricingRepository = pricingRepository;
         _roomRepository = roomRepository;
     }
@@ -29,7 +29,7 @@ public class SetRoomPricingCommandHandler : IRequestHandler<SetRoomPricingComman
         if (room == null)
             return Result.Failure(new Error("Room.NotFound", "Room not found"));       
         
-        var access = await InventoryAuthorization.CheckAsync(_hotels, room.HotelId, request.ActorId, request.IsAdmin, cancellationToken);
+        var access = await InventoryAuthorization.CheckAsync(_hotelRepository, room.HotelId, request.ActorId, request.IsAdmin, cancellationToken);
         if (access.IsFailure) return access;
         var priceResult = Money.Create(request.Price, request.Currency);
         if (priceResult.IsFailure) return Result.Failure(priceResult.Error);

@@ -7,12 +7,12 @@ namespace Users.Application.Auth.Logout;
 
 public sealed class LogoutCommandHandler : IRequestHandler<LogoutCommand, Result>
 {
-    private readonly IUserRepository _users;
+    private readonly IUserRepository _userRepository;
     private readonly IRefreshTokenService _refreshTokens;
 
-    public LogoutCommandHandler(IUserRepository users, IRefreshTokenService refreshTokens)
+    public LogoutCommandHandler(IUserRepository userRepository, IRefreshTokenService refreshTokens)
     {
-        _users = users;
+        _userRepository = userRepository;
         _refreshTokens = refreshTokens;
     }
 
@@ -22,11 +22,11 @@ public sealed class LogoutCommandHandler : IRequestHandler<LogoutCommand, Result
             return Result.Success();
 
         var hash = _refreshTokens.HashToken(request.RefreshToken);
-        var user = await _users.GetByRefreshTokenHashAsync(hash, cancellationToken);
+        var user = await _userRepository.GetByRefreshTokenHashAsync(hash, cancellationToken);
         if (user is not null && user.MatchesActiveRefreshTokenHash(hash, DateTime.UtcNow))
         {
             user.RevokeRefreshToken();
-            await _users.UpdateAsync(user, cancellationToken);
+            await _userRepository.UpdateAsync(user, cancellationToken);
         }
 
         return Result.Success();

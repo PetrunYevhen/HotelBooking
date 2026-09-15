@@ -8,12 +8,12 @@ namespace Users.Application.Auth.Refresh;
 public sealed class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, Result<AuthSession>>
 {
     private static readonly Error InvalidToken = new("Auth.InvalidRefreshToken", "Refresh token is invalid or expired.");
-    private readonly IUserRepository _users;
+    private readonly IUserRepository _userRepository;
     private readonly IRefreshTokenService _refreshTokens;
 
-    public RefreshTokenCommandHandler(IUserRepository users, IRefreshTokenService refreshTokens)
+    public RefreshTokenCommandHandler(IUserRepository userRepository, IRefreshTokenService refreshTokens)
     {
-        _users = users;
+        _userRepository = userRepository;
         _refreshTokens = refreshTokens;
     }
 
@@ -23,7 +23,7 @@ public sealed class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCom
             return Result.Failure<AuthSession>(InvalidToken);
 
         var presentedHash = _refreshTokens.HashToken(request.RefreshToken);
-        var user = await _users.GetByRefreshTokenHashAsync(presentedHash, cancellationToken);
+        var user = await _userRepository.GetByRefreshTokenHashAsync(presentedHash, cancellationToken);
         if (user is null || !user.MatchesActiveRefreshTokenHash(presentedHash, DateTime.UtcNow))
             return Result.Failure<AuthSession>(InvalidToken);
 
@@ -32,7 +32,7 @@ public sealed class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCom
         if (setResult.IsFailure)
             return Result.Failure<AuthSession>(InvalidToken);
 
-        await _users.UpdateAsync(user, cancellationToken);
+        await _userRepository.UpdateAsync(user, cancellationToken);
         return Result.Success(AuthSession.FromUser(user, replacement));
     }
 }
