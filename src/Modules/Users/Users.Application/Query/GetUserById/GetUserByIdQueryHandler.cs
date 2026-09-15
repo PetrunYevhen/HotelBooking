@@ -27,8 +27,9 @@ public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, 
                                "PhoneNumber",
                                CASE "Role"
                                    WHEN 1 THEN 'Admin'
-                                   WHEN 2 THEN 'User'
-                                   WHEN 3 THEN 'Moderator'
+                                   WHEN 2 THEN 'Hotelier'
+                                   WHEN 3 THEN 'User'
+                                   WHEN 4 THEN 'Moderator'
                                    ELSE 'Unknown'
                                END AS "Role"
                            FROM "Accounts"."Users"

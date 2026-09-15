@@ -16,6 +16,7 @@ public static class EventBusStartup
     private static void SubscribeToIntegrationEvents(ILogger logger)
     {
          var eventBus = UserCompositoryRoot.BeginLifetimeScope().Resolve<IEventBus>();
+         SubscribeToIntegrationEvent<ContractIntegrationEvent<SharedKernel.Contracts.HotelierApplicationApproved>>(eventBus, logger);
     }
 
     private static void SubscribeToIntegrationEvent<T>(IEventBus eventBus, ILogger logger)

@@ -1,6 +1,5 @@
 using Accommodations.Application.Contracts;
 using Accommodations.Domain.Entities.Hotels.Enums;
-using Accommodations.Domain.Entities.Hotels.Policies;
 using BuildingBlock.Domain;
 
 namespace Accommodations.Application.Command.Hotels.SetPolicies;
@@ -25,4 +24,6 @@ public class SetHotelPoliciesCommand : CommandBase<Result>
     public PetPolicy PetPolicy { get; init; }
     public SmokingPolicy SmokingPolicy { get; init; }
     public int CheckOutHoursPolicy { get; init; }
+    public Guid ActorId { get; init; }
+    public bool IsAdmin { get; init; }
 }

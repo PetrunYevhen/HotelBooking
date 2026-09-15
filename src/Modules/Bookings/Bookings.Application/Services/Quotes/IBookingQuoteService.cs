@@ -18,7 +18,8 @@ public sealed record BookingQuote(
     IReadOnlyCollection<AddOnQuoteLine> AddOnLines,
     IReadOnlyCollection<Domain.Entities.BookingAddOnDetails> BookingAddOns,
     IReadOnlyCollection<Domain.Entities.HotelAddOnSnapshot> SnapshotsToCache,
-    Money Total);
+    Money Total,
+    DateTime ScheduledCheckOutAt);
 
 public interface IBookingQuoteService
 {

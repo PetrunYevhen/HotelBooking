@@ -18,8 +18,10 @@ public class BookingCanceledIntegrationEventHandler : INotificationHandler<Booki
         if (notification.RefundAmount <= 0)
             return;
 
-        await _mediator.Send(
+        var result = await _mediator.Send(
             new RefundPaymentCommand(notification.BookingId, notification.RefundAmount, notification.Currency),
             cancellationToken);
+        if (result.IsFailure)
+            throw new InvalidOperationException($"Refund was not processed: {result.Error.Code}");
     }
 }

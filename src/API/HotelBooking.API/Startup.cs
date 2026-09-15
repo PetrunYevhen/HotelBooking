@@ -72,7 +72,7 @@ public class Startup
                 Type = SecuritySchemeType.Http,
                 Scheme = "bearer",
                 BearerFormat = "JWT",
-                Description = "Paste an access token obtained from /api/auth/login."
+                Description = "Paste an access token obtained from /api/auth/signin."
             });
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
             {

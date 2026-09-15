@@ -49,6 +49,9 @@ namespace Bookings.Infrastructure.Migrations
 
             modelBuilder.Entity("Bookings.Domain.Entities.Booking", b =>
                 {
+                    b.Property<uint>("Version").IsConcurrencyToken().ValueGeneratedOnAddOrUpdate().HasColumnType("xid").HasColumnName("xmin");
+                    b.Property<DateTime>("ScheduledCheckOutAt").HasColumnType("timestamp with time zone");
+                    b.Property<bool>("LatePaymentRefundRequested").HasColumnType("boolean");
                     b.Property<Guid>("BookingId")
                         .HasColumnType("uuid");
 

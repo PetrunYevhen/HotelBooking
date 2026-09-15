@@ -1,5 +1,3 @@
-using BuildingBlock.Domain;
-
 namespace Application.Emails;
 
 public interface IEmailSender

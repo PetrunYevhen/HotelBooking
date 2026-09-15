@@ -5,6 +5,7 @@ namespace Bookings.Application.ClientContracts;
 
 public interface IAccommodationsClient
 {
+    Task<SharedKernel.Contracts.RoomBookingDetails?> GetRoomBookingDetailsAsync(Guid roomId, CancellationToken cancellationToken);
     Task<bool> IsRoomAvailableAsync(Guid roomId,  CancellationToken cancellationToken);
     Task<Result<Money>> GetRoomPriceAsync(Guid roomId, DateRange dateRange, CancellationToken cancellationToken);
     Task<int> GetHotelCheckOutHoursAsync(Guid hotelId, CancellationToken cancellationToken);

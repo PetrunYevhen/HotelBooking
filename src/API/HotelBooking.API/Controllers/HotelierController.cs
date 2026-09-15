@@ -3,7 +3,6 @@ using Accommodations.Application.Command.HotelAddOns.CreateHotelAddOn;
 using Accommodations.Application.Command.HotelAddOns.SetHotelAddOnStatus;
 using Accommodations.Application.Command.HotelAddOns.UpdateHotelAddOn;
 using Accommodations.Application.Command.Hotels.AddHotelFacilities;
-using Accommodations.Application.Command.Hotels.AssignHotelOwner;
 using Accommodations.Application.Command.Hotels.RemoveHotelFacility;
 using Accommodations.Application.Command.Hotels.SetPolicies;
 using Accommodations.Application.Command.Rooms.AddRoomFacilities;
@@ -28,24 +27,15 @@ namespace HotelBooking.API.Controllers;
 
 [ApiController]
 [Route("api/hotelier")]
-[Authorize(Roles = "Admin,Hotelier")]
+[Authorize(Roles = "Hotelier")]
 public sealed class HotelierController(IAccommodationsModule accommodations, IBookingsModule bookings) : ControllerBase
 {
     [HttpGet("hotels")]
     public async Task<IActionResult> GetHotels(CancellationToken cancellationToken)
     {
         if (!TryUser(out var userId)) return Unauthorized();
-        // Admin can use this endpoint to see the currently unassigned legacy inventory too.
-        var result = await accommodations.ExecuteQueryAsync(new GetHotelsByOwnerQuery(userId, User.IsInRole("Admin")), cancellationToken);
+        var result = await accommodations.ExecuteQueryAsync(new GetHotelsByOwnerQuery(userId, false), cancellationToken);
         return Ok(result);
-    }
-
-    [HttpPut("hotels/{hotelId:guid}/owner")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> AssignOwner(Guid hotelId, [FromBody] AssignOwnerRequest request, CancellationToken cancellationToken)
-    {
-        var result = await accommodations.ExecuteCommandAsync(new AssignHotelOwnerCommand(hotelId, request.OwnerUserId), cancellationToken);
-        return result.IsFailure ? this.ToProblem(result.Error) : NoContent();
     }
 
     [HttpGet("hotels/{hotelId:guid}/overview")]
@@ -112,7 +102,8 @@ public sealed class HotelierController(IAccommodationsModule accommodations, IBo
     public async Task<IActionResult> AddHotelAmenity(Guid hotelId, [FromBody] List<FacilityRequest> facilities, CancellationToken cancellationToken)
     {
         if (!await CanAccess(hotelId, cancellationToken)) return Forbid();
-        var result = await accommodations.ExecuteCommandAsync(new AddHotelFacilitiesCommand { HotelId = hotelId, Facilities = facilities }, cancellationToken);
+        if (!TryUser(out var actorId)) return Unauthorized();
+        var result = await accommodations.ExecuteCommandAsync(new AddHotelFacilitiesCommand { HotelId = hotelId, Facilities = facilities, ActorId = actorId }, cancellationToken);
         return result.IsFailure ? this.ToProblem(result.Error) : NoContent();
     }
 
@@ -120,7 +111,8 @@ public sealed class HotelierController(IAccommodationsModule accommodations, IBo
     public async Task<IActionResult> RemoveHotelAmenity(Guid hotelId, Guid facilityId, CancellationToken cancellationToken)
     {
         if (!await CanAccess(hotelId, cancellationToken)) return Forbid();
-        var result = await accommodations.ExecuteCommandAsync(new RemoveHotelFacilityCommand(hotelId, facilityId), cancellationToken);
+        if (!TryUser(out var actorId)) return Unauthorized();
+        var result = await accommodations.ExecuteCommandAsync(new RemoveHotelFacilityCommand(hotelId, facilityId) { ActorId = actorId }, cancellationToken);
         return result.IsFailure ? this.ToProblem(result.Error) : NoContent();
     }
 
@@ -128,7 +120,8 @@ public sealed class HotelierController(IAccommodationsModule accommodations, IBo
     public async Task<IActionResult> AddRoomAmenity(Guid hotelId, Guid roomId, [FromBody] List<FacilityRequest> facilities, CancellationToken cancellationToken)
     {
         if (!await IsHotelRoom(hotelId, roomId, cancellationToken)) return Forbid();
-        var result = await accommodations.ExecuteCommandAsync(new AddRoomFacilitiesCommand { RoomId = roomId, Facilities = facilities }, cancellationToken);
+        if (!TryUser(out var actorId)) return Unauthorized();
+        var result = await accommodations.ExecuteCommandAsync(new AddRoomFacilitiesCommand { RoomId = roomId, Facilities = facilities, ActorId = actorId }, cancellationToken);
         return result.IsFailure ? this.ToProblem(result.Error) : NoContent();
     }
 
@@ -136,7 +129,8 @@ public sealed class HotelierController(IAccommodationsModule accommodations, IBo
     public async Task<IActionResult> RemoveRoomAmenity(Guid hotelId, Guid roomId, Guid facilityId, CancellationToken cancellationToken)
     {
         if (!await IsHotelRoom(hotelId, roomId, cancellationToken)) return Forbid();
-        var result = await accommodations.ExecuteCommandAsync(new RemoveRoomFacilityCommand(roomId, facilityId), cancellationToken);
+        if (!TryUser(out var actorId)) return Unauthorized();
+        var result = await accommodations.ExecuteCommandAsync(new RemoveRoomFacilityCommand(roomId, facilityId) { ActorId = actorId }, cancellationToken);
         return result.IsFailure ? this.ToProblem(result.Error) : NoContent();
     }
 
@@ -144,7 +138,8 @@ public sealed class HotelierController(IAccommodationsModule accommodations, IBo
     public async Task<IActionResult> SetPolicies(Guid hotelId, [FromBody] SetHotelPoliciesCommand request, CancellationToken cancellationToken)
     {
         if (!await CanAccess(hotelId, cancellationToken)) return Forbid();
-        var result = await accommodations.ExecuteCommandAsync(new SetHotelPoliciesCommand(hotelId, request.CancellationPolicyType, request.DeadlineDays, request.PercentagePenalty, request.PetPolicy, request.SmokingPolicy, request.CheckOutHoursPolicy), cancellationToken);
+        if (!TryUser(out var actorId)) return Unauthorized();
+        var result = await accommodations.ExecuteCommandAsync(new SetHotelPoliciesCommand(hotelId, request.CancellationPolicyType, request.DeadlineDays, request.PercentagePenalty, request.PetPolicy, request.SmokingPolicy, request.CheckOutHoursPolicy) { ActorId = actorId }, cancellationToken);
         return result.IsFailure ? this.ToProblem(result.Error) : NoContent();
     }
 
@@ -152,7 +147,8 @@ public sealed class HotelierController(IAccommodationsModule accommodations, IBo
     public async Task<IActionResult> CreateAddOn(Guid hotelId, [FromBody] CreateHotelAddOnRequest request, CancellationToken cancellationToken)
     {
         if (!await CanAccess(hotelId, cancellationToken)) return Forbid();
-        var result = await accommodations.ExecuteCommandAsync(new CreateHotelAddOnCommand(hotelId, request.Code, request.Name, request.Description, request.PriceAmount, request.PriceCurrency, request.PricingType), cancellationToken);
+        if (!TryUser(out var actorId)) return Unauthorized();
+        var result = await accommodations.ExecuteCommandAsync(new CreateHotelAddOnCommand(hotelId, request.Code, request.Name, request.Description, request.PriceAmount, request.PriceCurrency, request.PricingType) { ActorId = actorId }, cancellationToken);
         return result.IsFailure ? this.ToProblem(result.Error) : StatusCode(201, result.Value);
     }
 
@@ -160,7 +156,8 @@ public sealed class HotelierController(IAccommodationsModule accommodations, IBo
     public async Task<IActionResult> UpdateAddOn(Guid hotelId, Guid addOnId, [FromBody] UpdateHotelAddOnRequest request, CancellationToken cancellationToken)
     {
         if (!await CanAccess(hotelId, cancellationToken)) return Forbid();
-        var result = await accommodations.ExecuteCommandAsync(new UpdateHotelAddOnCommand(hotelId, addOnId, request.Code, request.Name, request.Description, request.PriceAmount, request.PriceCurrency, request.PricingType), cancellationToken);
+        if (!TryUser(out var actorId)) return Unauthorized();
+        var result = await accommodations.ExecuteCommandAsync(new UpdateHotelAddOnCommand(hotelId, addOnId, request.Code, request.Name, request.Description, request.PriceAmount, request.PriceCurrency, request.PricingType) { ActorId = actorId }, cancellationToken);
         return result.IsFailure ? this.ToProblem(result.Error) : NoContent();
     }
 
@@ -168,7 +165,8 @@ public sealed class HotelierController(IAccommodationsModule accommodations, IBo
     public async Task<IActionResult> SetAddOnStatus(Guid hotelId, Guid addOnId, string operation, CancellationToken cancellationToken)
     {
         if (!await CanAccess(hotelId, cancellationToken)) return Forbid();
-        var result = await accommodations.ExecuteCommandAsync(new SetHotelAddOnStatusCommand(hotelId, addOnId, operation == "activate"), cancellationToken);
+        if (!TryUser(out var actorId)) return Unauthorized();
+        var result = await accommodations.ExecuteCommandAsync(new SetHotelAddOnStatusCommand(hotelId, addOnId, operation == "activate") { ActorId = actorId }, cancellationToken);
         return result.IsFailure ? this.ToProblem(result.Error) : NoContent();
     }
 
@@ -187,7 +185,6 @@ public sealed class HotelierController(IAccommodationsModule accommodations, IBo
 
     private async Task<bool> CanAccess(Guid hotelId, CancellationToken cancellationToken)
     {
-        if (User.IsInRole("Admin")) return true;
         if (!TryUser(out var userId)) return false;
         return await accommodations.ExecuteQueryAsync(new GetHotelOwnerQuery(hotelId), cancellationToken) == userId;
     }
@@ -195,6 +192,5 @@ public sealed class HotelierController(IAccommodationsModule accommodations, IBo
     private bool TryUser(out Guid userId) => Guid.TryParse(User.FindFirstValue("sub"), out userId);
 }
 
-public sealed record AssignOwnerRequest(Guid? OwnerUserId);
 public sealed record HotelierOverviewDto(int ArrivalsToday, int DeparturesToday, int ActiveStays, int NewBookings, IReadOnlyList<HotelBookingDto> NextActions);
 public sealed record HotelierCalendarDto(object Rooms, IReadOnlyList<HotelBookingDto> Occupancy);

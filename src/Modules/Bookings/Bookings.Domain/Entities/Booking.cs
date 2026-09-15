@@ -15,6 +15,8 @@ public class Booking : Entity, IAggregateRoot
     public Money TotalPrice { get; private set; }
     public BookingStatus Status { get; private set; }
     public DateRange BookingDates { get; private set; }
+    public DateTime ScheduledCheckOutAt { get; private set; }
+    public bool LatePaymentRefundRequested { get; private set; }
     public int GuestsCount { get; private set; }
     public GuestInfo GuestInfo { get; private set; }
     public string? SpecialRequest { get; private set; }
@@ -40,7 +42,8 @@ public class Booking : Entity, IAggregateRoot
         int guestsCount,
         GuestInfo guestInfo,
         string? specialRequest,
-        IReadOnlyCollection<BookingAddOnDetails>? addOns
+        IReadOnlyCollection<BookingAddOnDetails>? addOns,
+        DateTime? scheduledCheckOutAt
 )
     {
         BookingId = BookingId.New();
@@ -49,6 +52,7 @@ public class Booking : Entity, IAggregateRoot
         UserId = userId;
         TotalPrice = totalPrice;
         BookingDates = bookingDates;
+        ScheduledCheckOutAt = scheduledCheckOutAt ?? bookingDates.End;
         GuestsCount = guestsCount;
         GuestInfo = guestInfo;
         SpecialRequest = specialRequest;
@@ -76,7 +80,8 @@ public class Booking : Entity, IAggregateRoot
         int guestsCount,
         GuestInfo guestInfo,
         string? specialRequest = null,
-        IReadOnlyCollection<BookingAddOnDetails>? addOns = null)
+        IReadOnlyCollection<BookingAddOnDetails>? addOns = null,
+        DateTime? scheduledCheckOutAt = null)
     {
         if (hotelId == Guid.Empty)
             return Result.Failure<Booking>(new Error("Booking.InvalidHotelId", "HotelId is required."));
@@ -96,7 +101,29 @@ public class Booking : Entity, IAggregateRoot
         if (addOns?.Any(addOn => addOn.Quantity < 1 || addOn.UnitPrice.Currency != totalPrice.Currency || addOn.TotalPrice.Currency != totalPrice.Currency) == true)
             return Result.Failure<Booking>(new Error("Booking.InvalidAddOns", "Add-ons must have a positive quantity and use the booking currency."));
 
-        return Result.Success(new Booking(hotelId, roomId, userId, totalPrice, bookingDates, guestsCount, guestInfo, specialRequest, addOns));
+        if (scheduledCheckOutAt is { } checkout && (checkout.Kind != DateTimeKind.Utc || checkout < bookingDates.End))
+            return Result.Failure<Booking>(new Error("Booking.InvalidCheckout", "Checkout must be UTC and not precede the last night."));
+        return Result.Success(new Booking(hotelId, roomId, userId, totalPrice, bookingDates, guestsCount, guestInfo, specialRequest, addOns, scheduledCheckOutAt));
+    }
+
+    public Result AcceptPayment(Money amount)
+    {
+        if (amount.Amount != TotalPrice.Amount || amount.Currency != TotalPrice.Currency)
+            return Result.Failure(new Error("Booking.PaymentMismatch", "Payment must match the booking total and currency."));
+        if (Status == BookingStatus.Cancelled)
+        {
+            // A payment delivered after cancellation must be compensated through the outbox.
+            // Confirmed cancellations already have their policy-based refund event.
+            if (ConfirmedAt is null && !LatePaymentRefundRequested)
+            {
+                LatePaymentRefundRequested = true;
+                AddDomainEvent(new BookingCanceledDomainEvent(BookingId, RoomId, CancellationInitiator.System, amount));
+            }
+            return Result.Success();
+        }
+        if (Status is BookingStatus.Confirmed or BookingStatus.CheckedIn or BookingStatus.Completed or BookingStatus.NoShow)
+            return Result.Success();
+        return Confirm();
     }
 
     public Result Confirm()
@@ -152,7 +179,7 @@ public class Booking : Entity, IAggregateRoot
         if (utcNow.Kind != DateTimeKind.Utc)
             return Result.Failure(new Error("Booking.InvalidUtc", "utcNow must be UTC."));
 
-        if (utcNow < BookingDates.End)
+        if (utcNow < ScheduledCheckOutAt)
             return Result.Failure(new Error(
                 "Booking.CheckOutNotDue",
                 "The booking checkout time has not arrived yet."));

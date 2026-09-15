@@ -4,5 +4,37 @@
   "rules": {
     "react/rules-of-hooks": "error",
     "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/shared/**"],
+      "rules": {
+        "no-restricted-imports": ["error", { "patterns": [{ "group": ["@/app", "@/app/**", "@/domains", "@/domains/**", "@/workspaces", "@/workspaces/**"], "message": "shared/ must not depend on app/, domains/ or workspaces/." }] }]
+      }
+    },
+    {
+      "files": ["src/domains/**"],
+      "rules": {
+        "no-restricted-imports": ["error", { "patterns": [{ "group": ["@/app", "@/app/**", "@/workspaces", "@/workspaces/**"], "message": "domains/ must not depend on app/ or workspaces/." }] }]
+      }
+    },
+    {
+      "files": ["src/workspaces/guest/**"],
+      "rules": {
+        "no-restricted-imports": ["error", { "patterns": [{ "group": ["@/app", "@/app/**", "@/workspaces/hotelier/**", "@/workspaces/admin/**"], "message": "Workspaces are isolated: move shared code to domains/ or shared/." }] }]
+      }
+    },
+    {
+      "files": ["src/workspaces/hotelier/**"],
+      "rules": {
+        "no-restricted-imports": ["error", { "patterns": [{ "group": ["@/app", "@/app/**", "@/workspaces/guest/**", "@/workspaces/admin/**"], "message": "Workspaces are isolated: move shared code to domains/ or shared/." }] }]
+      }
+    },
+    {
+      "files": ["src/workspaces/admin/**"],
+      "rules": {
+        "no-restricted-imports": ["error", { "patterns": [{ "group": ["@/app", "@/app/**", "@/workspaces/guest/**", "@/workspaces/hotelier/**"], "message": "Workspaces are isolated: move shared code to domains/ or shared/." }] }]
+      }
+    }
+  ]
 }

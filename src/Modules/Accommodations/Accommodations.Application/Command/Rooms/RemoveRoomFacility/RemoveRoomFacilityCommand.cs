@@ -7,4 +7,6 @@ public sealed class RemoveRoomFacilityCommand(Guid roomId, Guid facilityId) : Co
 {
     public Guid RoomId { get; } = roomId;
     public Guid FacilityId { get; } = facilityId;
+    public Guid ActorId { get; init; }
+    public bool IsAdmin { get; init; }
 }

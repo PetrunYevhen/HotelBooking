@@ -28,6 +28,7 @@ public class ClientModule : Module
     public void RegisterSubscriptions(ILifetimeScope scope)
     {
         new GetRoomAvailabilitySubscription().Subscride(_client, scope);
+        new GetRoomBookingDetailsSubscription().Subscride(_client, scope);
         new GetRoomPriceSubscription().Subscride(_client, scope);
         new GetHotelCheckOutHoursSubscription().Subscride(_client, scope);
         new GetHotelCancellationPolicySubscription().Subscride(_client, scope);

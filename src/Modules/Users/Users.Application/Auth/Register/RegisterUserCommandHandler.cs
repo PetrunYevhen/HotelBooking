@@ -22,6 +22,8 @@ public sealed class RegisterUserCommandHandler : IRequestHandler<RegisterUserCom
 
     public async Task<Result<AuthSession>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
+        if (request.Intent is not ("guest" or "list-property"))
+            return Result.Failure<AuthSession>(new Error("User.InvalidIntent", "Account intent must be guest or list-property."));
         if (string.IsNullOrWhiteSpace(request.Password) || request.Password.Length is < 12 or > 128)
             return Result.Failure<AuthSession>(new Error("User.InvalidPassword", "Password must be between 12 and 128 characters."));
 
@@ -38,6 +40,15 @@ public sealed class RegisterUserCommandHandler : IRequestHandler<RegisterUserCom
             return Result.Failure<AuthSession>(new Error("User.UsernameAlreadyExists", "A user with this username already exists."));
         if (await _users.GetByEmailAsync(user.Email, cancellationToken) is not null)
             return Result.Failure<AuthSession>(new Error("User.EmailAlreadyExists", "A user with this email address already exists."));
+
+        if (request.Intent == "list-property")
+        {
+            if (request.Onboarding is null)
+                return Result.Failure<AuthSession>(new Error("HotelierApplication.InvalidDetails", "Business details are required."));
+            var validation = request.Onboarding.Validate();
+            if (validation.IsFailure) return Result.Failure<AuthSession>(validation.Error);
+            user.RequestHotelierOnboarding(request.Onboarding);
+        }
 
         var refreshToken = _refreshTokens.CreateToken();
         var tokenResult = user.SetRefreshTokenHash(_refreshTokens.HashToken(refreshToken), _refreshTokens.GetExpiryUtc(DateTime.UtcNow));

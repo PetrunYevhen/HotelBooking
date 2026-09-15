@@ -9,6 +9,29 @@ namespace HotelBooking.UnitTests.Bookings;
 public sealed class BookingTests
 {
     [Fact]
+    public void ExpiredBookingRequestsExactlyOneFullRefundForLatePayment()
+    {
+        var booking = ValidBooking();
+        booking.Expire();
+        Assert.True(booking.AcceptPayment(booking.TotalPrice).IsSuccess);
+        Assert.True(booking.AcceptPayment(booking.TotalPrice).IsSuccess);
+        Assert.Equal(BookingStatus.Cancelled, booking.Status);
+        var refund = Assert.Single(booking.DomainEvents.OfType<global::Bookings.Domain.Entities.Events.BookingCanceledDomainEvent>());
+        Assert.Equal(booking.TotalPrice, refund.RefundAmount);
+    }
+
+    [Fact]
+    public void PaymentMustMatchTotalAndDuplicateDeliveryDoesNotConfirmTwice()
+    {
+        var booking = ValidBooking();
+        Assert.True(booking.AcceptPayment(Money.Create(1, booking.TotalPrice.Currency).Value).IsFailure);
+        Assert.Equal(BookingStatus.Pending, booking.Status);
+        Assert.True(booking.AcceptPayment(booking.TotalPrice).IsSuccess);
+        Assert.True(booking.AcceptPayment(booking.TotalPrice).IsSuccess);
+        Assert.Single(booking.DomainEvents.OfType<global::Bookings.Domain.Entities.Events.BookingConfirmedDomainEvent>());
+    }
+
+    [Fact]
     public void Create_WithEmptyHotelId_ReturnsFailure()
     {
         var result = Booking.Create(

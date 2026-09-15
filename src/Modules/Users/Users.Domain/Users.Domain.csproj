@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="../../../SharedKernel/SharedKernel.csproj" />
       <ProjectReference Include="..\..\..\Common\BuildingBlocks\Domain\Domain.csproj" />
     </ItemGroup>
     

@@ -1,6 +1,7 @@
 using Accommodations.Application.Command.Pricing.SetRoomPricing;
 using Accommodations.Application.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelBooking.API.Controllers;
 
@@ -14,19 +15,21 @@ public class PricingController : ControllerBase
         => _accommodationsModule = accommodationsModule;
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Hotelier")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SetRoomPricing(
         [FromBody] SetRoomPricingRequest request,
         CancellationToken cancellationToken)
     {
+        if (!Guid.TryParse(User.FindFirst("sub")?.Value, out var actorId)) return Unauthorized();
         var result = await _accommodationsModule.ExecuteCommandAsync(
             new SetRoomPricingCommand(
                 request.RoomId,
                 request.Price,
                 request.Currency,
                 request.ValidFrom,
-                request.ValidTo),
+                request.ValidTo) { ActorId = actorId, IsAdmin = User.IsInRole("Admin") },
             cancellationToken);
 
         if (result.IsFailure)

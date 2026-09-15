@@ -1,5 +1,6 @@
 ﻿services:
   hotel_booking_api:
+    platform: linux/amd64
     build:
       context: ./src/
       
@@ -24,6 +25,7 @@
         condition: service_started
 
   hotel_booking_migrator:
+    platform: linux/amd64
     build:
       context: ./src/
       target: migrator

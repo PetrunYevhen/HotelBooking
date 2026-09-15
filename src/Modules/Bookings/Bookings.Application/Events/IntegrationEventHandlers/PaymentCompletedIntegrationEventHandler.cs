@@ -15,10 +15,12 @@ public class PaymentCompletedIntegrationEventHandler : INotificationHandler<Paym
 
     public async Task Handle(PaymentCompletedIntegrationEvent notification, CancellationToken cancellationToken)
     {
-        await _mediator.Send(new ConfirmBookingCommand(
+        var result = await _mediator.Send(new ConfirmBookingCommand(
             notification.BookingId,
             notification.Amount,
             notification.Currency,
             notification.CompletedAt), cancellationToken);
+        if (result.IsFailure)
+            throw new InvalidOperationException($"Payment confirmation was not processed: {result.Error.Code}");
     }
 }

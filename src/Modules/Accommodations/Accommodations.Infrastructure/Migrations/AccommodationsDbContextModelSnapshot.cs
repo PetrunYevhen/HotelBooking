@@ -498,6 +498,27 @@ namespace Accommodations.Infrastructure.Migrations
                     b.Navigation("Facilities");
                 });
 #pragma warning restore 612, 618
+        modelBuilder.Entity("Accommodations.Domain.Entities.HotelierApplications.HotelierApplication", b =>
+        {
+            b.Property<Guid>("HotelierApplicationId").HasColumnType("uuid");
+            b.Property<Guid>("ApplicantId").HasColumnType("uuid");
+            b.Property<string>("BusinessEmail").IsRequired().HasMaxLength(320).HasColumnType("character varying(320)");
+            b.Property<string>("BusinessPhoneNumber").IsRequired().HasMaxLength(32).HasColumnType("character varying(32)");
+            b.Property<string>("FirstPropertyAddress").IsRequired().HasMaxLength(500).HasColumnType("character varying(500)");
+            b.Property<string>("FirstPropertyName").IsRequired().HasMaxLength(200).HasColumnType("character varying(200)");
+            b.Property<string>("LegalBusinessName").IsRequired().HasMaxLength(200).HasColumnType("character varying(200)");
+            b.Property<string>("RegistrationNumber").IsRequired().HasMaxLength(100).HasColumnType("character varying(100)");
+            b.Property<string>("RejectionReason").HasMaxLength(1000).HasColumnType("character varying(1000)");
+            b.Property<Guid?>("ReviewedByUserId").HasColumnType("uuid");
+            b.Property<DateTime?>("ReviewedAt").HasColumnType("timestamp with time zone");
+            b.Property<int>("Status").HasColumnType("integer");
+            b.Property<DateTime>("SubmittedAt").HasColumnType("timestamp with time zone");
+            b.Property<string>("TaxNumber").HasMaxLength(100).HasColumnType("character varying(100)");
+            b.Property<uint>("Version").IsConcurrencyToken().ValueGeneratedOnAddOrUpdate().HasColumnType("xid").HasColumnName("xmin");
+            b.HasKey("HotelierApplicationId");
+            b.HasIndex("ApplicantId", "Status").IsUnique().HasFilter("\"Status\" = 0");
+            b.ToTable("HotelierApplications", "Accommodations");
+        });
         }
     }
 }

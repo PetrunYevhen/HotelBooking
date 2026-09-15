@@ -25,12 +25,16 @@ public class RefundPaymentCommandHandler : IRequestHandler<RefundPaymentCommand,
         if (payment is null)
             return Result.Failure(Error.NotFound("Payment"));
 
-        if (payment.Status != PaymentStatus.Completed)
+        if (payment.Status is PaymentStatus.Refunded or PaymentStatus.PartiallyRefunded or PaymentStatus.Failed)
             return Result.Success();
+        if (payment.Status != PaymentStatus.Completed)
+            return Result.Failure(new Error("Payment.NotCompleted", "Payment has not completed yet; retry the refund."));
 
         var amountResult = Money.Create(request.Amount, request.Currency);
         if (amountResult.IsFailure)
             return Result.Failure(amountResult.Error);
+        if (amountResult.Value.Currency != payment.TotalAmount.Currency || amountResult.Value.Amount > payment.TotalAmount.Amount)
+            return Result.Failure(new Error("Payment.InvalidRefund", "Refund must match the currency and not exceed the payment."));
 
         // The same cancellation integration event can be delivered again after a failed commit.
         // Keep this key stable so the gateway returns the original refund instead of charging twice.
@@ -40,6 +44,8 @@ public class RefundPaymentCommandHandler : IRequestHandler<RefundPaymentCommand,
             payment.ExternalTransactionId!, amountResult.Value, idempotencyKey, cancellationToken);
         if (refundResult.IsFailure)
             return Result.Failure(refundResult.Error);
+        if (refundResult.Value.Status != "succeeded")
+            return Result.Failure(new Error("Payment.RefundPending", "Gateway has not completed the refund yet."));
 
         var outcome = payment.Refund(amountResult.Value);
         if (outcome.IsFailure)

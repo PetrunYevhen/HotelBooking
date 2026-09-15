@@ -63,6 +63,7 @@ partial class UsersDbContextModelSnapshot : ModelSnapshot
             });
             b.ToTable("Users", "Accounts");
         });
+
 #pragma warning restore 612, 618
     }
 }

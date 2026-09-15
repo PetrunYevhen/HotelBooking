@@ -8,12 +8,10 @@ namespace Bookings.Application.Services.AddOns;
 
 public sealed class AddOnPriceCalculationService : IAddOnPriceCalculationService
 {
-    private readonly IHotelAddOnSnapshotReader _snapshotReader;
     private readonly IAccommodationsClient _accommodationsClient;
 
-    public AddOnPriceCalculationService(IHotelAddOnSnapshotReader snapshotReader, IAccommodationsClient accommodationsClient)
+    public AddOnPriceCalculationService(IAccommodationsClient accommodationsClient)
     {
-        _snapshotReader = snapshotReader;
         _accommodationsClient = accommodationsClient;
     }
 
@@ -39,20 +37,14 @@ public sealed class AddOnPriceCalculationService : IAddOnPriceCalculationService
             if (requested.HotelAddOnId == Guid.Empty || requested.Quantity < 1 || !selectedIds.Add(requested.HotelAddOnId))
                 return Result.Failure<AddOnCalculationResult>(new Error("BookingAddOn.InvalidSelection", "Each add-on must be selected once with a positive quantity."));
 
-            var snapshot = await _snapshotReader.GetByIdAsync(requested.HotelAddOnId, cancellationToken);
-            if (snapshot is null)
-            {
-                var configuration = await _accommodationsClient.GetHotelAddOnAsync(hotelId, requested.HotelAddOnId, cancellationToken);
-                if (configuration is null)
-                    return Result.Failure<AddOnCalculationResult>(new Error("BookingAddOn.NotFound", "The selected add-on is not available."));
-
-                var snapshotResult = CreateSnapshot(configuration);
-                if (snapshotResult.IsFailure)
-                    return Result.Failure<AddOnCalculationResult>(snapshotResult.Error);
-
-                snapshot = snapshotResult.Value;
-                snapshotsToCache.Add(snapshot);
-            }
+            // The catalog owns sale eligibility and price. Projection lag must not price a new purchase.
+            var configuration = await _accommodationsClient.GetHotelAddOnAsync(hotelId, requested.HotelAddOnId, cancellationToken);
+            if (configuration is null)
+                return Result.Failure<AddOnCalculationResult>(new Error("BookingAddOn.NotFound", "The selected add-on is not available."));
+            var snapshotResult = CreateSnapshot(configuration);
+            if (snapshotResult.IsFailure)
+                return Result.Failure<AddOnCalculationResult>(snapshotResult.Error);
+            var snapshot = snapshotResult.Value;
 
             if (snapshot.HotelId != hotelId || !snapshot.IsActive)
                 return Result.Failure<AddOnCalculationResult>(new Error("BookingAddOn.InvalidSelection", "The selected add-on is not available."));
@@ -61,9 +53,9 @@ public sealed class AddOnPriceCalculationService : IAddOnPriceCalculationService
 
             var multiplier = snapshot.PricingType switch
             {
-                HotelAddOnPricingType.PerStay => requested.Quantity,
-                HotelAddOnPricingType.PerGuest => requested.Quantity * guestCount,
-                HotelAddOnPricingType.PerGuestPerNight => requested.Quantity * guestCount * nights,
+                HotelAddOnPricingType.PerStay => (decimal)requested.Quantity,
+                HotelAddOnPricingType.PerGuest => (decimal)requested.Quantity * guestCount,
+                HotelAddOnPricingType.PerGuestPerNight => (decimal)requested.Quantity * guestCount * nights,
                 _ => 0
             };
             if (multiplier < 1)

@@ -32,6 +32,8 @@ public class AccommodationsStartup
    {
        SqlMapper.AddTypeHandler(new HotelIdTypeHandler());
        SqlMapper.AddTypeHandler(new HotelAddOnIdTypeHandler());
+       SqlMapper.AddTypeHandler(new HotelierApplicationIdTypeHandler());
+       SqlMapper.AddTypeHandler(new AccountIdTypeHandler());
        
        var moduleLogger = logger.ForContext("Module", "Accommodations");
        
@@ -58,6 +60,7 @@ public class AccommodationsStartup
        containerBuilder.RegisterModule(new ProcessingModule());
        containerBuilder.RegisterModule(new ServicesModule());
        var domainNotificationMap = new BiDictionary<string, Type>();
+       domainNotificationMap.Add("HotelierApplicationApprovedNotification", typeof(HotelierApplicationApprovedNotification));
        domainNotificationMap.Add("HotelAddOnUpsertedNotification", typeof(HotelAddOnUpsertedNotification));
        domainNotificationMap.Add("HotelAddOnDeactivatedNotification", typeof(HotelAddOnDeactivatedNotification));
        containerBuilder.RegisterModule(new OutboxModule(domainNotificationMap));
