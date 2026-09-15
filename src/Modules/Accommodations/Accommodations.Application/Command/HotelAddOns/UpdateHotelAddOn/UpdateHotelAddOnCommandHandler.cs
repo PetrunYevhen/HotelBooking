@@ -10,18 +10,18 @@ namespace Accommodations.Application.Command.HotelAddOns.UpdateHotelAddOn;
 
 public sealed class UpdateHotelAddOnCommandHandler : IRequestHandler<UpdateHotelAddOnCommand, Result>
 {
-    private readonly IHotelAddOnRepository _hotelAddOn;
+    private readonly IHotelAddOnRepository _hotelAddOnRepository;
     private readonly IHotelRepository _hotels;
 
-    public UpdateHotelAddOnCommandHandler(IHotelAddOnRepository hotelAddOn, IHotelRepository hotels)
+    public UpdateHotelAddOnCommandHandler(IHotelAddOnRepository hotelAddOnRepository, IHotelRepository hotels)
     {
-        _hotelAddOn = hotelAddOn;
+        _hotelAddOnRepository = hotelAddOnRepository;
         _hotels = hotels;
     }
 
     public async Task<Result> Handle(UpdateHotelAddOnCommand request, CancellationToken cancellationToken)
     {
-        var addOn = await _hotelAddOn.GetByIdAsync(new HotelAddOnId(request.HotelAddOnId), cancellationToken);
+        var addOn = await _hotelAddOnRepository.GetByIdAsync(new HotelAddOnId(request.HotelAddOnId), cancellationToken);
         if (addOn is null || addOn.HotelId.Value != request.HotelId)
             return Result.Failure(Error.NotFound("Hotel add-on"));
 
@@ -36,7 +36,7 @@ public sealed class UpdateHotelAddOnCommandHandler : IRequestHandler<UpdateHotel
         if (result.IsFailure)
             return result;
 
-        await _hotelAddOn.UpdateAsync(addOn, cancellationToken);
+        await _hotelAddOnRepository.UpdateAsync(addOn, cancellationToken);
         return Result.Success();
     }
 }
