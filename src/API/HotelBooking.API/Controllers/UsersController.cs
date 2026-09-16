@@ -177,7 +177,7 @@ public sealed class UsersController : ControllerBase
             HttpOnly = false,
             Secure = !_environment.IsDevelopment(),
             SameSite = SameSiteMode.Strict,
-            Path = "/api/auth",
+            Path = "/",
             Expires = DateTimeOffset.UtcNow.AddDays(30)
         });
         return token;
@@ -197,7 +197,7 @@ public sealed class UsersController : ControllerBase
     private void DeleteSessionCookies()
     {
         Response.Cookies.Delete(RefreshCookie, new CookieOptions { Path = "/api/auth", Secure = !_environment.IsDevelopment(), SameSite = SameSiteMode.Strict });
-        Response.Cookies.Delete(CsrfCookie, new CookieOptions { Path = "/api/auth", Secure = !_environment.IsDevelopment(), SameSite = SameSiteMode.Strict });
+        Response.Cookies.Delete(CsrfCookie, new CookieOptions { Path = "/", Secure = !_environment.IsDevelopment(), SameSite = SameSiteMode.Strict });
     }
 
     private bool TryGetCurrentUserId(out Guid userId) =>

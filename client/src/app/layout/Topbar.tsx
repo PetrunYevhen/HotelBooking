@@ -3,7 +3,7 @@ import { Globe2, Menu, Search, UserRound, X } from "lucide-react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { BrandLogo } from "@/shared/components/BrandLogo"
 import { getAuthSession } from "@/domains/auth/session"
-import { clearAccessToken } from "@/shared/lib/api-client"
+import { signOut as signOutRequest } from "@/domains/auth/api/auth"
 
 const navigation = [
     { label: "Destinations", href: "/#destinations" },
@@ -21,7 +21,7 @@ export function Topbar() {
     const navigate = useNavigate()
     const session = getAuthSession()
     const workspace = session?.role === "Admin" ? { label: "Admin", to: "/admin" } : session?.role === "Hotelier" ? { label: "Hotelier", to: "/hotelier" } : session ? { label: "Account", to: "/account" } : null
-    const signOut = () => { clearAccessToken(); navigate("/") }
+    const signOut = () => { void signOutRequest().finally(() => navigate("/")) }
 
     return (
         <header className="sticky top-0 z-50 border-b bg-white/95 backdrop-blur">
