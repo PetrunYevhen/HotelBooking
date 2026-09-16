@@ -19,19 +19,30 @@ export class ApiError extends Error {
 
 export const apiClient = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
+    withCredentials: true,
     headers: { "Content-Type": "application/json" },
 })
 
-const accessTokenKey = "hotelbooking_access_token"
+// In-memory only - never persisted (localStorage/sessionStorage are readable by any
+// script on the page, so a stolen access token there survives an XSS hit indefinitely).
+// Session persistence across reloads comes from the httpOnly refresh cookie instead;
+// see restoreSession() in domains/auth/api/auth.ts.
+let accessToken: string | null = null
 
-export const hasAccessToken = () => Boolean(localStorage.getItem(accessTokenKey))
-export const getAccessToken = () => localStorage.getItem(accessTokenKey)
-export const setAccessToken = (token: string) => localStorage.setItem(accessTokenKey, token)
-export const clearAccessToken = () => localStorage.removeItem(accessTokenKey)
+export const hasAccessToken = () => accessToken !== null
+export const getAccessToken = () => accessToken
+export const setAccessToken = (token: string) => { accessToken = token }
+export const clearAccessToken = () => { accessToken = null }
+
+const csrfCookieName = "hotelbooking_csrf"
+
+export const readCsrfCookie = (): string | null => {
+    const match = document.cookie.match(new RegExp(`(?:^|; )${csrfCookieName}=([^;]*)`))
+    return match ? decodeURIComponent(match[1]) : null
+}
 
 apiClient.interceptors.request.use((config) => {
-    const token = localStorage.getItem(accessTokenKey)
-    if (token) config.headers.Authorization = `Bearer ${token}`
+    if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`
     return config
 })
 

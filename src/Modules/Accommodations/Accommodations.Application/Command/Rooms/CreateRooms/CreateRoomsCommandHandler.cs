@@ -20,13 +20,13 @@ public class CreateRoomsCommandHandler : IRequestHandler<CreateRoomsCommand, Res
         _roomRepository = roomRepository;
     }
 
-    public async Task<Result<List<Guid>>> Handle(CreateRoomsCommand roomuest, CancellationToken cancellationToken)
+    public async Task<Result<List<Guid>>> Handle(CreateRoomsCommand request, CancellationToken cancellationToken)
     {
         var rooms = new List<Room>();
-        
-        foreach (var room in roomuest.Rooms)
+
+        foreach (var room in request.Rooms)
         {
-             var access = await InventoryAuthorization.CheckAsync(_hotelRepository, new HotelId(room.HotelId), roomuest.ActorId, roomuest.IsAdmin, cancellationToken);
+             var access = await InventoryAuthorization.CheckAsync(_hotelRepository, new HotelId(room.HotelId), request.ActorId, request.IsAdmin, cancellationToken);
              if (access.IsFailure) return Result.Failure<List<Guid>>(access.Error);
              var basePriceResult = Money.Create(room.BasePriceAmount, room.BasePriceCurrency);
              if (basePriceResult.IsFailure)
