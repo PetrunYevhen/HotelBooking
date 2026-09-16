@@ -11,4 +11,6 @@ public class CheckOutBookingCommand : CommandBase<Result>
     }
 
     public Guid BookingId { get; set; }
+    public Guid ActorId { get; init; }
+    public bool IsAdmin { get; init; }
 }

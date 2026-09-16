@@ -109,7 +109,9 @@ private readonly IBookingsModule _bookingsModule;
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CheckIn(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _bookingsModule.ExecuteCommandAsync(new CheckInBookingCommand(id), cancellationToken);
+        if (!TryGetCurrentUserId(out var userId))
+            return Unauthorized();
+        var result = await _bookingsModule.ExecuteCommandAsync(new CheckInBookingCommand(id) { ActorId = userId, IsAdmin = true }, cancellationToken);
         if (result.IsFailure)
             return this.ToProblem(result.Error);
         return NoContent();
@@ -122,7 +124,9 @@ private readonly IBookingsModule _bookingsModule;
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CheckOut(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _bookingsModule.ExecuteCommandAsync(new CheckOutBookingCommand(id), cancellationToken);
+        if (!TryGetCurrentUserId(out var userId))
+            return Unauthorized();
+        var result = await _bookingsModule.ExecuteCommandAsync(new CheckOutBookingCommand(id) { ActorId = userId, IsAdmin = true }, cancellationToken);
         if (result.IsFailure)
             return this.ToProblem(result.Error);
         return NoContent();

@@ -74,7 +74,8 @@ public sealed class HotelierController(IAccommodationsModule accommodations, IBo
     public async Task<IActionResult> CheckIn(Guid bookingId, CancellationToken cancellationToken)
     {
         if (!await CanAccessBooking(bookingId, cancellationToken)) return Forbid();
-        var result = await bookings.ExecuteCommandAsync(new CheckInBookingCommand(bookingId), cancellationToken);
+        if (!TryUser(out var actorId)) return Unauthorized();
+        var result = await bookings.ExecuteCommandAsync(new CheckInBookingCommand(bookingId) { ActorId = actorId }, cancellationToken);
         return result.IsFailure ? this.ToProblem(result.Error) : NoContent();
     }
 
@@ -82,7 +83,8 @@ public sealed class HotelierController(IAccommodationsModule accommodations, IBo
     public async Task<IActionResult> CheckOut(Guid bookingId, CancellationToken cancellationToken)
     {
         if (!await CanAccessBooking(bookingId, cancellationToken)) return Forbid();
-        var result = await bookings.ExecuteCommandAsync(new CheckOutBookingCommand(bookingId), cancellationToken);
+        if (!TryUser(out var actorId)) return Unauthorized();
+        var result = await bookings.ExecuteCommandAsync(new CheckOutBookingCommand(bookingId) { ActorId = actorId }, cancellationToken);
         return result.IsFailure ? this.ToProblem(result.Error) : NoContent();
     }
 

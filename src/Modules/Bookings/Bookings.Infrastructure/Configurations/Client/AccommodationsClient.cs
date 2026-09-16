@@ -52,4 +52,10 @@ public class AccommodationsClient : IAccommodationsClient
         return _client.SendAsync<HotelAddOnConfigurationDto?>(
             "accommodations/hotel-add-on", new { HotelId = hotelId, HotelAddOnId = hotelAddOnId }, cancellationToken);
     }
+
+    public Task<Guid?> GetHotelOwnerAsync(Guid hotelId, CancellationToken cancellationToken)
+    {
+        return _client.SendAsync<Guid?>(
+            "accommodations/hotel-owner", new { HotelId = hotelId }, cancellationToken);
+    }
 }
