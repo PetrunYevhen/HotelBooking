@@ -10,12 +10,12 @@ namespace Accommodations.Application.Command.HotelAddOns.SetHotelAddOnStatus;
 public sealed class SetHotelAddOnStatusCommandHandler : IRequestHandler<SetHotelAddOnStatusCommand, Result>
 {
     private readonly IHotelAddOnRepository _hotelAddOnRepository;
-    private readonly IHotelRepository _hotels;
+    private readonly IHotelRepository _hotelRepository;
 
-    public SetHotelAddOnStatusCommandHandler(IHotelAddOnRepository hotelAddOnRepository, IHotelRepository hotels)
+    public SetHotelAddOnStatusCommandHandler(IHotelAddOnRepository hotelAddOnRepository, IHotelRepository hotelRepository)
     {
         _hotelAddOnRepository = hotelAddOnRepository;
-        _hotels = hotels;
+        _hotelRepository = hotelRepository;
     }
 
     public async Task<Result> Handle(SetHotelAddOnStatusCommand request, CancellationToken cancellationToken)
@@ -24,7 +24,7 @@ public sealed class SetHotelAddOnStatusCommandHandler : IRequestHandler<SetHotel
         if (addOn is null || addOn.HotelId.Value != request.HotelId)
             return Result.Failure(Error.NotFound("Hotel add-on"));
 
-        var access = await InventoryAuthorization.CheckAsync(_hotels, addOn.HotelId, request.ActorId, request.IsAdmin, cancellationToken);
+        var access = await InventoryAuthorization.CheckAsync(_hotelRepository, addOn.HotelId, request.ActorId, request.IsAdmin, cancellationToken);
         if (access.IsFailure) return access;
 
         if (request.IsActive)

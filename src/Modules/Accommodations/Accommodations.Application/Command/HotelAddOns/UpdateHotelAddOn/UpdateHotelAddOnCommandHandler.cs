@@ -11,12 +11,12 @@ namespace Accommodations.Application.Command.HotelAddOns.UpdateHotelAddOn;
 public sealed class UpdateHotelAddOnCommandHandler : IRequestHandler<UpdateHotelAddOnCommand, Result>
 {
     private readonly IHotelAddOnRepository _hotelAddOnRepository;
-    private readonly IHotelRepository _hotels;
+    private readonly IHotelRepository _hotelRepository;
 
-    public UpdateHotelAddOnCommandHandler(IHotelAddOnRepository hotelAddOnRepository, IHotelRepository hotels)
+    public UpdateHotelAddOnCommandHandler(IHotelAddOnRepository hotelAddOnRepository, IHotelRepository hotelRepository)
     {
         _hotelAddOnRepository = hotelAddOnRepository;
-        _hotels = hotels;
+        _hotelRepository = hotelRepository;
     }
 
     public async Task<Result> Handle(UpdateHotelAddOnCommand request, CancellationToken cancellationToken)
@@ -25,7 +25,7 @@ public sealed class UpdateHotelAddOnCommandHandler : IRequestHandler<UpdateHotel
         if (addOn is null || addOn.HotelId.Value != request.HotelId)
             return Result.Failure(Error.NotFound("Hotel add-on"));
 
-        var access = await InventoryAuthorization.CheckAsync(_hotels, addOn.HotelId, request.ActorId, request.IsAdmin, cancellationToken);
+        var access = await InventoryAuthorization.CheckAsync(_hotelRepository, addOn.HotelId, request.ActorId, request.IsAdmin, cancellationToken);
         if (access.IsFailure) return access;
 
         var price = Money.Create(request.PriceAmount, request.PriceCurrency);
