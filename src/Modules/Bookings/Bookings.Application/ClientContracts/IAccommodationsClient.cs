@@ -11,6 +11,7 @@ public interface IAccommodationsClient
     Task<int> GetHotelCheckOutHoursAsync(Guid hotelId, CancellationToken cancellationToken);
     Task<CancellationPolicyDto> GetHotelCancellationPolicyAsync(Guid hotelId, CancellationToken cancellationToken);
     Task<HotelAddOnConfigurationDto?> GetHotelAddOnAsync(Guid hotelId, Guid hotelAddOnId, CancellationToken cancellationToken);
+    Task<Guid?> GetHotelOwnerAsync(Guid hotelId, CancellationToken cancellationToken);
 }
 
 public sealed class HotelAddOnConfigurationDto

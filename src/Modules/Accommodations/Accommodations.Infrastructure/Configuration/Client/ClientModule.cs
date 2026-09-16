@@ -33,5 +33,6 @@ public class ClientModule : Module
         new GetHotelCheckOutHoursSubscription().Subscride(_client, scope);
         new GetHotelCancellationPolicySubscription().Subscride(_client, scope);
         new GetHotelAddOnSubscription().Subscride(_client, scope);
+        new GetHotelOwnerSubscription().Subscride(_client, scope);
     }
 }

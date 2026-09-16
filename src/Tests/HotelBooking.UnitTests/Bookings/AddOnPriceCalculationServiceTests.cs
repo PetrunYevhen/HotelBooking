@@ -94,4 +94,5 @@ internal sealed class BookingCatalogStub : IAccommodationsClient
         Task.FromResult(new CancellationPolicyDto());
     public Task<HotelAddOnConfigurationDto?> GetHotelAddOnAsync(Guid hotelId, Guid id, CancellationToken cancellationToken) =>
         Task.FromResult(id == AddOn.HotelAddOnId ? AddOn : null);
+    public Task<Guid?> GetHotelOwnerAsync(Guid hotelId, CancellationToken cancellationToken) => Task.FromResult<Guid?>(null);
 }
