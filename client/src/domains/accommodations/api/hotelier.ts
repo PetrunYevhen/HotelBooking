@@ -24,3 +24,9 @@ export const removeRoomAmenity = (hotelId: string, roomId: string, facilityId: s
 export const createAddOn = (hotelId: string, payload: Omit<HotelAddOnDto, "hotelAddOnId" | "hotelId" | "isActive">) => apiClient.post(`/api/hotelier/hotels/${hotelId}/add-ons`, payload)
 export const updateAddOn = (hotelId: string, addOnId: string, payload: Omit<HotelAddOnDto, "hotelAddOnId" | "hotelId" | "isActive">) => apiClient.put(`/api/hotelier/hotels/${hotelId}/add-ons/${addOnId}`, payload)
 export const setAddOnActive = (hotelId: string, addOnId: string, active: boolean) => apiClient.post(`/api/hotelier/hotels/${hotelId}/add-ons/${addOnId}/${active ? "activate" : "deactivate"}`)
+
+export interface CreateHotelPayload { name: string; description: string; status: number; street: string; city: string; country: string; postalCode: string; checkIn: string; checkOut: string }
+export const createHotel = async (payload: CreateHotelPayload) => (await apiClient.post<{ id: string }>("/api/hotels", payload)).data
+
+export interface CreateRoomPayload { hotelId: string; roomNumber: string; type: number; beds: number; capacity: number; description: string | null; status: number; basePriceAmount: number; basePriceCurrency: string }
+export const createRoom = async (payload: CreateRoomPayload) => (await apiClient.post<string[]>("/api/rooms", [payload])).data
