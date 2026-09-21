@@ -1,9 +1,12 @@
 using Bookings.Application.Contracts;
 using BuildingBlock.Domain;
+using Infrastructure.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace Bookings.Application.Command.CreateBooking;
 
-public class CreateBookingCommand : CommandBase<Result<Guid>>
+public class CreateBookingCommand : CommandBase<Result<Guid>>, ITranslatesDbConflict
 {
     public CreateBookingCommand(Guid hotelId, Guid roomId, Guid userId, DateTime checkIn, DateTime checkOut, int guestCount, string firstName, string lastName, string email, string phoneNumber, string? specialRequest, IReadOnlyCollection<CreateBookingAddOn>? addOns = null)
     {
@@ -35,6 +38,11 @@ public class CreateBookingCommand : CommandBase<Result<Guid>>
 
     public string? SpecialRequest { get; init; }
     public IReadOnlyCollection<CreateBookingAddOn> AddOns { get; init; }
+
+    public Result? TranslateDbConflict(DbUpdateException exception) =>
+        exception.InnerException is PostgresException { SqlState: PostgresErrorCodes.ExclusionViolation }
+            ? Result.Failure<Guid>(new Error("Booking.Overlap", "Room already booked for this period."))
+            : null;
 }
 
 public sealed record CreateBookingAddOn(Guid HotelAddOnId, int Quantity);
