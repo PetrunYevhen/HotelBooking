@@ -2,6 +2,7 @@ using Bookings.Application.Contracts;
 using BuildingBlock.Domain;
 using Infrastructure.UnitOfWork;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace Bookings.Application.Behaviour;
@@ -36,7 +37,16 @@ public class TransactionalBehaviour<TRequest, TResponse>
             return response;
         }
         
-        await _unitOfWork.CommitAsync(cancellationToken);
+        try
+        {
+            await _unitOfWork.CommitAsync(cancellationToken);
+        }
+        catch (DbUpdateException ex) when (request is ITranslatesDbConflict translator &&
+                                            translator.TranslateDbConflict(ex) is { } conflictResult)
+        {
+            _logger.Warning("[Command] {Command} conflicted: {Error}", commandName, conflictResult.Error.Message);
+            return (TResponse)(object)conflictResult;
+        }
 
         _logger.Information("[Command] {Command} committed successfully", commandName);
         return response;
