@@ -42,21 +42,21 @@ COPY ["Directory.Packages.props", "./"]
 COPY ["Directory.Build.props", "./"]
 
 # Restore packages
-RUN dotnet restore "API/HotelBooking.API/HotelBooking.API.csproj" --disable-parallel --disable-build-servers --no-cache -m:1
-RUN dotnet restore "Migrator/HotelBooking.Migrator/HotelBooking.Migrator.csproj" --disable-parallel --disable-build-servers --no-cache -m:1
+RUN dotnet restore "API/HotelBooking.API/HotelBooking.API.csproj"
+RUN dotnet restore "Migrator/HotelBooking.Migrator/HotelBooking.Migrator.csproj"
 # Копіюємо решту файлів і збираємо
 COPY . .
 WORKDIR "/src/API/HotelBooking.API"
-RUN dotnet build "HotelBooking.API.csproj" -c Release -o /app/build --no-restore -m:1 /p:UseSharedCompilation=false
+RUN dotnet build "HotelBooking.API.csproj" -c Release -o /app/build --no-restore
 
 # ============ PUBLISH IMAGES ============
 FROM build AS publish-api
 WORKDIR "/src/API/HotelBooking.API"
-RUN dotnet publish "HotelBooking.API.csproj" -c Release -o /app/publish --no-restore -m:1 /p:UseAppHost=false /p:UseSharedCompilation=false
+RUN dotnet publish "HotelBooking.API.csproj" -c Release -o /app/publish --no-restore /p:UseAppHost=false
 
 FROM build AS publish-migrator
 WORKDIR "/src/Migrator/HotelBooking.Migrator"
-RUN dotnet publish "HotelBooking.Migrator.csproj" -c Release -o /app/migrator --no-restore -m:1 /p:UseAppHost=false /p:UseSharedCompilation=false
+RUN dotnet publish "HotelBooking.Migrator.csproj" -c Release -o /app/migrator --no-restore /p:UseAppHost=false
 
 # ============ MIGRATOR RUNTIME IMAGE ============
 FROM runtime AS migrator
